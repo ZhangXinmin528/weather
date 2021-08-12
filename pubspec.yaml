@@ -1,0 +1,41 @@
+name: weather
+description: An weather flutter project .
+version: 1.0.0+1
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+
+  #国际化
+  intl: ^0.17.0
+  #bloc
+  flutter_bloc: ^7.0.0
+
+  equatable: ^2.0.0
+  #路由管理
+  fluro: ^2.0.3
+  #http
+  dio: ^4.0.0
+  #logger
+  pretty_dio_logger: ^1.2.0-beta-1
+  logger: ^1.0.0
+
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+
+  uses-material-design: true
+
