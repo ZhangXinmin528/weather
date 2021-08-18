@@ -11,19 +11,31 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # 使用Intl国际化
+  #Intl-1.国际化
   flutter_localizations:
     sdk: flutter
 
-  #国际化
+  #Intl-2.引入框架
   intl: ^0.17.0
+
   #bloc
   flutter_bloc: ^7.0.0
 
   equatable: ^2.0.0
+
   #路由管理
   fluro: ^2.0.3
+
   #http
   dio: ^4.0.0
+
+  #sp
+  shared_preferences: ^2.0.5
+
+  #location
+  geolocator: ^7.0.3
+
   #logger
   pretty_dio_logger: ^1.2.0-beta-1
   logger: ^1.0.0
@@ -37,5 +49,9 @@ dev_dependencies:
 
 flutter:
 
-  uses-material-design: true
+  #Intl-3.启用 generate 标志
+  generate: true
 
+  uses-material-design: true
+  assets:
+    - assets/

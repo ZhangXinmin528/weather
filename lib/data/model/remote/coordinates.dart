@@ -1,5 +1,6 @@
-import 'package:feather/src/utils/types_helper.dart';
+import 'package:weather/utils/types_helper.dart';
 
+///坐标
 class Coordinates {
   final double longitude;
   final double latitude;

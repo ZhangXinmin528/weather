@@ -1,4 +1,4 @@
-import 'package:feather/src/utils/types_helper.dart';
+import 'package:weather/utils/types_helper.dart';
 
 class MainWeatherData {
   final double temp;

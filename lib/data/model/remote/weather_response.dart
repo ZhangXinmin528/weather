@@ -1,10 +1,10 @@
-import 'package:feather/src/data/model/internal/application_error.dart';
-import 'package:feather/src/data/model/remote/clouds.dart';
-import 'package:feather/src/data/model/remote/coordinates.dart';
-import 'package:feather/src/data/model/remote/main_weather_data.dart';
-import 'package:feather/src/data/model/remote/overall_weather_data.dart';
-import 'package:feather/src/data/model/remote/system.dart';
-import 'package:feather/src/data/model/remote/wind.dart';
+import 'package:weather/data/model/internal/application_error.dart';
+import 'package:weather/data/model/remote/clouds.dart';
+import 'package:weather/data/model/remote/coordinates.dart';
+import 'package:weather/data/model/remote/main_weather_data.dart';
+import 'package:weather/data/model/remote/overall_weather_data.dart';
+import 'package:weather/data/model/remote/system.dart';
+import 'package:weather/data/model/remote/wind.dart';
 
 class WeatherResponse {
   final Coordinates? cord;

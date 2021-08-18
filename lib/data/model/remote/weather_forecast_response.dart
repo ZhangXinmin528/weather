@@ -1,8 +1,10 @@
-import 'package:feather/src/data/model/remote/clouds.dart';
-import 'package:feather/src/data/model/remote/main_weather_data.dart';
-import 'package:feather/src/data/model/remote/overall_weather_data.dart';
-import 'package:feather/src/data/model/remote/rain.dart';
-import 'package:feather/src/data/model/remote/wind.dart';
+
+
+import 'package:weather/data/model/remote/clouds.dart';
+import 'package:weather/data/model/remote/main_weather_data.dart';
+import 'package:weather/data/model/remote/overall_weather_data.dart';
+import 'package:weather/data/model/remote/rain.dart';
+import 'package:weather/data/model/remote/wind.dart';
 
 class WeatherForecastResponse {
   final MainWeatherData? mainWeatherData;
