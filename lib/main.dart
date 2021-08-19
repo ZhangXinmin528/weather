@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
+import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/local/storage_manager.dart';
 import 'package:weather/data/repository/local/weather_local_repository.dart';
@@ -27,7 +28,7 @@ class WeatherApp extends StatefulWidget {
 class _WeatherAppState extends State<WeatherApp> {
   ///路由表
   final NavigationProvider _navigationProvider = NavigationProvider();
-  final GlobalKey<NavigatorState> _navigationKey = GlobalKey();
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
   ///定位
   final LocationManager _locationManager = LocationManager(LocationProvider());
@@ -65,11 +66,17 @@ class _WeatherAppState extends State<WeatherApp> {
         providers: [
           BlocProvider(create: (context) {
             return AppBloc(_applicationLocalRepository);
-          })
+          }),
+          //导航
+          BlocProvider(
+            create: (context) {
+              return NavigationBloc(_navigationProvider, _navigatorKey);
+            },
+          ),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: true,
-          navigatorKey: _navigationKey,
+          navigatorKey: _navigatorKey,
           theme: _initThemeData(),
           localizationsDelegates: const [
             AppLocalizations.delegate,

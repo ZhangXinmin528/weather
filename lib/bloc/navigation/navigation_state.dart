@@ -7,6 +7,5 @@ class NavigationState extends Equatable {
   NavigationState(this._navigationRoute);
 
   @override
-  // TODO: implement props
   List<Object?> get props => [_navigationRoute];
 }
