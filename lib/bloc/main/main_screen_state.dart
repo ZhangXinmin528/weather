@@ -22,7 +22,7 @@ class LocationServiceDisableMianScreenState extends MainScreenState {}
 class PermissionNotGrantedMainScreenState extends MainScreenState {
   final bool permanentlyDeniedPermission;
 
-  PermissionNotGrantedMainScreenState(this.permanentlyDeniedPermission);
+  const PermissionNotGrantedMainScreenState(this.permanentlyDeniedPermission);
 }
 
 class LoadingMainScreenState extends MainScreenState {}
