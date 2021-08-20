@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:weather/resources/config/navigation_path.dart';
 import 'package:weather/ui/main/main_screen.dart';
 
-///应用导航器
+///应用导航器:定义导航路由
 class NavigationProvider {
   final router = FluroRouter();
 

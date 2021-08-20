@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
+import 'package:weather/bloc/main/main_screen_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/local/storage_manager.dart';
@@ -12,6 +13,7 @@ import 'package:weather/data/repository/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
 import 'package:weather/location/location_provider.dart';
 import 'package:weather/navigation/navigation_provider.dart';
+import 'package:weather/ui/main/main_screen.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
 
 void main() {
@@ -64,13 +66,22 @@ class _WeatherAppState extends State<WeatherApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) {
-            return AppBloc(_applicationLocalRepository);
-          }),
+          BlocProvider<AppBloc>(
+            create: (context) {
+              return AppBloc(_applicationLocalRepository);
+            },
+          ),
           //导航
-          BlocProvider(
+          BlocProvider<NavigationBloc>(
             create: (context) {
               return NavigationBloc(_navigationProvider, _navigatorKey);
+            },
+          ),
+          //主页面
+          BlocProvider<MainScreenBloc>(
+            create: (context) {
+              return MainScreenBloc(_locationManager, _weatherLocalRepository,
+                  _weatherRemoteRepository, _applicationLocalRepository);
             },
           ),
         ],

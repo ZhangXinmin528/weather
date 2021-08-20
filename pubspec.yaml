@@ -40,6 +40,10 @@ dependencies:
   pretty_dio_logger: ^1.2.0-beta-1
   logger: ^1.0.0
 
+  #swiper
+  flutter_swiper_null_safety:
+    git: https://github.com/lianyagang/flutter_swiper_null_safety.git
+
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

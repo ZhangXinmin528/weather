@@ -116,6 +116,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_swiper_null_safety:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "893326b4944ddf02544d33fc03e9d83537361279"
+      url: "https://github.com/lianyagang/flutter_swiper_null_safety.git"
+    source: git
+    version: "1.0.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
