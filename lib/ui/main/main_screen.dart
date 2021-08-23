@@ -8,6 +8,9 @@ import 'package:weather/bloc/main/main_screen_bloc.dart';
 import 'package:weather/bloc/main/main_screen_event.dart';
 import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
+import 'package:weather/bloc/navigation/navigation_event.dart';
+import 'package:weather/data/model/internal/application_error.dart';
+import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
 import 'package:weather/data/model/remote/weather_response.dart';
 import 'package:weather/resources/config/dimensions.dart';
@@ -73,7 +76,12 @@ class _MainScreenState extends State<MainScreen> {
                   else if (state is SuccessLoadMainScreenState)
                     _buildWeatherWidget(state.weatherResponse,
                         state.weatherForecastListResponse)
+                  else if (state is FailedLoadMainScreenState)
+                    _buildFailedToLoadDataWidget(state.applicationError)
+                  else
+                    const SizedBox()
                 ],
+                _buildOverflowMenu()
               ],
             );
           })
@@ -82,6 +90,32 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  ///失败页面
+  Widget _buildFailedToLoadDataWidget(ApplicationError error) {
+    final appLocalizations = AppLocalizations.of(context)!;
+    String detailedDescription = "";
+    switch (error) {
+      case ApplicationError.apiError:
+        detailedDescription = appLocalizations.error_api;
+        break;
+      case ApplicationError.connectionError:
+        detailedDescription = appLocalizations.error_server_connection;
+        break;
+      case ApplicationError.locationNotSelectedError:
+        detailedDescription = appLocalizations.error_location_not_selected;
+        break;
+    }
+
+    return _buildErrorWidget(
+      "${appLocalizations.error_failed_to_load_weather_data} $detailedDescription",
+      () {
+        _mainScreenBloc.add(LoadWeatherMainEvent());
+      },
+      key: const Key("main_screen_failed_to_load_data_widget"),
+    );
+  }
+
+  ///天气信息主页面
   Widget _buildWeatherWidget(WeatherResponse weatherResponse,
       WeatherForecastListResponse weatherForecastListResponse) {
     return Directionality(
@@ -225,6 +259,7 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  ///异常情况
   Widget _buildErrorWidget(
     String errorMessage,
     Function() onRetryClicked, {
@@ -257,5 +292,73 @@ class _MainScreenState extends State<MainScreen> {
         ],
       ),
     );
+  }
+
+  ///构建菜单
+  Widget _buildOverflowMenu() {
+    return SafeArea(
+      key: const Key("main_screen_overflow_menu"),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Theme(
+            data: Theme.of(context).copyWith(cardColor: Colors.white),
+            child: PopupMenuButton<PopupMenuElement>(
+              onSelected: (PopupMenuElement element) {
+                _onMenuElementClicked(element, context);
+              },
+              icon: const Icon(
+                Icons.menu,
+                color: Colors.white,
+              ),
+              itemBuilder: (BuildContext context) {
+                return _getOverflowMenu(context)
+                    .map((PopupMenuElement element) {
+                  return PopupMenuItem<PopupMenuElement>(
+                    value: element,
+                    child: Text(
+                      element.title!,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  );
+                }).toList();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<PopupMenuElement> _getOverflowMenu(BuildContext context) {
+    final applicationLocalization = AppLocalizations.of(context)!;
+    final List<PopupMenuElement> menuList = [];
+    menuList.add(PopupMenuElement(
+        key: const Key("menu_overflow_settings"),
+        title: applicationLocalization.settings));
+    menuList.add(PopupMenuElement(
+        key: const Key("menu_overflow_about"),
+        title: applicationLocalization.about));
+    return menuList;
+  }
+
+  ///菜单点击
+  void _onMenuElementClicked(PopupMenuElement value, BuildContext context) {
+    List<Color> startGradientColors = [];
+    if (_mainScreenBloc.state is SuccessLoadMainScreenState) {
+      final weatherResponse =
+          (_mainScreenBloc.state as SuccessLoadMainScreenState).weatherResponse;
+      final LinearGradient gradient = WidgetHelper.getGradient(
+          sunriseTime: weatherResponse.system!.sunrise,
+          sunsetTime: weatherResponse.system!.sunset);
+      startGradientColors = gradient.colors;
+    }
+
+    if (value.key == const Key("menu_overflow_settings")) {
+      _navigationBloc.add(SettingsScreenNavigationEvent(startGradientColors));
+    }
+    if (value.key == const Key("menu_overflow_about")) {
+      _navigationBloc.add(AboutScreenNavigationEvent(startGradientColors));
+    }
   }
 }

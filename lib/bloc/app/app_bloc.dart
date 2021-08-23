@@ -3,6 +3,7 @@ import 'package:weather/bloc/app/app_event.dart';
 import 'package:weather/bloc/app/app_state.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   final ApplicationLocalRepository _localRepository;
@@ -22,5 +23,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   bool isMetricUnits() {
     return state.unit == Unit.metric;
+  }
+
+  @override
+  void onTransition(Transition<AppEvent, AppState> transition) {
+    super.onTransition(transition);
+    LogUtil.d("AppBloc~");
+    print(transition);
   }
 }

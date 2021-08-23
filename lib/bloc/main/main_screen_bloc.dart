@@ -134,6 +134,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       final position = await _locationManager.getLocation();
       if (position != null) {
         LogUtil.i("Position is present!");
+        print(position);
+
         final GeoPosition geoPosition = GeoPosition.fromPosition(position);
         _weatherLocalRepository.saveLocation(geoPosition);
         return geoPosition;
@@ -173,5 +175,12 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     } else {
       return null;
     }
+  }
+
+  @override
+  void onTransition(Transition<MainScreenEvent, MainScreenState> transition) {
+    super.onTransition(transition);
+    LogUtil.d("MainScreenBloc~");
+    print(transition);
   }
 }

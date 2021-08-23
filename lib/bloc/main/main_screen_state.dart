@@ -38,6 +38,7 @@ class SuccessLoadMainScreenState extends MainScreenState {
   List<Object?> get props => [unit, weatherResponse];
 }
 
+///主页面加载天气失败
 class FailedLoadMainScreenState extends MainScreenState {
   final ApplicationError applicationError;
 

@@ -33,8 +33,8 @@ dependencies:
   #sp
   shared_preferences: ^2.0.5
 
-  #location
-  geolocator: ^7.0.3
+  #百度定位
+  flutter_bmflocation: ^1.0.4
 
   #logger
   pretty_dio_logger: ^1.2.0-beta-1

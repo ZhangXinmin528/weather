@@ -5,6 +5,7 @@ import 'package:weather/bloc/navigation/navigation_state.dart';
 import 'package:weather/data/model/internal/navigation_route.dart';
 import 'package:weather/navigation/navigation_provider.dart';
 import 'package:weather/resources/config/navigation_path.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   final NavigationProvider _navigationProvider;
@@ -29,5 +30,12 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
       _navigatorKey,
       routeSettings: routeSettings,
     );
+  }
+
+  @override
+  void onTransition(Transition<NavigationEvent, NavigationState> transition) {
+    super.onTransition(transition);
+    LogUtil.d("NavigationBloc~");
+    print(transition);
   }
 }
