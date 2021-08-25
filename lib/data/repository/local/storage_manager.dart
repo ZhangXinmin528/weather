@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:weather/data/model/internal/geo_position.dart';
+import 'package:weather/data/model/internal/coordinate.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
 import 'package:weather/data/model/remote/weather_response.dart';
@@ -108,7 +108,7 @@ class StorageManager {
     }
   }
 
-  Future<bool> saveLocation(GeoPosition geoPosition) async {
+  Future<bool> saveLocation(Coordinate geoPosition) async {
     try {
       LogUtil.d("Store location: $geoPosition");
       final result = await _spUtils.setString(
@@ -121,13 +121,13 @@ class StorageManager {
     }
   }
 
-  Future<GeoPosition?> getLocation() async {
+  Future<Coordinate?> getLocation() async {
     try {
       final String? jsonData =
           await _spUtils.getString(Ids.storageLocationKey);
       LogUtil.d("Returned user location: $jsonData");
       if (jsonData != null) {
-        return GeoPosition.fromJson(
+        return Coordinate.fromJson(
             json.decode(jsonData) as Map<String, dynamic>);
       } else {
         return null;

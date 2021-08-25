@@ -28,7 +28,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   @override
   void onTransition(Transition<AppEvent, AppState> transition) {
     super.onTransition(transition);
-    LogUtil.d("AppBloc~");
-    print(transition);
+    // LogUtil.d("AppBloc~");
+    // print(transition);
   }
 }

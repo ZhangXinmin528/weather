@@ -1,4 +1,4 @@
-import 'package:weather/data/model/internal/geo_position.dart';
+import 'package:weather/data/model/internal/coordinate.dart';
 import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
 import 'package:weather/data/model/remote/weather_response.dart';
 import 'package:weather/data/repository/local/storage_manager.dart';
@@ -9,11 +9,11 @@ class WeatherLocalRepository {
 
   WeatherLocalRepository(this._storageManager);
 
-  Future saveLocation(GeoPosition geoPosition) async {
+  Future saveCoordinate(Coordinate geoPosition) async {
     await _storageManager.saveLocation(geoPosition);
   }
 
-  Future<GeoPosition?> getLocation() async {
+  Future<Coordinate?> getCachedCoordinate() async {
     return _storageManager.getLocation();
   }
 
@@ -21,7 +21,7 @@ class WeatherLocalRepository {
     await _storageManager.saveWeather(response);
   }
 
-  Future<WeatherResponse?> getWeather() async {
+  Future<WeatherResponse?> getCachedWeather() async {
     return _storageManager.getWeather();
   }
 
@@ -29,7 +29,7 @@ class WeatherLocalRepository {
     await _storageManager.saveWeatherForecast(response);
   }
 
-  Future<WeatherForecastListResponse?> getWeatherForecast() async {
+  Future<WeatherForecastListResponse?> getCachedWeatherForecast() async {
     return _storageManager.getWeatherForecast();
   }
 }

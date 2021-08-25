@@ -10,13 +10,12 @@ import 'package:weather/data/repository/local/storage_manager.dart';
 import 'package:weather/data/repository/local/weather_local_repository.dart';
 import 'package:weather/data/repository/remote/weather_api_provider.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
-import 'package:weather/location/location_manager.dart';
-import 'package:weather/location/location_provider.dart';
 import 'package:weather/navigation/navigation_provider.dart';
-import 'package:weather/ui/main/main_screen.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
+import 'package:weather/weather_observer.dart';
 
 void main() {
+  Bloc.observer = WeatherObserver();
   runApp(WeatherApp());
 }
 
@@ -31,9 +30,6 @@ class _WeatherAppState extends State<WeatherApp> {
   ///路由表
   final NavigationProvider _navigationProvider = NavigationProvider();
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
-
-  ///定位
-  final LocationManager _locationManager = LocationManager(LocationProvider());
 
   ///sp
   final StorageManager _storageManager =
@@ -80,7 +76,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //主页面
           BlocProvider<MainScreenBloc>(
             create: (context) {
-              return MainScreenBloc(_locationManager, _weatherLocalRepository,
+              return MainScreenBloc(_weatherLocalRepository,
                   _weatherRemoteRepository, _applicationLocalRepository);
             },
           ),

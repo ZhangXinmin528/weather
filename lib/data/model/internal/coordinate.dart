@@ -1,16 +1,16 @@
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 
-class GeoPosition {
+class Coordinate {
   final double? lat;
   final double? long;
 
-  GeoPosition(this.lat, this.long);
+  Coordinate(this.lat, this.long);
 
-  GeoPosition.fromJson(Map<String, dynamic> json)
+  Coordinate.fromJson(Map<String, dynamic> json)
       : lat = json["lat"] as double?,
         long = json["long"] as double?;
 
-  GeoPosition.fromPosition(Position position)
+  Coordinate.fromBaiduLocation(BaiduLocation position)
       : lat = position.latitude,
         long = position.longitude;
 

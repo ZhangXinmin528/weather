@@ -47,7 +47,7 @@ class _MainScreenState extends State<MainScreen> {
     _appBloc.add(LoadSettingsAppEvent());
 
     _mainScreenBloc = BlocProvider.of(context);
-    _mainScreenBloc.add(LocationCheckMainEvent());
+    _mainScreenBloc.add(LocationChangedEvent());
 
     _navigationBloc = BlocProvider.of(context);
   }
@@ -61,23 +61,17 @@ class _MainScreenState extends State<MainScreen> {
               builder: (context, state) {
             return Stack(
               children: [
-                if (state is InitialMainScreenState ||
-                    state is LoadingMainScreenState ||
-                    state is CheckLocationMainScreenState) ...[
+                if (state is StartLocationState ||
+                    state is LoadingMainScreenState) ...[
                   const AnimatedGradientWidget(),
                   const LoadingWidget(),
                 ] else ...[
                   _buildGradientWidget(),
-                  if (state is LocationServiceDisableMianScreenState)
-                    _buildLocationServiceDisabledWidget()
-                  else if (state is PermissionNotGrantedMainScreenState)
-                    _buildPermissionNotGrantedWidget(
-                        state.permanentlyDeniedPermission)
-                  else if (state is SuccessLoadMainScreenState)
+                  if (state is SuccessLoadMainScreenState)
                     _buildWeatherWidget(state.weatherResponse,
                         state.weatherForecastListResponse)
                   else if (state is FailedLoadMainScreenState)
-                    _buildFailedToLoadDataWidget(state.applicationError)
+                    _buildFailedToLoadDataWidget(state.error)
                   else
                     const SizedBox()
                 ],
@@ -101,7 +95,7 @@ class _MainScreenState extends State<MainScreen> {
       case ApplicationError.connectionError:
         detailedDescription = appLocalizations.error_server_connection;
         break;
-      case ApplicationError.locationNotSelectedError:
+      case ApplicationError.locationError:
         detailedDescription = appLocalizations.error_location_not_selected;
         break;
     }
@@ -109,7 +103,7 @@ class _MainScreenState extends State<MainScreen> {
     return _buildErrorWidget(
       "${appLocalizations.error_failed_to_load_weather_data} $detailedDescription",
       () {
-        _mainScreenBloc.add(LoadWeatherMainEvent());
+        _mainScreenBloc.add(WeatherDataLoadedMainEvent());
       },
       key: const Key("main_screen_failed_to_load_data_widget"),
     );
@@ -204,35 +198,6 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  ///定位权限未授予
-  Widget _buildPermissionNotGrantedWidget(bool permanentlyDeniedPermission) {
-    final AppLocalizations appLocalizations = AppLocalizations.of(context)!;
-    final String text = permanentlyDeniedPermission
-        ? appLocalizations.error_permissions_not_granted_permanently
-        : appLocalizations.error_permissions_not_granted;
-    return Column(
-        key: const Key("main_screen_permissions_not_granted_widget"),
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildErrorWidget(text, () {
-            _mainScreenBloc.add(LocationCheckMainEvent());
-          }),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextButton(
-              onPressed: () {
-                //TODO：设置按钮
-                // AppSettings.openAppSettings();
-              },
-              child: Text(
-                appLocalizations.open_app_settings,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ]);
-  }
-
   ///背景色
   Widget _buildGradientWidget() {
     return Container(
@@ -243,19 +208,6 @@ class _MainScreenState extends State<MainScreen> {
           ApplicationColors.nightEndColor,
         ),
       ),
-    );
-  }
-
-  ///定位服务不可用
-  Widget _buildLocationServiceDisabledWidget() {
-    return _buildErrorWidget(
-      AppLocalizations.of(context)!.error_location_disabled,
-      () {
-        _mainScreenBloc.add(
-          LocationCheckMainEvent(),
-        );
-      },
-      key: const Key("main_screen_location_service_disabled_widget"),
     );
   }
 

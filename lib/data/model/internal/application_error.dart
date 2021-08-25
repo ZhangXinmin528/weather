@@ -1,5 +1,5 @@
 enum ApplicationError {
   apiError,
   connectionError,
-  locationNotSelectedError,
+  locationError,
 }
