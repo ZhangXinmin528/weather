@@ -39,26 +39,12 @@ class LocationManager {
         _locationPlugin.onResultCallback().listen((Map<String, Object> result) {
       try {
         final BaiduLocation location = BaiduLocation.fromMap(result);
-        LogUtil.d("LocationManager..location:$location");
         valueChanged(location);
       } catch (exception) {
         valueChanged(null);
         print(exception);
       }
     });
-  }
-
-  ///进行一次定位
-  Future<BaiduLocation> startLocationOnce() async {
-    if (_locationPlugin != null) {
-      _locationPlugin.startLocation();
-    }
-
-    final Map<String, Object> _loationResult =
-        await _locationPlugin.onResultCallback().last;
-
-    // stopLocation();
-    return BaiduLocation.fromMap(_loationResult);
   }
 
   ///取消定位

@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/data/model/internal/application_error.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
@@ -17,15 +16,8 @@ class MainScreenState extends Equatable {
 ///开始定位
 class StartLocationState extends MainScreenState {}
 
-///定位成功
-class LocationSuccessState extends MainScreenState {
-  final BaiduLocation? location;
-
-  LocationSuccessState(this.location);
-
-  @override
-  List<Object?> get props => [unit, location];
-}
+///定位变化
+class LocationChangedState extends MainScreenState {}
 
 ///加载主屏幕
 class LoadingMainScreenState extends MainScreenState {}

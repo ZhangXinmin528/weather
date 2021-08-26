@@ -47,7 +47,8 @@ class _MainScreenState extends State<MainScreen> {
     _appBloc.add(LoadSettingsAppEvent());
 
     _mainScreenBloc = BlocProvider.of(context);
-    _mainScreenBloc.add(LocationChangedEvent());
+    //开始定位
+    _mainScreenBloc.add(StartLocationEvent());
 
     _navigationBloc = BlocProvider.of(context);
   }

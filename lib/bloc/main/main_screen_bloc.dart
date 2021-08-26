@@ -21,6 +21,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
   final ApplicationLocalRepository _applicationLocalRepository;
 
+  late BaiduLocation? _baiduLocation;
+
   Timer? _refreshTimer;
 
   MainScreenBloc(this._weatherLocalRepository, this._weatherRemoteRepository,
@@ -44,71 +46,53 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   ///开始定位
   Stream<MainScreenState> _mapStartLocationToState(
       MainScreenState state) async* {
-    LogUtil.d("_mapStartLocationToState~");
+    LogUtil.d("开始定位~");
     if (state is StartLocationState) {
       //请求定位权限
       _locationManager.requestLocationPermission();
-      BaiduLocation? location = await _locationManager.startLocationOnce();
-      LogUtil.d("_mapStartLocationToState..location:$location");
-      if (location == null) {
-        //定位失败
-        yield FailedLoadMainScreenState(ApplicationError.locationError);
-      } else {
-        //定位成功
-        final Coordinate geoPosition = Coordinate.fromBaiduLocation(location!);
-        _weatherLocalRepository.saveCoordinate(geoPosition);
+
+      _locationManager.startLocation((value) {
+        //定位变化
+        _baiduLocation = value;
         add(LocationChangedEvent());
-        yield LocationSuccessState(location);
-      }
+        //停止定位
+        _locationManager.stopLocation();
+        LogUtil.d("定位回调了~_baiduLocation：${_baiduLocation?.address}");
+      });
+
+      yield LocationChangedState();
     }
   }
 
   ///定位相关逻辑
   Stream<MainScreenState> _mapLocationChangedToState(
       MainScreenState state) async* {
-    LogUtil.d("_mapLocationToState~");
-    if (state is StartLocationState) {
-      //请求定位权限
-      _locationManager.requestLocationPermission();
-      add(WeatherDataLoadedMainEvent());
-      yield StartLocationState();
-    } else if (state is StartLocationState) {
-      LogUtil.d("_mapLocationToState~");
-      BaiduLocation? location;
-      _locationManager.startLocation((value) {
-        location = value;
-        print(location);
-        LogUtil.d("定位回调：${location!.address}");
-      });
-      //TODO：有问题
-      if (location == null) {
-        //定位失败
-        yield FailedLoadMainScreenState(ApplicationError.locationError);
-      } else {
-        //定位成功
-        final Coordinate geoPosition = Coordinate.fromBaiduLocation(location!);
-        _weatherLocalRepository.saveCoordinate(geoPosition);
-        add(WeatherDataLoadedMainEvent());
-        yield LocationSuccessState(location);
-      }
+    LogUtil.d("处理定位数据~_baiduLocation：${_baiduLocation?.address}");
+
+    if (_baiduLocation == null) {
+      //定位失败
+      yield FailedLoadMainScreenState(ApplicationError.locationError);
     } else {
-      yield StartLocationState();
+      //定位成功
+      final Coordinate geoPosition =
+          Coordinate.fromBaiduLocation(_baiduLocation!);
+      _weatherLocalRepository.saveCoordinate(geoPosition);
+      add(WeatherDataLoadedMainEvent());
     }
   }
 
   Stream<MainScreenState> _mapWeatherToState(MainScreenState state) async* {
-    LogUtil.d("_mapWeatherToState~");
-    if (state is LocationSuccessState) {
-      final location = state.location;
-      if (location != null) {
+    LogUtil.d("定位成功..加载天气数据~");
+    if (state is LocationChangedState) {
+      if (_baiduLocation != null) {
         //获取天气信息
-        final WeatherResponse? weatherResponse =
-            await _fetcherWeather(location.latitude, location.longitude);
+        final WeatherResponse? weatherResponse = await _fetcherWeather(
+            _baiduLocation!.latitude, _baiduLocation!.longitude);
 
         //获取天气预测信息
         final WeatherForecastListResponse? weatherForecastListResponse =
             await _fetcherWeatherForecast(
-                location.latitude, location.longitude);
+                _baiduLocation!.latitude, _baiduLocation!.longitude);
 
         if (weatherResponse != null && weatherForecastListResponse != null) {
           if (weatherResponse.errorCode != null) {
@@ -153,7 +137,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   ///获取天气数据
   Future<WeatherResponse?> _fetcherWeather(
       double? latitude, double? longitude) async {
-    LogUtil.d("Fetcher weather~");
+    LogUtil.d("请求天气数据~");
 
     final WeatherResponse weatherResponse =
         await _weatherRemoteRepository.fetchWeather(latitude, longitude);

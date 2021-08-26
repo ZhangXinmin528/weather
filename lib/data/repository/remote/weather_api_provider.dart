@@ -18,7 +18,7 @@ class WeatherApiProvider {
   Future<WeatherResponse> fetchWeather(double? latitude, double? longitude) async {
     try {
       final Uri uri = _buildUri(_apiWeatherEndpoint, latitude, longitude);
-
+      LogUtil.e("Fetcher weather:${uri.toString()}");
       final Response<Map<String, dynamic>> response =
           await _dio.get(uri.toString());
 
