@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_swiper_null_safety/flutter_swiper_null_safety.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
 import 'package:weather/bloc/app/app_event.dart';
 import 'package:weather/bloc/main/main_screen_bloc.dart';
@@ -9,20 +8,12 @@ import 'package:weather/bloc/main/main_screen_event.dart';
 import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
-import 'package:weather/data/model/internal/application_error.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
-import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
-import 'package:weather/data/model/remote/weather_response.dart';
-import 'package:weather/resources/config/dimensions.dart';
-import 'package:weather/resources/config/ids.dart';
-import 'package:weather/ui/main/widget/weather_main_sun_path_widget.dart';
+import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/ui/widget/animated_gradient.dart';
 import 'package:weather/ui/widget/application_colors.dart';
-import 'package:weather/ui/widget/current_weather_widget.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
 import 'package:weather/ui/widget/widget_helper.dart';
-import 'package:weather/utils/datatime_utils.dart';
-import 'package:weather/utils/log_utils.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -69,8 +60,9 @@ class _MainScreenState extends State<MainScreen> {
                 ] else ...[
                   _buildGradientWidget(),
                   if (state is SuccessLoadMainScreenState)
-                    _buildWeatherWidget(state.weatherResponse,
-                        state.weatherForecastListResponse)
+                    // _buildWeatherWidget(state.weatherResponse,
+                    //     state.weatherForecastListResponse)
+                    const SizedBox()
                   else if (state is FailedLoadMainScreenState)
                     _buildFailedToLoadDataWidget(state.error)
                   else
@@ -86,18 +78,18 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   ///失败页面
-  Widget _buildFailedToLoadDataWidget(ApplicationError error) {
+  Widget _buildFailedToLoadDataWidget(WeatherError error) {
     final appLocalizations = AppLocalizations.of(context)!;
     String detailedDescription = "";
     switch (error) {
-      case ApplicationError.apiError:
-        detailedDescription = appLocalizations.error_api;
-        break;
-      case ApplicationError.connectionError:
+      case WeatherError.connectionError:
         detailedDescription = appLocalizations.error_server_connection;
         break;
-      case ApplicationError.locationError:
+      case WeatherError.locationError:
         detailedDescription = appLocalizations.error_location_not_selected;
+        break;
+      case WeatherError.data_not_available:
+        detailedDescription = appLocalizations.error_date_not_available;
         break;
     }
 
@@ -108,95 +100,6 @@ class _MainScreenState extends State<MainScreen> {
       },
       key: const Key("main_screen_failed_to_load_data_widget"),
     );
-  }
-
-  ///天气信息主页面
-  Widget _buildWeatherWidget(WeatherResponse weatherResponse,
-      WeatherForecastListResponse weatherForecastListResponse) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Container(
-        key: const Key("main_screen_weather_widget_conainer"),
-        decoration: BoxDecoration(
-          gradient: WidgetHelper.getGradient(
-            sunriseTime: weatherResponse.system!.sunrise,
-            sunsetTime: weatherResponse.system!.sunset,
-          ),
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                weatherResponse.name!,
-                key: const Key("main_screen_weather_widget_cith_name"),
-                style: Theme.of(context).textTheme.headline6,
-                textDirection: TextDirection.ltr,
-              ),
-              Text(
-                DateTimeUtils.formatDateTime(DateTime.now()),
-                key: const Key("main_screen_weather_widget_date"),
-                textDirection: TextDirection.ltr,
-                style: Theme.of(context).textTheme.subtitle2,
-              ),
-              SizedBox(
-                height: Dimensions.weatherMainWidgetSwiperHeight,
-                child: _buildSwiperWidget(
-                    weatherResponse, weatherForecastListResponse),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSwiperWidget(WeatherResponse weatherResponse,
-      WeatherForecastListResponse weatherForecastListResponse) {
-    return Swiper(
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return _getPage(Ids.mainWeatherPage, weatherResponse,
-              weatherForecastListResponse);
-        } else {
-          return _getPage(Ids.weatherMainSunPathPage, weatherResponse,
-              weatherForecastListResponse);
-        }
-      },
-      itemCount: 2,
-      loop: false,
-      pagination: SwiperPagination(
-        builder: DotSwiperPaginationBuilder(
-          color: ApplicationColors.swiperInactiveDotColor,
-          activeColor: ApplicationColors.swiperActiveDotColor,
-        ),
-      ),
-    );
-  }
-
-  ///天气信息页面
-  Widget _getPage(String key, WeatherResponse weatherResponse,
-      WeatherForecastListResponse weatherForecastListResponse) {
-    if (_pageMap.containsKey(key)) {
-      return _pageMap[key] ?? const SizedBox();
-    } else {
-      Widget page;
-      if (key == Ids.mainWeatherPage) {
-        page = CurrentWeatherWidget(
-          weatherResponse: weatherResponse,
-          forecastListResponse: weatherForecastListResponse,
-        );
-      } else if (key == Ids.weatherMainSunPathPage) {
-        page = WeatherMainSunPathWidget(
-          system: weatherResponse.system,
-        );
-      } else {
-        LogUtil.e("Unsupported key:$key");
-        page = const SizedBox();
-      }
-      _pageMap[key] = page;
-      return page;
-    }
   }
 
   ///背景色
@@ -299,12 +202,12 @@ class _MainScreenState extends State<MainScreen> {
   void _onMenuElementClicked(PopupMenuElement value, BuildContext context) {
     List<Color> startGradientColors = [];
     if (_mainScreenBloc.state is SuccessLoadMainScreenState) {
-      final weatherResponse =
-          (_mainScreenBloc.state as SuccessLoadMainScreenState).weatherResponse;
-      final LinearGradient gradient = WidgetHelper.getGradient(
-          sunriseTime: weatherResponse.system!.sunrise,
-          sunsetTime: weatherResponse.system!.sunset);
-      startGradientColors = gradient.colors;
+      // final weatherResponse =
+      //     (_mainScreenBloc.state as SuccessLoadMainScreenState).weatherResponse;
+      // final LinearGradient gradient = WidgetHelper.getGradient(
+      //     sunriseTime: weatherResponse.system!.sunrise,
+      //     sunsetTime: weatherResponse.system!.sunset);
+      // startGradientColors = gradient.colors;
     }
 
     if (value.key == const Key("menu_overflow_settings")) {

@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:weather/data/model/internal/application_error.dart';
 import 'package:weather/data/model/internal/unit.dart';
-import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
-import 'package:weather/data/model/remote/weather_response.dart';
+import 'package:weather/data/model/internal/weather_error.dart';
+import 'package:weather/data/model/remote/weather/weather_now.dart';
 
 class MainScreenState extends Equatable {
   final Unit? unit;
@@ -24,19 +23,17 @@ class LoadingMainScreenState extends MainScreenState {}
 
 ///主屏幕数据加载成功
 class SuccessLoadMainScreenState extends MainScreenState {
-  final WeatherResponse weatherResponse;
-  final WeatherForecastListResponse weatherForecastListResponse;
+  final Weather weather;
 
-  SuccessLoadMainScreenState(
-      this.weatherResponse, this.weatherForecastListResponse);
+  SuccessLoadMainScreenState(this.weather);
 
   @override
-  List<Object?> get props => [unit, weatherResponse];
+  List<Object?> get props => [weather, unit];
 }
 
 ///主页面加载天气失败
 class FailedLoadMainScreenState extends MainScreenState {
-  final ApplicationError error;
+  final WeatherError error;
 
   const FailedLoadMainScreenState(this.error);
 

@@ -1,20 +1,21 @@
-import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
-import 'package:weather/data/model/remote/weather_response.dart';
-import 'package:weather/data/repository/remote/weather_api_provider.dart';
+import 'package:weather/data/model/remote/weather/weather_now.dart';
+import 'package:weather/data/repository/remote/heweather_api_provider.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class WeatherRemoteRepository {
-  final WeatherApiProvider _weatherApiProvider;
+  final HeWeatherApiProvider _weatherApiProvider;
 
   WeatherRemoteRepository(this._weatherApiProvider);
 
   ///获取天气信息
-  Future<WeatherResponse> fetchWeather(double? latitude, double? longitude) {
-    return _weatherApiProvider.fetchWeather(latitude, longitude);
-  }
+  Future<Weather> requestWeatherNow(double longitude, double latitude) async {
+    final response =
+        await _weatherApiProvider.requestWeatherNow(longitude, latitude);
 
-  ///获取天气预报信息
-  Future<WeatherForecastListResponse> fetcherForecast(
-      double? latitude, double? longitude) {
-    return _weatherApiProvider.fetchWeatherForecast(latitude, longitude);
+    LogUtil.d("response=${response.data.toString()}");
+    final Weather weather = Weather.fromJson(response.data);
+    // Weather.fromJson(json.decode(response.data.toString()));
+    print(weather.code);
+    return weather;
   }
 }

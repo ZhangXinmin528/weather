@@ -16,4 +16,8 @@ class TypesHelper {
       return 0;
     }
   }
+
+  static String numToString(int num) {
+    return num.toString();
+  }
 }

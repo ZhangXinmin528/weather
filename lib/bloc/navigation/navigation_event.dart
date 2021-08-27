@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:weather/data/model/internal/weather_forecast_holder.dart';
 
 class NavigationEvent extends Equatable{
 
@@ -14,9 +13,6 @@ class MainScreenNavigationEvent extends NavigationEvent {}
 
 ///天气信息页面
 class ForecastScreenNavigationEvent extends NavigationEvent {
-  final WeatherForecastHolder holder;
-
-  ForecastScreenNavigationEvent(this.holder);
 }
 
 ///关于页面

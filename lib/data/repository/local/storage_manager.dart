@@ -1,14 +1,10 @@
 import 'dart:convert';
 
-import 'package:weather/data/model/internal/coordinate.dart';
 import 'package:weather/data/model/internal/unit.dart';
-import 'package:weather/data/model/remote/weather_forecast_list_response.dart';
-import 'package:weather/data/model/remote/weather_response.dart';
 import 'package:weather/resources/config/ids.dart';
-import 'package:weather/utils/datatime_utils.dart';
+import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
-
 
 class StorageManager {
   final SharedPreferencesUtils _spUtils;
@@ -43,8 +39,7 @@ class StorageManager {
         unitValue = 1;
       }
 
-      final result =
-          await _spUtils.setInt(Ids.storageUnitKey, unitValue);
+      final result = await _spUtils.setInt(Ids.storageUnitKey, unitValue);
       LogUtil.d("Saved with result: $result");
 
       return result;
@@ -69,8 +64,7 @@ class StorageManager {
 
   Future<int> getRefreshTime() async {
     try {
-      int? refreshTime =
-          await _spUtils.getInt(Ids.storageRefreshTimeKey);
+      int? refreshTime = await _spUtils.getInt(Ids.storageRefreshTimeKey);
       if (refreshTime == null || refreshTime == 0) {
         refreshTime = 600000;
       }
@@ -84,8 +78,8 @@ class StorageManager {
   Future<bool> saveLastRefreshTime(int lastRefreshTime) async {
     try {
       LogUtil.d("Save refresh time: $lastRefreshTime");
-      final result = await _spUtils.setInt(
-          Ids.storageLastRefreshTimeKey, lastRefreshTime);
+      final result =
+          await _spUtils.setInt(Ids.storageLastRefreshTimeKey, lastRefreshTime);
       LogUtil.d("Saved with result: $result");
       return result;
     } catch (exc, stackTrace) {
@@ -108,93 +102,5 @@ class StorageManager {
     }
   }
 
-  Future<bool> saveLocation(Coordinate geoPosition) async {
-    try {
-      LogUtil.d("Store location: $geoPosition");
-      final result = await _spUtils.setString(
-          Ids.storageLocationKey, json.encode(geoPosition));
-      LogUtil.d("Saved with result: $result");
-      return result;
-    } catch (exc, stackTrace) {
-      LogUtil.e("Exception: $exc stack trace: $stackTrace");
-      return false;
-    }
-  }
 
-  Future<Coordinate?> getLocation() async {
-    try {
-      final String? jsonData =
-          await _spUtils.getString(Ids.storageLocationKey);
-      LogUtil.d("Returned user location: $jsonData");
-      if (jsonData != null) {
-        return Coordinate.fromJson(
-            json.decode(jsonData) as Map<String, dynamic>);
-      } else {
-        return null;
-      }
-    } catch (exc, stackTrace) {
-      LogUtil.e("Exception: $exc stack trace: $stackTrace");
-      return null;
-    }
-  }
-
-  Future<bool> saveWeather(WeatherResponse response) async {
-    try {
-      LogUtil.d("Store weather: ${json.encode(response)}");
-      final result = await _spUtils.setString(
-          Ids.storageWeatherKey, json.encode(response));
-      LogUtil.d("Saved with result: $result");
-      return result;
-    } catch (exc, stackTrace) {
-      LogUtil.e("Exception: $exc stack trace: $stackTrace");
-      return false;
-    }
-  }
-
-  Future<WeatherResponse?> getWeather() async {
-    try {
-      final String? jsonData =
-          await _spUtils.getString(Ids.storageWeatherKey);
-      LogUtil.d("Returned weather data: $jsonData");
-      if (jsonData != null) {
-        return WeatherResponse.fromJson(
-            jsonDecode(jsonData) as Map<String, dynamic>);
-      } else {
-        return null;
-      }
-    } catch (exc, stackTrace) {
-      LogUtil.e("Exception: $exc stack trace: $stackTrace");
-      return null;
-    }
-  }
-
-  Future<bool> saveWeatherForecast(WeatherForecastListResponse response) async {
-    try {
-      LogUtil.d("Store weather forecast ${json.encode(response)}");
-      final result = _spUtils.setString(
-          Ids.storageWeatherForecastKey, json.encode(response));
-      LogUtil.d("Saved with result: $result");
-      return result;
-    } catch (exc, stackTrace) {
-      LogUtil.e("Exception: $exc stack trace: $stackTrace");
-      return false;
-    }
-  }
-
-  Future<WeatherForecastListResponse?> getWeatherForecast() async {
-    try {
-      final String? jsonData =
-          await _spUtils.getString(Ids.storageWeatherForecastKey);
-      LogUtil.d("Returned weather forecast data: $jsonData");
-      if (jsonData != null) {
-        return WeatherForecastListResponse.fromJson(
-            jsonDecode(jsonData) as Map<String, dynamic>);
-      } else {
-        return null;
-      }
-    } catch (exc, stackTrace) {
-      LogUtil.e("Exception: $exc stack trace: $stackTrace");
-      return null;
-    }
-  }
 }

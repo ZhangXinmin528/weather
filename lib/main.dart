@@ -7,8 +7,7 @@ import 'package:weather/bloc/main/main_screen_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/local/storage_manager.dart';
-import 'package:weather/data/repository/local/weather_local_repository.dart';
-import 'package:weather/data/repository/remote/weather_api_provider.dart';
+import 'package:weather/data/repository/remote/heweather_api_provider.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
 import 'package:weather/navigation/navigation_provider.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
@@ -35,12 +34,9 @@ class _WeatherAppState extends State<WeatherApp> {
   final StorageManager _storageManager =
       StorageManager(SharedPreferencesUtils());
 
-  ///天气数据缓存
-  late WeatherLocalRepository _weatherLocalRepository;
-
   ///天气数据接口数据
   final WeatherRemoteRepository _weatherRemoteRepository =
-      WeatherRemoteRepository(WeatherApiProvider());
+      WeatherRemoteRepository(HeWeatherApiProvider());
 
   ///app整体缓存
   late ApplicationLocalRepository _applicationLocalRepository;
@@ -48,7 +44,6 @@ class _WeatherAppState extends State<WeatherApp> {
   @override
   void initState() {
     super.initState();
-    _weatherLocalRepository = WeatherLocalRepository(_storageManager);
     _applicationLocalRepository = ApplicationLocalRepository(_storageManager);
 
     ///作用？？
@@ -76,7 +71,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //主页面
           BlocProvider<MainScreenBloc>(
             create: (context) {
-              return MainScreenBloc(_weatherLocalRepository,
+              return MainScreenBloc(
                   _weatherRemoteRepository, _applicationLocalRepository);
             },
           ),
