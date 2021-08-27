@@ -82,9 +82,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         final Weather weather =
             await _weatherRemoteRepository.requestWeatherNow(
                 _baiduLocation!.longitude, _baiduLocation!.latitude);
-        LogUtil.d("code=${weather.code}");
         if (weather != null) {
-          if (weather.code != 200) {
+          if (weather.code != "200") {
             yield FailedLoadMainScreenState(WeatherError.data_not_available);
           } else {
             //加载天气数据
