@@ -1,34 +1,36 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'weather_now.dart';
+part of 'weather_hour.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-WeatherRT _$WeatherRTFromJson(Map<String, dynamic> json) {
-  return WeatherRT(
+WeatherHour _$WeatherHourFromJson(Map<String, dynamic> json) {
+  return WeatherHour(
     json['code'] as String,
-    json['updateTime'] as String,
+    json['updateTimwee'] as String,
     json['fxLink'] as String,
-    Now.fromJson(json['now'] as Map<String, dynamic>),
+    (json['hourly'] as List<dynamic>)
+        .map((e) => Hourly.fromJson(e as Map<String, dynamic>))
+        .toList(),
     Refer.fromJson(json['refer'] as Map<String, dynamic>),
   );
 }
 
-Map<String, dynamic> _$WeatherRTToJson(WeatherRT instance) => <String, dynamic>{
+Map<String, dynamic> _$WeatherHourToJson(WeatherHour instance) =>
+    <String, dynamic>{
       'code': instance.code,
-      'updateTime': instance.updateTime,
+      'updateTimwee': instance.updateTime,
       'fxLink': instance.fxLink,
-      'now': instance.now,
+      'hourly': instance.hourly,
       'refer': instance.refer,
     };
 
-Now _$NowFromJson(Map<String, dynamic> json) {
-  return Now(
-    json['obsTime'] as String,
+Hourly _$HourlyFromJson(Map<String, dynamic> json) {
+  return Hourly(
+    json['fxTime'] as String,
     json['temp'] as String,
-    json['feelsLike'] as String,
     json['icon'] as String,
     json['text'] as String,
     json['wind360'] as String,
@@ -36,18 +38,17 @@ Now _$NowFromJson(Map<String, dynamic> json) {
     json['windScale'] as String,
     json['windSpeed'] as String,
     json['humidity'] as String,
+    json['pop'] as String,
     json['precip'] as String,
     json['pressure'] as String,
-    json['vis'] as String,
     json['cloud'] as String,
     json['dew'] as String,
   );
 }
 
-Map<String, dynamic> _$NowToJson(Now instance) => <String, dynamic>{
-      'obsTime': instance.obsTime,
+Map<String, dynamic> _$HourlyToJson(Hourly instance) => <String, dynamic>{
+      'fxTime': instance.fxTime,
       'temp': instance.temp,
-      'feelsLike': instance.feelsLike,
       'icon': instance.icon,
       'text': instance.text,
       'wind360': instance.wind360,
@@ -55,9 +56,9 @@ Map<String, dynamic> _$NowToJson(Now instance) => <String, dynamic>{
       'windScale': instance.windScale,
       'windSpeed': instance.windSpeed,
       'humidity': instance.humidity,
+      'pop': instance.pop,
       'precip': instance.precip,
       'pressure': instance.pressure,
-      'vis': instance.vis,
       'cloud': instance.cloud,
       'dew': instance.dew,
     };

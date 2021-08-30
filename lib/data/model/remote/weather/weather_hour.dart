@@ -1,47 +1,43 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'weather_now.g.dart';
+part 'weather_hour.g.dart';
 
-///实时天气信息
 @JsonSerializable()
-class WeatherRT {
+class WeatherHour {
   @JsonKey(name: 'code')
   String code;
 
-  @JsonKey(name: 'updateTime')
+  @JsonKey(name: 'updateTimwee')
   String updateTime;
 
   @JsonKey(name: 'fxLink')
   String fxLink;
 
-  @JsonKey(name: 'now')
-  Now now;
+  @JsonKey(name: 'hourly')
+  List<Hourly> hourly;
 
   @JsonKey(name: 'refer')
   Refer refer;
 
-  WeatherRT(
+  WeatherHour(
     this.code,
     this.updateTime,
     this.fxLink,
-    this.now,
+    this.hourly,
     this.refer,
   );
 
-  factory WeatherRT.fromJson(Map<String, dynamic> srcJson) =>
-      _$WeatherRTFromJson(srcJson);
+  factory WeatherHour.fromJson(Map<String, dynamic> srcJson) =>
+      _$WeatherHourFromJson(srcJson);
 }
 
 @JsonSerializable()
-class Now {
-  @JsonKey(name: 'obsTime')
-  String obsTime;
+class Hourly {
+  @JsonKey(name: 'fxTime')
+  String fxTime;
 
   @JsonKey(name: 'temp')
   String temp;
-
-  @JsonKey(name: 'feelsLike')
-  String feelsLike;
 
   @JsonKey(name: 'icon')
   String icon;
@@ -64,14 +60,14 @@ class Now {
   @JsonKey(name: 'humidity')
   String humidity;
 
+  @JsonKey(name: 'pop')
+  String pop;
+
   @JsonKey(name: 'precip')
   String precip;
 
   @JsonKey(name: 'pressure')
   String pressure;
-
-  @JsonKey(name: 'vis')
-  String vis;
 
   @JsonKey(name: 'cloud')
   String cloud;
@@ -79,10 +75,9 @@ class Now {
   @JsonKey(name: 'dew')
   String dew;
 
-  Now(
-    this.obsTime,
+  Hourly(
+    this.fxTime,
     this.temp,
-    this.feelsLike,
     this.icon,
     this.text,
     this.wind360,
@@ -90,14 +85,15 @@ class Now {
     this.windScale,
     this.windSpeed,
     this.humidity,
+    this.pop,
     this.precip,
     this.pressure,
-    this.vis,
     this.cloud,
     this.dew,
   );
 
-  factory Now.fromJson(Map<String, dynamic> srcJson) => _$NowFromJson(srcJson);
+  factory Hourly.fromJson(Map<String, dynamic> srcJson) =>
+      _$HourlyFromJson(srcJson);
 }
 
 @JsonSerializable()

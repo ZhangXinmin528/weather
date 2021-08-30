@@ -5,6 +5,8 @@ import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/bloc/main/main_screen_event.dart';
 import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
+import 'package:weather/data/model/remote/weather/weather_daily.dart';
+import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
@@ -28,10 +30,12 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   @override
   Stream<MainScreenState> mapEventToState(MainScreenEvent event) async* {
     LogUtil.d("mapEventToState..$event");
-    //开始定位
+
     if (event is StartLocationEvent) {
+      //开始定位
       yield* _mapStartLocationToState(state);
     } else if (event is LocationChangedEvent) {
+      //定位数据变化
       yield* _mapLocationChangedToState(state);
     } else if (event is WeatherDataLoadedMainEvent) {
       //加载天气数据
@@ -79,9 +83,20 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     if (state is LocationChangedState) {
       if (_baiduLocation != null) {
         //获取天气信息
-        final Weather weather =
+        final WeatherRT weather =
             await _weatherRemoteRepository.requestWeatherNow(
                 _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //7D
+        final WeatherDaily weatherDaily =
+            await _weatherRemoteRepository.requestWether7D(
+                _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //24H
+        final WeatherHour weatherHour =
+            await _weatherRemoteRepository.requestWeather24H(
+                _baiduLocation!.longitude, _baiduLocation!.latitude);
+
         if (weather != null) {
           if (weather.code != "200") {
             yield FailedLoadMainScreenState(WeatherError.data_not_available);

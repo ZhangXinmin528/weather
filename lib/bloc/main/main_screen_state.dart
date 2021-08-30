@@ -23,7 +23,7 @@ class LoadingMainScreenState extends MainScreenState {}
 
 ///主屏幕数据加载成功
 class SuccessLoadMainScreenState extends MainScreenState {
-  final Weather weather;
+  final WeatherRT weather;
 
   SuccessLoadMainScreenState(this.weather);
 
