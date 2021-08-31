@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:weather/resources/config/app_config.dart';
+import 'package:weather/utils/datetime_utils.dart';
 
 class HeWeatherApiProvider {
   final _baseApi = 'https://devapi.qweather.com/v7';
@@ -15,7 +16,7 @@ class HeWeatherApiProvider {
   final _cityWeather7D = "/7d";
 
   //24小时天气
-  final _cityWeather24H = "24h";
+  final _cityWeather24H = "/24h";
 
   ///2.天气生活指数
   final String _indicesPoint = "/indices";
@@ -28,6 +29,24 @@ class HeWeatherApiProvider {
 
   //极端天气预警
   final String _warningNow = "/now";
+
+  ///4.空气API
+  final String _airPoint = "/air";
+
+  //实时空气质量
+  final String _airNow = "/now";
+
+  //空气质量预报
+  final String _air5D = "/5d";
+
+  ///天文API
+  final String _astronomyPoint = "/astronomy";
+
+  //日出日落
+  final String _astronomySun = "/sun";
+
+  //月升月落和月相
+  final String _astronomyMoon = "/moon";
 
   late Dio _dio;
 
@@ -99,7 +118,7 @@ class HeWeatherApiProvider {
 
 //===========================================================================//
 
-  ///天气灾害指数
+  ///灾害预警API
   ///极端天气预报数据
   Future<Response> requestWarningNow(double longitude, double latitude) async {
     final path = _baseApi + _warningPoint + _warningNow;
@@ -107,6 +126,60 @@ class HeWeatherApiProvider {
     final Map<String, dynamic> params = {
       'key': AppConfig.weather_key,
       'location': "$longitude,$latitude",
+    };
+    return await _dio.get(path, queryParameters: params);
+  }
+
+//===========================================================================//
+
+  ///空气API
+  ///实时空气质量
+  Future<Response> requestAirNow(double longitude, double latitude) async {
+    final path = _baseApi + _airPoint + _airNow;
+    //参数
+    final Map<String, dynamic> params = {
+      'key': AppConfig.weather_key,
+      'location': "$longitude,$latitude",
+    };
+    return await _dio.get(path, queryParameters: params);
+  }
+
+  ///空气质量预报
+  Future<Response> requestAir5D(double longitude, double latitude) async {
+    final path = _baseApi + _airPoint + _air5D;
+    //参数
+    final Map<String, dynamic> params = {
+      'key': AppConfig.weather_key,
+      'location': "$longitude,$latitude",
+    };
+    return await _dio.get(path, queryParameters: params);
+  }
+
+//===========================================================================//
+
+  ///天文API
+  ///日出日落
+  Future<Response> requestAstronomySun(
+      double longitude, double latitude) async {
+    final path = _baseApi + _astronomyPoint + _astronomySun;
+    //参数
+    final Map<String, dynamic> params = {
+      'key': AppConfig.weather_key,
+      'location': "$longitude,$latitude",
+      'date': DateTimeUtils.formatDateTime(DateTime.now(), "yyyyMMdd"),
+    };
+    return await _dio.get(path, queryParameters: params);
+  }
+
+  ///月升月落和月相
+  Future<Response> requestAstronomyMoon(
+      double longitude, double latitude) async {
+    final path = _baseApi + _astronomyPoint + _astronomyMoon;
+    //参数
+    final Map<String, dynamic> params = {
+      'key': AppConfig.weather_key,
+      'location': "$longitude,$latitude",
+      'date': DateTimeUtils.formatDateTime(DateTime.now(), "yyyyMMdd"),
     };
     return await _dio.get(path, queryParameters: params);
   }

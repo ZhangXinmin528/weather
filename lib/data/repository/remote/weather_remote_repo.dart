@@ -1,3 +1,7 @@
+import 'package:weather/data/model/remote/weather/air_daily.dart';
+import 'package:weather/data/model/remote/weather/astronomy_moon.dart';
+import 'package:weather/data/model/remote/weather/astronomy_sun.dart';
+import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
 import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
@@ -66,4 +70,41 @@ class WeatherRemoteRepository {
 
 //=========================================================================//
 
+  ///空气API
+  ///实时空气质量
+  Future<WeatherAir> requestAirNow(double longitude, double latitude) async {
+    final response =
+        await _weatherApiProvider.requestAirNow(longitude, latitude);
+    final WeatherAir air = WeatherAir.fromJson(response.data);
+    return air;
+  }
+
+  ///实时空气质量
+  Future<AirDaily> requestAir5D(double longitude, double latitude) async {
+    final response =
+        await _weatherApiProvider.requestAir5D(longitude, latitude);
+    final AirDaily air = AirDaily.fromJson(response.data);
+    return air;
+  }
+
+//=========================================================================//
+
+  ///天文API
+  ///日出日落数据
+  Future<AstronomySun> requestAstronomySun(
+      double longitude, double latitude) async {
+    final response =
+        await _weatherApiProvider.requestAstronomySun(longitude, latitude);
+    final AstronomySun sun = AstronomySun.fromJson(response.data);
+    return sun;
+  }
+
+  ///月升月落和月相
+  Future<AstronomyMoon> requestAstronomyMoon(
+      double longitude, double latitude) async {
+    final response =
+        await _weatherApiProvider.requestAstronomyMoon(longitude, latitude);
+    final AstronomyMoon moon = AstronomyMoon.fromJson(response.data);
+    return moon;
+  }
 }

@@ -10,8 +10,12 @@ class DateTimeUtils {
   static const String defaultFormat = 'dd/MM/yyyy';
 
   ///格式化日期，格式
-  static String formatDateTime(DateTime dateTime) {
+  static String defaultFormatDateTime(DateTime dateTime) {
     return DateFormat(defaultFormat).format(dateTime);
+  }
+
+  static String formatDateTime(DateTime dateTime, String format) {
+    return DateFormat(format).format(dateTime);
   }
 
   static int getNowTime() {

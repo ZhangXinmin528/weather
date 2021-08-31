@@ -5,8 +5,9 @@ import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/bloc/main/main_screen_event.dart';
 import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/data/model/remote/weather/weather_daily.dart';
-import 'package:weather/data/model/remote/weather/weather_hour.dart';
+import 'package:weather/data/model/remote/weather/air_daily.dart';
+import 'package:weather/data/model/remote/weather/astronomy_moon.dart';
+import 'package:weather/data/model/remote/weather/astronomy_sun.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
@@ -88,13 +89,41 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
                 _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //7D
-        final WeatherDaily weatherDaily =
-            await _weatherRemoteRepository.requestWether7D(
-                _baiduLocation!.longitude, _baiduLocation!.latitude);
+        // final WeatherDaily weatherDaily =
+        //     await _weatherRemoteRepository.requestWether7D(
+        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //24H
-        final WeatherHour weatherHour =
-            await _weatherRemoteRepository.requestWeather24H(
+        // final WeatherHour weatherHour =
+        //     await _weatherRemoteRepository.requestWeather24H(
+        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //当天天气指数
+        // final WeatherIndices weatherIndices =
+        //     await _weatherRemoteRepository.requestIndices1D(
+        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //极端天气预警
+        // final WeatherWarning warning =
+        //     await _weatherRemoteRepository.requestWarningNow(
+        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //实时空气质量
+        // final WeatherAir air = await _weatherRemoteRepository.requestAirNow(
+        //     _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //空气质量预报
+        final AirDaily airDaily = await _weatherRemoteRepository.requestAir5D(
+            _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //日出日落
+        final AstronomySun sun =
+            await _weatherRemoteRepository.requestAstronomySun(
+                _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //月升月落
+        final AstronomyMoon moon =
+            await _weatherRemoteRepository.requestAstronomyMoon(
                 _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         if (weather != null) {
