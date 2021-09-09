@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,6 +22,8 @@ void main() {
 class WeatherApp extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
+    //显示布局边界
+    debugPaintSizeEnabled = true;
     return _WeatherAppState();
   }
 }
@@ -79,6 +82,8 @@ class _WeatherAppState extends State<WeatherApp> {
         child: MaterialApp(
           debugShowCheckedModeBanner: true,
           navigatorKey: _navigatorKey,
+          debugShowMaterialGrid: false,
+          //显示网格线
           theme: _initThemeData(),
           localizationsDelegates: const [
             AppLocalizations.delegate,

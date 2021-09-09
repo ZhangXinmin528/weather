@@ -23,8 +23,6 @@ dependencies:
   flutter_bloc: ^7.0.0
 
   #数据相关
-
-
   equatable: ^2.0.0
 
   #路由管理
@@ -42,6 +40,8 @@ dependencies:
   #logger
   pretty_dio_logger: ^1.2.0-beta-1
   logger: ^1.0.0
+
+  webview_flutter: ^2.0.12
 
   #swiper
   flutter_swiper_null_safety:
@@ -62,5 +62,6 @@ flutter:
   generate: true
 
   uses-material-design: true
+
   assets:
-    - assets/
+    - icon/

@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'weather_air.g.dart';
 
-
 @JsonSerializable()
-class WeatherAir{
-
+class WeatherAir {
   @JsonKey(name: 'code')
   String code;
 
@@ -25,16 +22,20 @@ class WeatherAir{
   @JsonKey(name: 'refer')
   Refer refer;
 
-  WeatherAir(this.code,this.updateTime,this.fxLink,this.now,/*this.station,*/this.refer,);
+  WeatherAir(
+    this.code,
+    this.updateTime,
+    this.fxLink,
+    this.now,
+    /*this.station,*/ this.refer,
+  );
 
-  factory WeatherAir.fromJson(Map<String, dynamic> srcJson) => _$WeatherAirFromJson(srcJson);
-
+  factory WeatherAir.fromJson(Map<String, dynamic> srcJson) =>
+      _$WeatherAirFromJson(srcJson);
 }
 
-
 @JsonSerializable()
-class Now{
-
+class Now {
   @JsonKey(name: 'pubTime')
   String pubTime;
 
@@ -68,16 +69,25 @@ class Now{
   @JsonKey(name: 'o3')
   String o3;
 
-  Now(this.pubTime,this.aqi,this.level,this.category,this.primary,this.pm10,this.pm2p5,this.no2,this.so2,this.co,this.o3,);
+  Now(
+    this.pubTime,
+    this.aqi,
+    this.level,
+    this.category,
+    this.primary,
+    this.pm10,
+    this.pm2p5,
+    this.no2,
+    this.so2,
+    this.co,
+    this.o3,
+  );
 
   factory Now.fromJson(Map<String, dynamic> srcJson) => _$NowFromJson(srcJson);
-
 }
 
-
 @JsonSerializable()
-class Station{
-
+class Station {
   @JsonKey(name: 'pubTime')
   String pubTime;
 
@@ -117,26 +127,39 @@ class Station{
   @JsonKey(name: 'o3')
   String o3;
 
-  Station(this.pubTime,this.name,this.id,this.aqi,this.level,this.category,this.primary,this.pm10,this.pm2p5,this.no2,this.so2,this.co,this.o3,);
+  Station(
+    this.pubTime,
+    this.name,
+    this.id,
+    this.aqi,
+    this.level,
+    this.category,
+    this.primary,
+    this.pm10,
+    this.pm2p5,
+    this.no2,
+    this.so2,
+    this.co,
+    this.o3,
+  );
 
-  factory Station.fromJson(Map<String, dynamic> srcJson) => _$StationFromJson(srcJson);
-
+  factory Station.fromJson(Map<String, dynamic> srcJson) =>
+      _$StationFromJson(srcJson);
 }
 
-
 @JsonSerializable()
-class Refer{
-
+class Refer {
   @JsonKey(name: 'sources')
   List<String> sources;
 
   @JsonKey(name: 'license')
   List<String> license;
 
-  Refer(this.sources,this.license,);
+  Refer(
+    this.sources,
+    this.license,
+  );
 
-  factory Refer.fromJson(Map<String, dynamic> srcJson) => _$ReferFromJson(srcJson);
-
+  factory Refer.fromJson(Map<String, dynamic> srcJson) =>
+      _$ReferFromJson(srcJson);
 }
-
-

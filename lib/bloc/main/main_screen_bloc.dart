@@ -5,9 +5,7 @@ import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/bloc/main/main_screen_event.dart';
 import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/data/model/remote/weather/air_daily.dart';
-import 'package:weather/data/model/remote/weather/astronomy_moon.dart';
-import 'package:weather/data/model/remote/weather/astronomy_sun.dart';
+import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
@@ -39,7 +37,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       //定位数据变化
       yield* _mapLocationChangedToState(state);
     } else if (event is WeatherDataLoadedMainEvent) {
-      //加载天气数据
+      //请求天气数据
       yield* _mapWeatherToState(state);
     }
   }
@@ -47,7 +45,6 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   ///开始定位
   Stream<MainScreenState> _mapStartLocationToState(
       MainScreenState state) async* {
-    LogUtil.d("开始定位~");
     if (state is StartLocationState) {
       //请求定位权限
       _locationManager.requestLocationPermission();
@@ -58,35 +55,36 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         add(LocationChangedEvent());
         //停止定位
         _locationManager.stopLocation();
-        LogUtil.d("定位回调了~_baiduLocation：${_baiduLocation?.address}");
+        LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
       });
-
-      yield LocationChangedState();
     }
   }
 
   ///定位相关逻辑
   Stream<MainScreenState> _mapLocationChangedToState(
       MainScreenState state) async* {
-    LogUtil.d("处理定位数据~_baiduLocation：${_baiduLocation?.address}");
-
     if (_baiduLocation == null) {
       //定位失败
-      yield FailedLoadMainScreenState(WeatherError.locationError);
+      yield LocationFaliedState(WeatherError.locationError);
     } else {
       //定位成功
+      yield LocationSuccessState();
       add(WeatherDataLoadedMainEvent());
     }
   }
 
   Stream<MainScreenState> _mapWeatherToState(MainScreenState state) async* {
     LogUtil.d("定位成功..加载天气数据~");
-    if (state is LocationChangedState) {
+    if (state is LocationSuccessState) {
       if (_baiduLocation != null) {
         //获取天气信息
-        final WeatherRT weather =
+        final WeatherRT weatherNow =
             await _weatherRemoteRepository.requestWeatherNow(
                 _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //实时空气质量
+        final WeatherAir weatherAir = await _weatherRemoteRepository
+            .requestAirNow(_baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //7D
         // final WeatherDaily weatherDaily =
@@ -108,31 +106,26 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         //     await _weatherRemoteRepository.requestWarningNow(
         //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
-        //实时空气质量
-        // final WeatherAir air = await _weatherRemoteRepository.requestAirNow(
+        //空气质量预报
+        // final AirDaily airDaily = await _weatherRemoteRepository.requestAir5D(
         //     _baiduLocation!.longitude, _baiduLocation!.latitude);
 
-        //空气质量预报
-        final AirDaily airDaily = await _weatherRemoteRepository.requestAir5D(
-            _baiduLocation!.longitude, _baiduLocation!.latitude);
-
         //日出日落
-        final AstronomySun sun =
-            await _weatherRemoteRepository.requestAstronomySun(
-                _baiduLocation!.longitude, _baiduLocation!.latitude);
+        // final AstronomySun sun =
+        //     await _weatherRemoteRepository.requestAstronomySun(
+        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //月升月落
-        final AstronomyMoon moon =
-            await _weatherRemoteRepository.requestAstronomyMoon(
-                _baiduLocation!.longitude, _baiduLocation!.latitude);
+        // final AstronomyMoon moon =
+        //     await _weatherRemoteRepository.requestAstronomyMoon(
+        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
-        if (weather != null) {
-          if (weather.code != "200") {
+        if (weatherNow != null) {
+          if (weatherNow.code != "200") {
             yield FailedLoadMainScreenState(WeatherError.data_not_available);
           } else {
-            //加载天气数据
-            print(weather);
-            yield SuccessLoadMainScreenState(weather);
+            yield SuccessLoadMainScreenState(
+                weatherNow, weatherAir, _baiduLocation!);
           }
         } else {
           yield const FailedLoadMainScreenState(WeatherError.connectionError);

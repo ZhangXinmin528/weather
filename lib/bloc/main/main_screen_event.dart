@@ -10,7 +10,7 @@ abstract class MainScreenEvent extends Equatable {
 ///开始定位
 class StartLocationEvent extends MainScreenEvent {}
 
-///定位成功
+///定位改变
 class LocationChangedEvent extends MainScreenEvent {}
 
 ///天气信息展示

@@ -17,3 +17,6 @@ samples, guidance on mobile development, and a full API reference.
 
 command order:
 flutter packages pub run build_runner watch
+
+天气地址
+https://widget-page.qweather.net/h5/index.html?md=0123456&bg=3&lc=accu&key=c4b6dbe7f0a945d390620707ad1d2768&v=_1630983214147
