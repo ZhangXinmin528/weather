@@ -13,6 +13,7 @@ import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
+import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview.dart';
 import 'package:weather/ui/widget/application_colors.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
@@ -88,7 +89,7 @@ class _MainScreenState extends State<MainScreen> {
     final temp = weatherNow.temp + "°";
 
     final ButtonStyle buttonStyle =
-        ElevatedButton.styleFrom(primary: Colors.white54);
+        ElevatedButton.styleFrom(primary: Colors.white24);
 
     return LayoutBuilder(builder: (context, viewportCOnstrants) {
       return SingleChildScrollView(
@@ -129,6 +130,7 @@ class _MainScreenState extends State<MainScreen> {
                     ],
                   ),
                 ),
+
                 Container(
                   alignment: Alignment.topLeft,
                   margin: EdgeInsets.only(left: 50.0, top: 4.0),
@@ -140,7 +142,7 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 Container(
                   alignment: Alignment.topLeft,
-                  margin: EdgeInsets.only(left: 16.0, top: 80.0),
+                  margin: EdgeInsets.only(left: 16.0, top: 100.0),
                   child: Text(
                     temp,
                     key: const Key("main_screen_temp_now"),
@@ -176,7 +178,7 @@ class _MainScreenState extends State<MainScreen> {
                   alignment: Alignment.centerLeft,
                   key: const Key("main_screen_aqi_now"),
                   margin: EdgeInsets.only(top: 12.0, left: 16.0),
-                  child: ElevatedButton(
+                  child: TextButton(
                     onPressed: () {
                       //TODO:空气质量页面
                       Navigator.push(context,
@@ -221,7 +223,7 @@ class _MainScreenState extends State<MainScreen> {
                   margin: EdgeInsets.only(
                     left: 20.0,
                     right: 20.0,
-                    top: 40.0,
+                    top: 20.0,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
@@ -324,6 +326,9 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ],
                   ),
+                ),
+                Divider(
+                  color: AppColor.line,
                 ),
               ],
             ),

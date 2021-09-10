@@ -23,7 +23,7 @@ class WeatherApp extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     //显示布局边界
-    debugPaintSizeEnabled = true;
+    // debugPaintSizeEnabled = true;
     return _WeatherAppState();
   }
 }
