@@ -3,6 +3,7 @@ import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
+import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 
 class MainScreenState extends Equatable {
@@ -37,9 +38,11 @@ class LoadingMainScreenState extends MainScreenState {}
 class SuccessLoadMainScreenState extends MainScreenState {
   final WeatherRT weather;
   final WeatherAir weatherAir;
+  final WeatherIndices weatherIndices;
   final BaiduLocation location;
 
-  SuccessLoadMainScreenState(this.weather, this.weatherAir, this.location);
+  SuccessLoadMainScreenState(
+      this.weather, this.weatherAir, this.weatherIndices, this.location);
 
   @override
   List<Object?> get props => [weather, weatherAir, location, unit];

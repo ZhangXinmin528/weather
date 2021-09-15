@@ -12,6 +12,7 @@ import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
+import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview.dart';
@@ -64,8 +65,8 @@ class _MainScreenState extends State<MainScreen> {
                 ] else ...[
                   _buildLightBackground(),
                   if (state is SuccessLoadMainScreenState)
-                    _buildWeatherNowWidget(
-                        state.weather, state.weatherAir, state.location)
+                    _buildWeatherNowWidget(state.weather, state.weatherAir,
+                        state.weatherIndices, state.location)
                   else if (state is FailedLoadMainScreenState)
                     _buildFailedToLoadDataWidget(state.error)
                   else
@@ -80,262 +81,326 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   /// 展示天气实时数据
-  Widget _buildWeatherNowWidget(
-      WeatherRT weather, WeatherAir weatherAir, BaiduLocation location) {
+  Widget _buildWeatherNowWidget(WeatherRT weather, WeatherAir weatherAir,
+      WeatherIndices weatherIndices, BaiduLocation location) {
     final weatherNow = weather.now;
     final weatherAirNow = weatherAir.now;
+    final indicesDaily = weatherIndices.daily;
 
     final String address = location.city + " " + location.district;
     final temp = weatherNow.temp + "°";
 
+    return LayoutBuilder(builder: (context, viewportConstrants) {
+      return SingleChildScrollView(
+        // child: ConstrainedBox(
+        //   constraints: BoxConstraints(minHeight: viewportConstrants.maxHeight),
+        // child: IntrinsicHeight(
+        child: Column(
+          children: [
+            //toolbar
+            _buildCityWidget(address),
+
+            _buildUpdateTimeWidget(),
+
+            _buildTempWidget(temp),
+
+            _buildWeatherDescAndIcon(weather),
+
+            _buildWeatherAir(weatherAir),
+
+            _buildOtherWeatherWidget(weather),
+
+            Divider(
+              color: AppColor.line,
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
+              child: const Text(
+                "生活指数",
+                style: TextStyle(fontSize: 18.0, color: Colors.grey),
+              ),
+            ),
+            Divider(
+              color: AppColor.line,
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.only(top: 10),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 20,
+                  childAspectRatio: 1,
+                ),
+                itemBuilder: (context, index) {
+                  final daily = indicesDaily[index];
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        daily.name,
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      Text(
+                        daily.category,
+                        style: TextStyle(color: Colors.black),
+                      )
+                    ],
+                  );
+                },
+                itemCount: indicesDaily.length,
+              ),
+            ),
+          ],
+        ),
+        // ),
+        // ),
+      );
+    });
+  }
+
+  ///Title
+  Widget _buildCityWidget(String address) {
+    return SafeArea(
+      key: const Key("main_screen_city_desc"),
+      child: Row(
+        children: [
+          Theme(
+            data: Theme.of(context).copyWith(cardColor: Colors.white),
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: 16.0,
+                top: 8.0,
+              ),
+              child: const Icon(
+                Icons.location_on,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Padding(
+            key: const Key("main_screen_text_address"),
+            padding: EdgeInsets.only(left: 10.0, top: 8.0),
+            child: Text(
+              //定位地址
+              address,
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  ///Time
+  Widget _buildUpdateTimeWidget() {
+    return Container(
+      alignment: Alignment.topLeft,
+      margin: EdgeInsets.only(left: 50.0, top: 4.0),
+      child: Text(
+        DateTimeUtils.formatNowTime() + "更新",
+        key: const Key("main_screen_update_time"),
+        style: TextStyle(fontSize: 14.0),
+      ),
+    );
+  }
+
+  ///temp
+  Widget _buildTempWidget(String temp) {
+    return Container(
+      alignment: Alignment.topLeft,
+      margin: EdgeInsets.only(left: 16.0, top: 100.0),
+      child: Text(
+        temp,
+        key: const Key("main_screen_temp_now"),
+        style: TextStyle(fontSize: 60, fontWeight: FontWeight.normal),
+      ),
+    );
+  }
+
+  Widget _buildWeatherDescAndIcon(WeatherRT weather) {
+    final weatherNow = weather.now;
+    return Container(
+      key: const Key("main_screen_desc_and_icon"),
+      margin: EdgeInsets.only(
+        left: 16.0,
+        top: 6,
+      ),
+      height: 40,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          IconUtils.getWeatherNowIcon(weatherNow.icon),
+          Padding(
+            padding: EdgeInsets.only(left: 6.0),
+            child: Text(
+              weatherNow.text,
+              key: const Key("main_screen_weathernow_text"),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.normal),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWeatherAir(WeatherAir weatherAir) {
+    final weatherAirNow = weatherAir.now;
+
     final ButtonStyle buttonStyle =
         ElevatedButton.styleFrom(primary: Colors.white24);
 
-    return LayoutBuilder(builder: (context, viewportCOnstrants) {
-      return SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: viewportCOnstrants.maxHeight),
-          child: IntrinsicHeight(
-            child: Column(
-              children: [
-                //toolbar
-                SafeArea(
-                  key: const Key("main_screen_city_desc"),
-                  child: Row(
-                    children: [
-                      Theme(
-                        data:
-                            Theme.of(context).copyWith(cardColor: Colors.white),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: 16.0,
-                            top: 8.0,
-                          ),
-                          child: const Icon(
-                            Icons.location_on,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        key: const Key("main_screen_text_address"),
-                        padding: EdgeInsets.only(left: 10.0, top: 8.0),
-                        child: Text(
-                          //定位地址
-                          address,
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.normal),
-                        ),
-                      )
-                    ],
-                  ),
+    return Container(
+      alignment: Alignment.centerLeft,
+      key: const Key("main_screen_aqi_now"),
+      margin: EdgeInsets.only(top: 12.0, left: 16.0),
+      child: TextButton(
+        onPressed: () {
+          //TODO:空气质量页面
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return WebviewPage("和风天气", weatherAir.fxLink);
+          }));
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RichText(
+              text: TextSpan(
+                text: weatherAirNow.category,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
                 ),
-
-                Container(
-                  alignment: Alignment.topLeft,
-                  margin: EdgeInsets.only(left: 50.0, top: 4.0),
-                  child: Text(
-                    DateTimeUtils.formatNowTime() + "更新",
-                    key: const Key("main_screen_update_time"),
-                    style: TextStyle(fontSize: 14.0),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.topLeft,
-                  margin: EdgeInsets.only(left: 16.0, top: 100.0),
-                  child: Text(
-                    temp,
-                    key: const Key("main_screen_temp_now"),
-                    style:
-                        TextStyle(fontSize: 60, fontWeight: FontWeight.normal),
-                  ),
-                ),
-                Container(
-                  key: const Key("main_screen_desc_and_icon"),
-                  margin: EdgeInsets.only(
-                    left: 16.0,
-                    top: 6,
-                  ),
-                  height: 40,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      IconUtils.getWeatherNowIcon(weatherNow.icon),
-                      Padding(
-                        padding: EdgeInsets.only(left: 6.0),
-                        child: Text(
-                          weatherNow.text,
-                          key: const Key("main_screen_weathernow_text"),
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.normal),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  key: const Key("main_screen_aqi_now"),
-                  margin: EdgeInsets.only(top: 12.0, left: 16.0),
-                  child: TextButton(
-                    onPressed: () {
-                      //TODO:空气质量页面
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return WebviewPage("和风天气", weatherAir.fxLink);
-                      }));
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            text: weatherAirNow.category,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(text: "\u3000"),
-                              TextSpan(
-                                text: weatherAirNow.aqi,
-                                style: TextStyle(
-                                  color: Colors.lightGreen,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: Colors.white,
-                        )
-                      ],
+                children: <TextSpan>[
+                  TextSpan(text: "\u3000"),
+                  TextSpan(
+                    text: weatherAirNow.aqi,
+                    style: TextStyle(
+                      color: Colors.lightGreen,
+                      fontSize: 16.0,
                     ),
-                    style: buttonStyle,
                   ),
-                ),
-                Container(
-                  key: const Key("main_screen_other_weather"),
-                  margin: EdgeInsets.only(
-                    left: 20.0,
-                    right: 20.0,
-                    top: 20.0,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: 16.0,
-                              bottom: 8.0,
-                              left: 12.0,
-                            ),
-                            child: Text(
-                              "降水",
-                              style:
-                                  TextStyle(fontSize: 16.0, color: Colors.grey),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: 8.0, bottom: 16.0, left: 12.0),
-                            child: Text(
-                              weatherNow.precip + "mm",
-                              style: TextStyle(
-                                  fontSize: 14.0, color: Colors.black),
-                            ),
-                          )
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
-                            child: Text(
-                              "湿度",
-                              style:
-                                  TextStyle(fontSize: 16.0, color: Colors.grey),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
-                            child: Text(
-                              weatherNow.humidity + "%",
-                              style: TextStyle(
-                                  fontSize: 14.0, color: Colors.black),
-                            ),
-                          )
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
-                            child: Text(
-                              weatherNow.windDir,
-                              style:
-                                  TextStyle(fontSize: 16.0, color: Colors.grey),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
-                            child: Text(
-                              weatherNow.windScale + "级",
-                              style: TextStyle(
-                                  fontSize: 14.0, color: Colors.black),
-                            ),
-                          )
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: 16.0, bottom: 8.0, right: 12.0),
-                            child: Text(
-                              "气压",
-                              style:
-                                  TextStyle(fontSize: 16.0, color: Colors.grey),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                                top: 8.0, bottom: 16.0, right: 12.0),
-                            child: Text(
-                              weatherNow.pressure + "hpa",
-                              style: TextStyle(
-                                  fontSize: 14.0, color: Colors.black),
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(
-                  color: AppColor.line,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+            Icon(
+              Icons.chevron_right,
+              color: Colors.white,
+            )
+          ],
         ),
-      );
-    });
+        style: buttonStyle,
+      ),
+    );
+  }
+
+  ///other weather
+  Widget _buildOtherWeatherWidget(WeatherRT weather) {
+    final weatherNow = weather.now;
+
+    return Container(
+      key: const Key("main_screen_other_weather"),
+      margin: EdgeInsets.only(
+        left: 20.0,
+        right: 20.0,
+        top: 20.0,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 16.0,
+                  bottom: 8.0,
+                  left: 12.0,
+                ),
+                child: Text(
+                  "降水",
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 12.0),
+                child: Text(
+                  weatherNow.precip + "mm",
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                ),
+              )
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+                child: Text(
+                  "湿度",
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Text(
+                  weatherNow.humidity + "%",
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                ),
+              )
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+                child: Text(
+                  weatherNow.windDir,
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
+                child: Text(
+                  weatherNow.windScale + "级",
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                ),
+              )
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 16.0, bottom: 8.0, right: 12.0),
+                child: Text(
+                  "气压",
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8.0, bottom: 16.0, right: 12.0),
+                child: Text(
+                  weatherNow.pressure + "hpa",
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   ///失败页面

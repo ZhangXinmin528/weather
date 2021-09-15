@@ -6,6 +6,7 @@ import 'package:weather/bloc/main/main_screen_event.dart';
 import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
+import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
@@ -86,20 +87,20 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         final WeatherAir weatherAir = await _weatherRemoteRepository
             .requestAirNow(_baiduLocation!.longitude, _baiduLocation!.latitude);
 
-        //7D
-        // final WeatherDaily weatherDaily =
-        //     await _weatherRemoteRepository.requestWether7D(
-        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
-
         //24H
         // final WeatherHour weatherHour =
         //     await _weatherRemoteRepository.requestWeather24H(
         //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
-        //当天天气指数
-        // final WeatherIndices weatherIndices =
-        //     await _weatherRemoteRepository.requestIndices1D(
+        //7D
+        // final WeatherDaily weatherDaily =
+        //     await _weatherRemoteRepository.requestWether7D(
         //         _baiduLocation!.longitude, _baiduLocation!.latitude);
+
+        //当天天气指数
+        final WeatherIndices weatherIndices =
+            await _weatherRemoteRepository.requestIndices1D(
+                _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //极端天气预警
         // final WeatherWarning warning =
@@ -125,7 +126,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
             yield FailedLoadMainScreenState(WeatherError.data_not_available);
           } else {
             yield SuccessLoadMainScreenState(
-                weatherNow, weatherAir, _baiduLocation!);
+                weatherNow, weatherAir, weatherIndices, _baiduLocation!);
           }
         } else {
           yield const FailedLoadMainScreenState(WeatherError.connectionError);
