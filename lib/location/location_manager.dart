@@ -5,11 +5,10 @@ import 'package:flutter_bmflocation/bdmap_location_flutter_plugin.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location_android_option.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location_ios_option.dart';
-import 'package:weather/utils/log_utils.dart';
 
 class LocationManager {
   late StreamSubscription<Map<String, Object>>? _locationListener;
-  late LocationFlutterPlugin _locationPlugin;
+  late LocationFlutterPlugin? _locationPlugin;
 
   factory LocationManager() {
     return _instance;
@@ -18,25 +17,46 @@ class LocationManager {
   static late final LocationManager _instance = LocationManager._internal();
 
   ///私有构造器
-  LocationManager._internal() {
-    _locationPlugin = new LocationFlutterPlugin();
-
-    _setLocOption();
-  }
+  LocationManager._internal() {}
 
   ///请求定位权限
   void requestLocationPermission() {
-    _locationPlugin.requestPermission();
+    _locationPlugin?.requestPermission();
+  }
+
+  void startLocationOnce(ValueChanged<BaiduLocation?> valueChanged) {
+    if (_locationPlugin != null) {
+      _locationPlugin = null;
+    }
+    _locationPlugin = new LocationFlutterPlugin();
+    _setLocOption(true);
+    _locationPlugin?.startLocation();
+
+    _locationListener = _locationPlugin
+        ?.onResultCallback()
+        .listen((Map<String, Object> result) {
+      try {
+        final BaiduLocation location = BaiduLocation.fromMap(result);
+        valueChanged(location);
+      } catch (exception) {
+        valueChanged(null);
+        print(exception);
+      }
+    });
   }
 
   ///开始定位
   void startLocation(ValueChanged<BaiduLocation?> valueChanged) {
     if (_locationPlugin != null) {
-      _locationPlugin.startLocation();
+      _locationPlugin = null;
     }
+    _locationPlugin = new LocationFlutterPlugin();
+    _setLocOption(true);
+    _locationPlugin?.startLocation();
 
-    _locationListener =
-        _locationPlugin.onResultCallback().listen((Map<String, Object> result) {
+    _locationListener = _locationPlugin
+        ?.onResultCallback()
+        .listen((Map<String, Object> result) {
       try {
         final BaiduLocation location = BaiduLocation.fromMap(result);
         valueChanged(location);
@@ -55,12 +75,12 @@ class LocationManager {
   ///终止定位
   void stopLocation() {
     if (_locationPlugin != null) {
-      _locationPlugin.stopLocation();
+      _locationPlugin?.stopLocation();
     }
   }
 
   ///移动端设置定位参数，包括
-  void _setLocOption() {
+  void _setLocOption(bool isOnce) {
     /// android 端设置定位参数
     BaiduLocationAndroidOption androidOption = new BaiduLocationAndroidOption();
     androidOption.setCoorType("bd09ll"); // 设置返回的位置坐标系类型
@@ -71,7 +91,11 @@ class LocationManager {
     androidOption.setIsNeedLocationDescribe(true); // 设置是否需要返回位置描述
     androidOption.setOpenGps(true); // 设置是否需要使用gps
     androidOption.setLocationMode(LocationMode.Hight_Accuracy); // 设置定位模式
-    androidOption.setScanspan(1000); // 设置发起定位请求时间间隔
+    if (isOnce) {
+      androidOption.setScanspan(0); // 设置发起定位请求时间间隔
+    } else {
+      androidOption.setScanspan(1000); // 设置发起定位请求时间间隔
+    }
 
     Map androidMap = androidOption.getMap();
 
@@ -90,6 +114,6 @@ class LocationManager {
 
     Map iosMap = iosOption.getMap();
 
-    _locationPlugin.prepareLoc(androidMap, iosMap);
+    _locationPlugin?.prepareLoc(androidMap, iosMap);
   }
 }

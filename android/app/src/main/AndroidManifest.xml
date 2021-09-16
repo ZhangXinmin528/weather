@@ -7,7 +7,7 @@
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="weather"
+        android:label="天气预报"
         android:usesCleartextTraffic="true">
 
         <activity

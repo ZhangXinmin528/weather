@@ -8,6 +8,7 @@ class DateTimeUtils {
   static const int secondsAsMs = 1000;
 
   static const String defaultFormat = 'dd/MM/yyyy';
+  static const String dailyFormat = 'MM/dd';
   static const String weatherTimeFormat = 'HH:mm';
 
   ///格式化日期，格式
@@ -21,6 +22,11 @@ class DateTimeUtils {
 
   static int getNowTime() {
     return DateTime.now().microsecondsSinceEpoch;
+  }
+
+  ///format string datetime to another format string
+  static String formatDateTimeString(String formattedString, String format) {
+    return DateFormat(format).format(DateTime.parse(formattedString));
   }
 
   ///获取当前时间戳

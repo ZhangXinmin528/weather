@@ -6,6 +6,7 @@ import 'package:weather/bloc/main/main_screen_event.dart';
 import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
+import 'package:weather/data/model/remote/weather/weather_daily.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
@@ -34,6 +35,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     if (event is StartLocationEvent) {
       //开始定位
       yield* _mapStartLocationToState(state);
+    } else if (event is RefreshMainEvent) {
+      //刷新定位
+      yield* _mapRefreshToState(state);
     } else if (event is LocationChangedEvent) {
       //定位数据变化
       yield* _mapLocationChangedToState(state);
@@ -46,6 +50,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   ///开始定位
   Stream<MainScreenState> _mapStartLocationToState(
       MainScreenState state) async* {
+    LogUtil.d("_mapStartLocationToState：${state is StartLocationState}");
     if (state is StartLocationState) {
       //请求定位权限
       _locationManager.requestLocationPermission();
@@ -55,10 +60,22 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         _baiduLocation = value;
         add(LocationChangedEvent());
         //停止定位
-        _locationManager.stopLocation();
+        // _locationManager.stopLocation();
         LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
       });
     }
+  }
+
+  ///刷新
+  Stream<MainScreenState> _mapRefreshToState(MainScreenState state) async* {
+    _locationManager.startLocation((value) {
+      //定位变化
+      _baiduLocation = value;
+      add(LocationChangedEvent());
+      //停止定位
+      _locationManager.stopLocation();
+      LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
+    });
   }
 
   ///定位相关逻辑
@@ -76,6 +93,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
   Stream<MainScreenState> _mapWeatherToState(MainScreenState state) async* {
     LogUtil.d("定位成功..加载天气数据~");
+
     if (state is LocationSuccessState) {
       if (_baiduLocation != null) {
         //获取天气信息
@@ -93,9 +111,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
         //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //7D
-        // final WeatherDaily weatherDaily =
-        //     await _weatherRemoteRepository.requestWether7D(
-        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
+        final WeatherDaily weatherDaily =
+            await _weatherRemoteRepository.requestWether7D(
+                _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //当天天气指数
         final WeatherIndices weatherIndices =
@@ -125,8 +143,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
           if (weatherNow.code != "200") {
             yield FailedLoadMainScreenState(WeatherError.data_not_available);
           } else {
-            yield SuccessLoadMainScreenState(
-                weatherNow, weatherAir, weatherIndices, _baiduLocation!);
+            yield SuccessLoadMainScreenState(weatherNow, weatherAir,
+                weatherDaily, weatherIndices, _baiduLocation!);
           }
         } else {
           yield const FailedLoadMainScreenState(WeatherError.connectionError);

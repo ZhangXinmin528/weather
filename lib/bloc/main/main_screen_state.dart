@@ -3,6 +3,7 @@ import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
+import 'package:weather/data/model/remote/weather/weather_daily.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 
@@ -38,14 +39,17 @@ class LoadingMainScreenState extends MainScreenState {}
 class SuccessLoadMainScreenState extends MainScreenState {
   final WeatherRT weather;
   final WeatherAir weatherAir;
+  final WeatherDaily weatherDaily;
   final WeatherIndices weatherIndices;
+
   final BaiduLocation location;
 
-  SuccessLoadMainScreenState(
-      this.weather, this.weatherAir, this.weatherIndices, this.location);
+  SuccessLoadMainScreenState(this.weather, this.weatherAir, this.weatherDaily,
+      this.weatherIndices, this.location);
 
   @override
-  List<Object?> get props => [weather, weatherAir, location, unit];
+  List<Object?> get props =>
+      [weather, weatherAir, weatherDaily, location, unit];
 }
 
 ///主页面加载天气失败
