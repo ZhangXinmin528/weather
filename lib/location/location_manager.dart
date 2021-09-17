@@ -7,8 +7,8 @@ import 'package:flutter_bmflocation/flutter_baidu_location_android_option.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location_ios_option.dart';
 
 class LocationManager {
-  late StreamSubscription<Map<String, Object>>? _locationListener;
-  late LocationFlutterPlugin? _locationPlugin;
+  late StreamSubscription<Map<String, Object>?>? _locationListener;
+  late LocationFlutterPlugin _locationPlugin;
 
   factory LocationManager() {
     return _instance;
@@ -17,46 +17,33 @@ class LocationManager {
   static late final LocationManager _instance = LocationManager._internal();
 
   ///私有构造器
-  LocationManager._internal() {}
-
-  ///请求定位权限
-  void requestLocationPermission() {
-    _locationPlugin?.requestPermission();
+  LocationManager._internal() {
+    _locationPlugin = new LocationFlutterPlugin();
   }
 
-  void startLocationOnce(ValueChanged<BaiduLocation?> valueChanged) {
+  void startLocationOnce() {
     if (_locationPlugin != null) {
-      _locationPlugin = null;
-    }
-    _locationPlugin = new LocationFlutterPlugin();
-    _setLocOption(true);
-    _locationPlugin?.startLocation();
+      _setLocOption(true);
 
-    _locationListener = _locationPlugin
-        ?.onResultCallback()
-        .listen((Map<String, Object> result) {
-      try {
-        final BaiduLocation location = BaiduLocation.fromMap(result);
-        valueChanged(location);
-      } catch (exception) {
-        valueChanged(null);
-        print(exception);
-      }
-    });
+      _locationPlugin.requestPermission();
+
+      _locationPlugin.startLocation();
+    }
   }
 
   ///开始定位
-  void startLocation(ValueChanged<BaiduLocation?> valueChanged) {
+  void startLocation() {
     if (_locationPlugin != null) {
-      _locationPlugin = null;
+      _setLocOption(false);
+      _locationPlugin.requestPermission();
+      _locationPlugin.startLocation();
     }
-    _locationPlugin = new LocationFlutterPlugin();
-    _setLocOption(true);
-    _locationPlugin?.startLocation();
+  }
 
+  void listenLocationCallback(ValueChanged<BaiduLocation?> valueChanged) {
     _locationListener = _locationPlugin
-        ?.onResultCallback()
-        .listen((Map<String, Object> result) {
+        .onResultCallback()
+        .listen((Map<String, Object>? result) {
       try {
         final BaiduLocation location = BaiduLocation.fromMap(result);
         valueChanged(location);
@@ -75,7 +62,7 @@ class LocationManager {
   ///终止定位
   void stopLocation() {
     if (_locationPlugin != null) {
-      _locationPlugin?.stopLocation();
+      _locationPlugin.stopLocation();
     }
   }
 

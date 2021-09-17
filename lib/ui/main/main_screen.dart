@@ -63,11 +63,12 @@ class _MainScreenState extends State<MainScreen> {
                   //开始定位
                   _buildLightBackground(),
                   const LoadingWidget(),
+                ] else if (state is SuccessLoadMainScreenState) ...[
+                  _buildWeatherChangedBg(state),
+                  _buildWeatherNowWidget(state)
                 ] else ...[
                   _buildLightBackground(),
-                  if (state is SuccessLoadMainScreenState)
-                    _buildWeatherNowWidget(state)
-                  else if (state is FailedLoadMainScreenState)
+                  if (state is FailedLoadMainScreenState)
                     _buildFailedToLoadDataWidget(state.error)
                   else
                     const SizedBox()
@@ -90,7 +91,7 @@ class _MainScreenState extends State<MainScreen> {
 
     final weatherNow = weatherRT.now;
 
-    final String address = location.city + " " + location.district;
+    final String address = "${location.city} ${location.district}";
     final temp = weatherNow.temp + "°";
 
     return RefreshIndicator(
@@ -224,7 +225,7 @@ class _MainScreenState extends State<MainScreen> {
     final weatherAirNow = weatherAir.now;
 
     final ButtonStyle buttonStyle =
-        ElevatedButton.styleFrom(primary: Colors.white38);
+        ElevatedButton.styleFrom(primary: Colors.white30);
 
     return Container(
       alignment: Alignment.centerLeft,
@@ -275,11 +276,8 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildOtherWeatherWidget(WeatherRT weather) {
     final weatherNow = weather.now;
     return Container(
-      color: Colors.white,
       key: const Key("main_screen_other_weather"),
-      margin: EdgeInsets.only(
-        top: 20.0,
-      ),
+      margin: EdgeInsets.only(top: 30.0, left: 16.0, right: 16.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -292,18 +290,18 @@ class _MainScreenState extends State<MainScreen> {
                 padding: EdgeInsets.only(
                   top: 16.0,
                   bottom: 8.0,
-                  left: 12.0,
+                  left: 16.0,
                 ),
                 child: Text(
                   "降水",
-                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 12.0),
                 child: Text(
                   weatherNow.precip + "mm",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                  style: TextStyle(fontSize: 14.0, color: Colors.white),
                 ),
               )
             ],
@@ -316,14 +314,14 @@ class _MainScreenState extends State<MainScreen> {
                 padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
                 child: Text(
                   "湿度",
-                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
                 child: Text(
                   weatherNow.humidity + "%",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                  style: TextStyle(fontSize: 14.0, color: Colors.white),
                 ),
               )
             ],
@@ -336,14 +334,14 @@ class _MainScreenState extends State<MainScreen> {
                 padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
                 child: Text(
                   weatherNow.windDir,
-                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
                 child: Text(
                   weatherNow.windScale + "级",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                  style: TextStyle(fontSize: 14.0, color: Colors.white),
                 ),
               )
             ],
@@ -356,14 +354,14 @@ class _MainScreenState extends State<MainScreen> {
                 padding: EdgeInsets.only(top: 16.0, bottom: 8.0, right: 12.0),
                 child: Text(
                   "气压",
-                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
+                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0, right: 12.0),
                 child: Text(
                   weatherNow.pressure + "hpa",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
+                  style: TextStyle(fontSize: 14.0, color: Colors.white),
                 ),
               )
             ],
@@ -378,7 +376,6 @@ class _MainScreenState extends State<MainScreen> {
     final indicesDaily = weatherIndices.daily;
 
     return Container(
-      color: Colors.white,
       child: Column(
         children: [
           Divider(
@@ -389,7 +386,7 @@ class _MainScreenState extends State<MainScreen> {
             margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
             child: const Text(
               "生活指数",
-              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+              style: TextStyle(fontSize: 18.0, color: Colors.white70),
             ),
           ),
           Divider(
@@ -405,20 +402,20 @@ class _MainScreenState extends State<MainScreen> {
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                mainAxisSpacing: 15,
-                crossAxisSpacing: 15,
+                mainAxisSpacing: 2,
+                crossAxisSpacing: 2,
                 childAspectRatio: 1,
               ),
               itemBuilder: (context, index) {
                 final daily = indicesDaily[index];
                 return Container(
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: Colors.white70, width: 1),
-                      borderRadius: BorderRadius.all(Radius.circular(6)),
+                      // color: Colors.black12,
+                      border: Border.all(color: Colors.white12, width: 1),
+                      // borderRadius: BorderRadius.all(Radius.circular(6)),
                       boxShadow: [
                         BoxShadow(
-                            color: Colors.black12,
+                            color: Colors.white12,
                             spreadRadius: 1,
                             blurRadius: 1.0,
                             offset: Offset(1.0, 1.0))
@@ -428,15 +425,15 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       Text(
                         daily.name,
-                        style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                        style: TextStyle(fontSize: 14.0, color: Colors.white70),
                       ),
                       const SizedBox(
                         height: 10.0,
                       ),
                       Text(
                         daily.category,
-                        style: TextStyle(fontSize: 16.0, color: Colors.black),
-                      )
+                        style: TextStyle(fontSize: 16.0, color: Colors.white),
+                      ),
                     ],
                   ),
                 );
@@ -452,7 +449,6 @@ class _MainScreenState extends State<MainScreen> {
   ///weather 7Day
   Widget _buildeWeather7Day(WeatherDaily weatherDaily) {
     return Container(
-      color: Colors.white,
       child: Column(
         children: [
           Divider(
@@ -463,7 +459,7 @@ class _MainScreenState extends State<MainScreen> {
             margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
             child: const Text(
               "七天预报",
-              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+              style: TextStyle(fontSize: 18.0, color: Colors.white70),
             ),
           ),
           Divider(
@@ -489,7 +485,7 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       Text(
                         date,
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: Colors.white),
                       ),
                       Padding(
                         key: const Key("main_screen_7d_daily_icon"),
@@ -502,7 +498,7 @@ class _MainScreenState extends State<MainScreen> {
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
                           daily.tempMax,
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                       Container(
@@ -521,7 +517,7 @@ class _MainScreenState extends State<MainScreen> {
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
                           daily.tempMin,
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                       Padding(
@@ -552,7 +548,7 @@ class _MainScreenState extends State<MainScreen> {
       margin: EdgeInsets.only(top: 12.0, bottom: 12.0),
       child: Text(
         "天气数据由和风天气提供",
-        style: TextStyle(color: Colors.grey),
+        style: TextStyle(color: Colors.white70),
       ),
     );
   }
@@ -601,6 +597,27 @@ class _MainScreenState extends State<MainScreen> {
       key: const Key("main_screen_light_background"),
       child: Image.network(
           "https://cdn.qweather.com/img/plugin/190516/bg/h5/lightd.png"),
+    );
+  }
+
+  ///随天气变化背景
+  Widget _buildWeatherChangedBg(SuccessLoadMainScreenState state) {
+    final hour = DateTime.now().hour;
+    final icon = state.weather.now.icon;
+    String bgSufix = "";
+    if (6 < hour && hour < 18)
+      bgSufix = "$icon" + "d.png";
+    else
+      bgSufix = "$icon" + "n.png";
+    final String url =
+        "https://cdn.qweather.com/img/plugin/190516/bg/h5/" + bgSufix;
+    return Container(
+      key: const Key("main_screen_weather_changed_background"),
+      child: Image.network(
+        url,
+        fit: BoxFit.fill,
+        height: 2000,
+      ),
     );
   }
 

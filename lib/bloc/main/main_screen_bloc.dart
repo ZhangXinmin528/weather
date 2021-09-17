@@ -26,7 +26,17 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
   MainScreenBloc(
       this._weatherRemoteRepository, this._applicationLocalRepository)
-      : super(StartLocationState());
+      : super(StartLocationState()) {
+    _locationManager.listenLocationCallback((value) {
+      //定位变化
+      _baiduLocation = value;
+      Future.delayed(Duration(seconds: 1), () {
+        add(LocationChangedEvent());
+      });
+      _locationManager.stopLocation();
+      LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
+    });
+  }
 
   @override
   Stream<MainScreenState> mapEventToState(MainScreenEvent event) async* {
@@ -52,30 +62,13 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       MainScreenState state) async* {
     LogUtil.d("_mapStartLocationToState：${state is StartLocationState}");
     if (state is StartLocationState) {
-      //请求定位权限
-      _locationManager.requestLocationPermission();
-
-      _locationManager.startLocation((value) {
-        //定位变化
-        _baiduLocation = value;
-        add(LocationChangedEvent());
-        //停止定位
-        // _locationManager.stopLocation();
-        LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
-      });
+      _locationManager.startLocation();
     }
   }
 
   ///刷新
   Stream<MainScreenState> _mapRefreshToState(MainScreenState state) async* {
-    _locationManager.startLocation((value) {
-      //定位变化
-      _baiduLocation = value;
-      add(LocationChangedEvent());
-      //停止定位
-      _locationManager.stopLocation();
-      LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
-    });
+    _locationManager.startLocation();
   }
 
   ///定位相关逻辑

@@ -8,6 +8,7 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/model/remote/weather/weather_warning.dart';
 import 'package:weather/data/repository/remote/heweather_api_provider.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class WeatherRemoteRepository {
   final HeWeatherApiProvider _weatherApiProvider;
@@ -17,18 +18,18 @@ class WeatherRemoteRepository {
   //==========================================================================//
   ///城市天气API
   ///获取实时天气信息
-  Future<WeatherRT> requestWeatherNow(double longitude, double latitude) async {
+  Future<WeatherRT> requestWeatherNow(double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestWeatherNow(longitude, latitude);
 
-    // LogUtil.d("response=${response.data.toString()}");
+    LogUtil.d("response=${response.data.toString()}");
     final WeatherRT weather = WeatherRT.fromJson(response.data);
     return weather;
   }
 
   ///获取7天天气预报
   Future<WeatherDaily> requestWether7D(
-      double longitude, double latitude) async {
+      double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestWeather7D(longitude, latitude);
 
@@ -50,7 +51,7 @@ class WeatherRemoteRepository {
   ///天气指数API
   ///获取当天天气指数
   Future<WeatherIndices> requestIndices1D(
-      double longitude, double latitude) async {
+      double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestIndices1D(longitude, latitude);
     final WeatherIndices indices = WeatherIndices.fromJson(response.data);
@@ -72,7 +73,7 @@ class WeatherRemoteRepository {
 
   ///空气API
   ///实时空气质量
-  Future<WeatherAir> requestAirNow(double longitude, double latitude) async {
+  Future<WeatherAir> requestAirNow(double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestAirNow(longitude, latitude);
     final WeatherAir air = WeatherAir.fromJson(response.data);
@@ -80,7 +81,7 @@ class WeatherRemoteRepository {
   }
 
   ///实时空气质量
-  Future<AirDaily> requestAir5D(double longitude, double latitude) async {
+  Future<AirDaily> requestAir5D(double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestAir5D(longitude, latitude);
     final AirDaily air = AirDaily.fromJson(response.data);
@@ -92,7 +93,7 @@ class WeatherRemoteRepository {
   ///天文API
   ///日出日落数据
   Future<AstronomySun> requestAstronomySun(
-      double longitude, double latitude) async {
+      double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestAstronomySun(longitude, latitude);
     final AstronomySun sun = AstronomySun.fromJson(response.data);
@@ -101,7 +102,7 @@ class WeatherRemoteRepository {
 
   ///月升月落和月相
   Future<AstronomyMoon> requestAstronomyMoon(
-      double longitude, double latitude) async {
+      double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestAstronomyMoon(longitude, latitude);
     final AstronomyMoon moon = AstronomyMoon.fromJson(response.data);
