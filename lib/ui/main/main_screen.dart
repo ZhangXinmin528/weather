@@ -605,7 +605,7 @@ class _MainScreenState extends State<MainScreen> {
     final hour = DateTime.now().hour;
     final icon = state.weather.now.icon;
     String bgSufix = "";
-    if (6 < hour && hour < 18)
+    if (6 < hour && hour < 20)
       bgSufix = "$icon" + "d.png";
     else
       bgSufix = "$icon" + "n.png";
