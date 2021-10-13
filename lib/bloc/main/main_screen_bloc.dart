@@ -7,6 +7,7 @@ import 'package:weather/bloc/main/main_screen_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
+import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
@@ -21,8 +22,6 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   final ApplicationLocalRepository _applicationLocalRepository;
 
   late BaiduLocation? _baiduLocation;
-
-  Timer? _refreshTimer;
 
   MainScreenBloc(
       this._weatherRemoteRepository, this._applicationLocalRepository)
@@ -74,13 +73,15 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   ///定位相关逻辑
   Stream<MainScreenState> _mapLocationChangedToState(
       MainScreenState state) async* {
-    if (_baiduLocation == null) {
-      //定位失败
-      yield LocationFaliedState(WeatherError.locationError);
-    } else {
+    LogUtil.e("_mapLocationChangedToState..定位数据：${_baiduLocation?.address}");
+    if (_baiduLocation != null && _baiduLocation!.city != null) {
       //定位成功
       yield LocationSuccessState();
       add(WeatherDataLoadedMainEvent());
+    } else {
+      LogUtil.e("定位回调了..定位失败~");
+      //定位失败
+      yield FailedLoadMainScreenState(WeatherError.locationError);
     }
   }
 
@@ -99,9 +100,9 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
             .requestAirNow(_baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //24H
-        // final WeatherHour weatherHour =
-        //     await _weatherRemoteRepository.requestWeather24H(
-        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
+        final WeatherHour weatherHour =
+            await _weatherRemoteRepository.requestWeather24H(
+                _baiduLocation!.longitude, _baiduLocation!.latitude);
 
         //7D
         final WeatherDaily weatherDaily =

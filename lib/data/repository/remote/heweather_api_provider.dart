@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:weather/resources/config/app_config.dart';
 import 'package:weather/utils/datetime_utils.dart';
 
@@ -62,7 +63,7 @@ class HeWeatherApiProvider {
     _baseOptions.receiveTimeout = 30 * 1000;
     _dio = Dio(_baseOptions);
 
-    // _dio.interceptors.add(PrettyDioLogger());
+    _dio.interceptors.add(PrettyDioLogger());
   }
 
   ///城市天气API

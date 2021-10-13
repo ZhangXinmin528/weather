@@ -39,7 +39,7 @@ class WeatherRemoteRepository {
 
   ///获取24小时天气预报
   Future<WeatherHour> requestWeather24H(
-      double longitude, double latitude) async {
+      double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestWeather24H(longitude, latitude);
     final WeatherHour hour = WeatherHour.fromJson(response.data);

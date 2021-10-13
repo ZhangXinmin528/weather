@@ -22,6 +22,7 @@ import 'package:weather/ui/widget/loading_widget.dart';
 import 'package:weather/ui/widget/widget_helper.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -64,7 +65,6 @@ class _MainScreenState extends State<MainScreen> {
                   _buildLightBackground(),
                   const LoadingWidget(),
                 ] else if (state is SuccessLoadMainScreenState) ...[
-                  _buildWeatherChangedBg(state),
                   _buildWeatherNowWidget(state)
                 ] else ...[
                   _buildLightBackground(),
@@ -103,31 +103,34 @@ class _MainScreenState extends State<MainScreen> {
           child: ConstrainedBox(
             constraints:
                 BoxConstraints(minHeight: viewportConstrants.maxHeight),
-            // child: IntrinsicHeight(
-            child: Column(
+            child: Stack(
               children: [
-                //toolbar
-                _buildCityWidget(address),
+                _buildLightBackground(viewportConstrants.maxHeight),
+                Column(
+                  children: [
+                    //toolbar
+                    _buildCityWidget(address),
 
-                _buildUpdateTimeWidget(),
+                    _buildUpdateTimeWidget(),
 
-                _buildTempWidget(temp),
+                    _buildTempWidget(temp),
 
-                _buildWeatherDescAndIcon(weatherRT),
+                    _buildWeatherDescAndIcon(weatherRT),
 
-                _buildWeatherAir(weatherAir),
+                    _buildWeatherAir(weatherAir),
 
-                _buildOtherWeatherWidget(weatherRT),
+                    _buildOtherWeatherWidget(weatherRT),
 
-                _buildeWeather7Day(weatherDaily),
+                    _buildeWeather7Day(weatherDaily),
 
-                _buildIndicesWidget(weatherIndices),
+                    _buildIndicesWidget(weatherIndices),
 
-                _buildWeatherFooter(),
+                    _buildWeatherFooter(),
+                  ],
+                ),
               ],
             ),
           ),
-          // ),
         );
       }),
     );
@@ -294,14 +297,14 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 child: Text(
                   "降水",
-                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 12.0),
                 child: Text(
                   weatherNow.precip + "mm",
-                  style: TextStyle(fontSize: 14.0, color: Colors.white),
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
                 ),
               )
             ],
@@ -314,14 +317,14 @@ class _MainScreenState extends State<MainScreen> {
                 padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
                 child: Text(
                   "湿度",
-                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
                 child: Text(
                   weatherNow.humidity + "%",
-                  style: TextStyle(fontSize: 14.0, color: Colors.white),
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
                 ),
               )
             ],
@@ -334,14 +337,14 @@ class _MainScreenState extends State<MainScreen> {
                 padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
                 child: Text(
                   weatherNow.windDir,
-                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
                 child: Text(
                   weatherNow.windScale + "级",
-                  style: TextStyle(fontSize: 14.0, color: Colors.white),
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
                 ),
               )
             ],
@@ -354,14 +357,14 @@ class _MainScreenState extends State<MainScreen> {
                 padding: EdgeInsets.only(top: 16.0, bottom: 8.0, right: 12.0),
                 child: Text(
                   "气压",
-                  style: TextStyle(fontSize: 16.0, color: Colors.white70),
+                  style: TextStyle(fontSize: 16.0, color: Colors.grey),
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(top: 8.0, bottom: 16.0, right: 12.0),
                 child: Text(
                   weatherNow.pressure + "hpa",
-                  style: TextStyle(fontSize: 14.0, color: Colors.white),
+                  style: TextStyle(fontSize: 14.0, color: Colors.black),
                 ),
               )
             ],
@@ -386,7 +389,7 @@ class _MainScreenState extends State<MainScreen> {
             margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
             child: const Text(
               "生活指数",
-              style: TextStyle(fontSize: 18.0, color: Colors.white70),
+              style: TextStyle(fontSize: 18.0, color: Colors.grey),
             ),
           ),
           Divider(
@@ -402,39 +405,66 @@ class _MainScreenState extends State<MainScreen> {
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                mainAxisSpacing: 2,
-                crossAxisSpacing: 2,
+                mainAxisSpacing: 0.5,
+                crossAxisSpacing: 0.5,
                 childAspectRatio: 1,
               ),
               itemBuilder: (context, index) {
                 final daily = indicesDaily[index];
-                return Container(
-                  decoration: BoxDecoration(
+                return GestureDetector(
+                  onTap: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              daily.name,
+                            ),
+                            titleTextStyle:
+                                TextStyle(fontSize: 18.0, color: Colors.black),
+                            content: Text(
+                              daily.text,
+                            ),
+                            contentTextStyle:
+                                TextStyle(fontSize: 14.0, color: Colors.grey),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
                       // color: Colors.black12,
-                      border: Border.all(color: Colors.white12, width: 1),
-                      // borderRadius: BorderRadius.all(Radius.circular(6)),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.white12,
-                            spreadRadius: 1,
-                            blurRadius: 1.0,
-                            offset: Offset(1.0, 1.0))
-                      ]),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        daily.name,
-                        style: TextStyle(fontSize: 14.0, color: Colors.white70),
-                      ),
-                      const SizedBox(
-                        height: 10.0,
-                      ),
-                      Text(
-                        daily.category,
-                        style: TextStyle(fontSize: 16.0, color: Colors.white),
-                      ),
-                    ],
+                      border: Border.all(color: Colors.grey, width: 0.5),
+                      borderRadius: BorderRadius.all(Radius.circular(6)),
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //       color: Colors.grey,
+                      //       spreadRadius: 1,
+                      //       blurRadius: 1.0,
+                      //       offset: Offset(1.0, 1.0))
+                      // ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          daily.name,
+                          style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                        ),
+                        const SizedBox(
+                          height: 10.0,
+                        ),
+                        Text(
+                          daily.category,
+                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -459,7 +489,7 @@ class _MainScreenState extends State<MainScreen> {
             margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
             child: const Text(
               "七天预报",
-              style: TextStyle(fontSize: 18.0, color: Colors.white70),
+              style: TextStyle(fontSize: 18.0, color: Colors.grey),
             ),
           ),
           Divider(
@@ -485,7 +515,7 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       Text(
                         date,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: Colors.grey),
                       ),
                       Padding(
                         key: const Key("main_screen_7d_daily_icon"),
@@ -498,7 +528,7 @@ class _MainScreenState extends State<MainScreen> {
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
                           daily.tempMax,
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.black),
                         ),
                       ),
                       Container(
@@ -517,7 +547,7 @@ class _MainScreenState extends State<MainScreen> {
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
                           daily.tempMin,
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.black),
                         ),
                       ),
                       Padding(
@@ -548,7 +578,7 @@ class _MainScreenState extends State<MainScreen> {
       margin: EdgeInsets.only(top: 12.0, bottom: 12.0),
       child: Text(
         "天气数据由和风天气提供",
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Colors.grey),
       ),
     );
   }
@@ -572,7 +602,7 @@ class _MainScreenState extends State<MainScreen> {
     return _buildErrorWidget(
       "${appLocalizations.error_failed_to_load_weather_data} $detailedDescription",
       () {
-        _mainScreenBloc.add(WeatherDataLoadedMainEvent());
+        _mainScreenBloc.add(RefreshMainEvent());
       },
       key: const Key("main_screen_failed_to_load_data_widget"),
     );
@@ -592,19 +622,38 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   ///创建浅色背景
-  Widget _buildLightBackground() {
+  Widget _buildLightBackground([double? maxHeight]) {
     return Container(
       key: const Key("main_screen_light_background"),
       child: Image.network(
-          "https://cdn.qweather.com/img/plugin/190516/bg/h5/lightd.png"),
+        "https://cdn.qweather.com/img/plugin/190516/bg/h5/lightd.png",
+        errorBuilder:
+            (BuildContext context, Object exceptio, StackTrace? stackTrace) {
+          LogUtil.e("An error occured when loading lightBackground image~");
+          return Image.asset("images/lightd.png");
+        },
+      ),
+      alignment: Alignment.topCenter,
+      height: maxHeight,
+    );
+  }
+
+  ///创建深色背景
+  Widget _buildDarkBackground() {
+    return Container(
+      key: const Key("main_screen_dark_background"),
+      child: Image.network(
+          "https://cdn.qweather.com/img/plugin/190516/bg/h5/darkd.png"),
     );
   }
 
   ///随天气变化背景
   Widget _buildWeatherChangedBg(SuccessLoadMainScreenState state) {
     final hour = DateTime.now().hour;
-    final icon = state.weather.now.icon;
+    var icon = state.weather.now.icon;
     String bgSufix = "";
+    //当icon ==154时 获取不到对应的背景图片
+    if (icon == "154") icon = "104";
     if (6 < hour && hour < 20)
       bgSufix = "$icon" + "d.png";
     else
@@ -616,7 +665,6 @@ class _MainScreenState extends State<MainScreen> {
       child: Image.network(
         url,
         fit: BoxFit.fill,
-        height: 2000,
       ),
     );
   }
@@ -627,6 +675,9 @@ class _MainScreenState extends State<MainScreen> {
     Function() onRetryClicked, {
     Key? key,
   }) {
+    final ButtonStyle buttonStyle =
+        ElevatedButton.styleFrom(primary: Colors.redAccent);
+
     return Padding(
       key: key,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -640,6 +691,7 @@ class _MainScreenState extends State<MainScreen> {
                 Text(
                   errorMessage,
                   textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.red),
                 ),
                 TextButton(
                   onPressed: onRetryClicked,
@@ -647,6 +699,7 @@ class _MainScreenState extends State<MainScreen> {
                     AppLocalizations.of(context)!.retry,
                     style: const TextStyle(color: Colors.white),
                   ),
+                  style: buttonStyle,
                 )
               ],
             ),

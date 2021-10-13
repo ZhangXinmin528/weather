@@ -20,14 +20,14 @@ class MainScreenState extends Equatable {
 class StartLocationState extends MainScreenState {}
 
 ///定位失败
-class LocationFaliedState extends MainScreenState {
-  final WeatherError error;
-
-  const LocationFaliedState(this.error);
-
-  @override
-  List<Object?> get props => [unit, error];
-}
+// class LocationFaliedState extends MainScreenState {
+//   final WeatherError error;
+//
+//   const LocationFaliedState(this.error);
+//
+//   @override
+//   List<Object?> get props => [unit, error];
+// }
 
 ///定位成功
 class LocationSuccessState extends MainScreenState {}
