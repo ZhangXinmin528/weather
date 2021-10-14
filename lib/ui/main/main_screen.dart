@@ -38,6 +38,9 @@ class _MainScreenState extends State<MainScreen> {
   late AppBloc _appBloc;
   late MainScreenBloc _mainScreenBloc;
   late NavigationBloc _navigationBloc;
+  late ScrollController _controller;
+
+  var barAlpha = 1;
 
   @override
   void initState() {
@@ -50,6 +53,18 @@ class _MainScreenState extends State<MainScreen> {
     _mainScreenBloc.add(StartLocationEvent());
 
     _navigationBloc = BlocProvider.of(context);
+
+    _controller.addListener(() {
+      if (_controller.offset > 200) {
+        print("offset >200");
+      } else {}
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -66,7 +81,8 @@ class _MainScreenState extends State<MainScreen> {
                   _buildLightBackground(),
                   const LoadingWidget(),
                 ] else if (state is SuccessLoadMainScreenState) ...[
-                  _buildWeatherNowWidget(state)
+                  _buildWeatherNowWidget(state),
+                  _buildToolbar(state.location),
                 ] else ...[
                   _buildLightBackground(),
                   if (state is FailedLoadMainScreenState)
@@ -110,25 +126,15 @@ class _MainScreenState extends State<MainScreen> {
                 _buildLightBackground(viewportConstrants.maxHeight),
                 Column(
                   children: [
-                    //toolbar
                     _buildCityWidget(address),
-
-                    _buildUpdateTimeWidget(),
-
                     _buildTempWidget(temp),
-
                     _buildWeatherDescAndIcon(weatherRT),
-
                     _buildWeatherAir(weatherAir),
-
+                    _buildUpdateTimeWidget(),
                     _buildOtherWeatherWidget(weatherRT),
-
                     _buildWeatherHour(weatherHour),
-
                     _buildeWeather7Day(weatherDaily),
-
                     _buildIndicesWidget(weatherIndices),
-
                     _buildWeatherFooter(),
                   ],
                 ),
@@ -145,29 +151,31 @@ class _MainScreenState extends State<MainScreen> {
     return SafeArea(
       key: const Key("main_screen_city_desc"),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Padding(
+            key: const Key("main_screen_text_address"),
+            padding: EdgeInsets.only(top: 70.0),
+            child: Text(
+              //定位地址
+              address,
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.normal),
+            ),
+          ),
           Theme(
             data: Theme.of(context).copyWith(cardColor: Colors.white),
             child: Padding(
               padding: EdgeInsets.only(
-                left: 16.0,
-                top: 8.0,
+                left: 8.0,
+                top: 70.0,
               ),
               child: const Icon(
                 Icons.location_on,
                 color: Colors.white,
+                size: 20.0,
               ),
             ),
           ),
-          Padding(
-            key: const Key("main_screen_text_address"),
-            padding: EdgeInsets.only(left: 10.0, top: 8.0),
-            child: Text(
-              //定位地址
-              address,
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.normal),
-            ),
-          )
         ],
       ),
     );
@@ -176,12 +184,12 @@ class _MainScreenState extends State<MainScreen> {
   ///Time
   Widget _buildUpdateTimeWidget() {
     return Container(
-      alignment: Alignment.topLeft,
-      margin: EdgeInsets.only(left: 50.0, top: 4.0),
+      alignment: Alignment.topRight,
+      margin: EdgeInsets.only(right: 16.0, top: 4.0),
       child: Text(
         DateTimeUtils.formatNowTime() + "更新",
         key: const Key("main_screen_update_time"),
-        style: TextStyle(fontSize: 14.0),
+        style: TextStyle(fontSize: 14.0, color: Colors.grey.shade200),
       ),
     );
   }
@@ -189,8 +197,8 @@ class _MainScreenState extends State<MainScreen> {
   ///temp
   Widget _buildTempWidget(String temp) {
     return Container(
-      alignment: Alignment.topLeft,
-      margin: EdgeInsets.only(left: 16.0, top: 100.0),
+      alignment: Alignment.topCenter,
+      margin: EdgeInsets.only(left: 16.0, top: 55.0),
       child: Text(
         temp,
         key: const Key("main_screen_temp_now"),
@@ -210,7 +218,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
       height: 40,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
           IconUtils.getWeatherNowIcon(weatherNow.icon),
@@ -235,9 +243,9 @@ class _MainScreenState extends State<MainScreen> {
         ElevatedButton.styleFrom(primary: Colors.white30);
 
     return Container(
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
       key: const Key("main_screen_aqi_now"),
-      margin: EdgeInsets.only(top: 12.0, left: 16.0),
+      margin: EdgeInsets.only(top: 10.0, left: 16.0),
       child: TextButton(
         onPressed: () {
           //TODO:空气质量页面
@@ -774,8 +782,10 @@ class _MainScreenState extends State<MainScreen> {
 
   ///构建标题栏
   Widget _buildToolbar(BaiduLocation location) {
-    return SafeArea(
-      key: const Key("main_screen_overflow_menu"),
+    return Container(
+      key: const Key("main_screen_toolbar"),
+      color: Colors.blue,
+      padding: EdgeInsets.only(top: 30.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
