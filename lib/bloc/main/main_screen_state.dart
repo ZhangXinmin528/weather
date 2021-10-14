@@ -4,6 +4,7 @@ import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
+import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 
@@ -41,11 +42,12 @@ class SuccessLoadMainScreenState extends MainScreenState {
   final WeatherAir weatherAir;
   final WeatherDaily weatherDaily;
   final WeatherIndices weatherIndices;
+  final WeatherHour weatherHour;
 
   final BaiduLocation location;
 
   SuccessLoadMainScreenState(this.weather, this.weatherAir, this.weatherDaily,
-      this.weatherIndices, this.location);
+      this.weatherHour, this.weatherIndices, this.location);
 
   @override
   List<Object?> get props =>

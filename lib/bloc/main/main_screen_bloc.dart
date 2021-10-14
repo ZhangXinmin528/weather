@@ -138,7 +138,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
             yield FailedLoadMainScreenState(WeatherError.data_not_available);
           } else {
             yield SuccessLoadMainScreenState(weatherNow, weatherAir,
-                weatherDaily, weatherIndices, _baiduLocation!);
+                weatherDaily, weatherHour, weatherIndices, _baiduLocation!);
           }
         } else {
           yield const FailedLoadMainScreenState(WeatherError.connectionError);

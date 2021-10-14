@@ -13,6 +13,7 @@ import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
+import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/resources/config/colors.dart';
@@ -87,6 +88,7 @@ class _MainScreenState extends State<MainScreen> {
     final WeatherAir weatherAir = state.weatherAir;
     final WeatherIndices weatherIndices = state.weatherIndices;
     final WeatherDaily weatherDaily = state.weatherDaily;
+    final WeatherHour weatherHour = state.weatherHour;
     final BaiduLocation location = state.location;
 
     final weatherNow = weatherRT.now;
@@ -120,6 +122,8 @@ class _MainScreenState extends State<MainScreen> {
                     _buildWeatherAir(weatherAir),
 
                     _buildOtherWeatherWidget(weatherRT),
+
+                    _buildWeatherHour(weatherHour),
 
                     _buildeWeather7Day(weatherDaily),
 
@@ -368,6 +372,65 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               )
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  ///24Hour weather
+  Widget _buildWeatherHour(WeatherHour weatherHour) {
+    return Container(
+      child: Column(
+        children: [
+          Divider(
+            color: AppColor.line,
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
+            child: const Text(
+              "24小时预报",
+              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+            ),
+          ),
+          Divider(
+            color: AppColor.line,
+          ),
+          Container(
+            height: 120,
+            padding: EdgeInsets.only(left: 16.0, right: 16.0),
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: weatherHour.hourly.length,
+                shrinkWrap: true,
+                // physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  final hour = weatherHour.hourly[index];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 8, right: 8.0),
+                        child: Text(
+                          DateTimeUtils.formatUTCDateTimeString(
+                              hour.fxTime, DateTimeUtils.weatherHourFormat),
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      Text(
+                        hour.temp + "°",
+                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      ),
+                      IconUtils.getWeatherNowIcon(hour.icon, size: 25),
+                      Text(
+                        hour.windScale + "级",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ],
+                  );
+                }),
           ),
         ],
       ),

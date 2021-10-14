@@ -11,6 +11,8 @@ class DateTimeUtils {
   static const String dailyFormat = 'MM/dd';
   static const String weatherTimeFormat = 'HH:mm';
 
+  static const String weatherHourFormat = 'dd/MM HH:mm';
+
   ///格式化日期，格式
   static String defaultFormatDateTime(DateTime dateTime) {
     return DateFormat(defaultFormat).format(dateTime);
@@ -27,6 +29,12 @@ class DateTimeUtils {
   ///format string datetime to another format string
   static String formatDateTimeString(String formattedString, String format) {
     return DateFormat(format).format(DateTime.parse(formattedString));
+  }
+
+  ///format utc datetime string to another format string
+  ///ex. 2021-10-14T13:37+08:00
+  static String formatUTCDateTimeString(String formattedString, String format) {
+    return DateFormat(format).format(DateTime.parse(formattedString).toLocal());
   }
 
   ///获取当前时间戳
