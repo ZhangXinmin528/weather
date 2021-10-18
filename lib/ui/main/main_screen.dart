@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
   late NavigationBloc _navigationBloc;
   late ScrollController _controller;
 
-  var barAlpha = 1;
+  var barAlpha = 0.0;
 
   @override
   void initState() {
@@ -54,10 +54,16 @@ class _MainScreenState extends State<MainScreen> {
 
     _navigationBloc = BlocProvider.of(context);
 
+    _controller = ScrollController();
     _controller.addListener(() {
-      if (_controller.offset > 200) {
-        print("offset >200");
-      } else {}
+      setState(() {
+        if (_controller.offset > 100) {
+          barAlpha = 1.0;
+        } else {
+          barAlpha = _controller.offset / 100.0;
+        }
+      });
+      print("controller..offset:${_controller.offset}..alpha:$barAlpha");
     });
   }
 
@@ -118,6 +124,7 @@ class _MainScreenState extends State<MainScreen> {
       },
       child: LayoutBuilder(builder: (context, viewportConstrants) {
         return SingleChildScrollView(
+          controller: _controller,
           child: ConstrainedBox(
             constraints:
                 BoxConstraints(minHeight: viewportConstrants.maxHeight),
@@ -782,38 +789,47 @@ class _MainScreenState extends State<MainScreen> {
 
   ///构建标题栏
   Widget _buildToolbar(BaiduLocation location) {
-    return Container(
-      key: const Key("main_screen_toolbar"),
-      color: Colors.blue,
-      padding: EdgeInsets.only(top: 30.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Theme(
-            data: Theme.of(context).copyWith(cardColor: Colors.white),
-            child: PopupMenuButton<PopupMenuElement>(
-              onSelected: (PopupMenuElement element) {
-                _onMenuElementClicked(element, context);
-              },
-              icon: const Icon(
-                Icons.menu,
-                color: Colors.white,
+    final String address = "${location.city} ${location.district}";
+
+    return Opacity(
+      opacity: barAlpha,
+      child: Container(
+        key: const Key("main_screen_toolbar"),
+        color: Color.fromARGB(255, 145, 177, 230),
+        padding: EdgeInsets.only(top: 40.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Theme(
+              data: Theme.of(context).copyWith(cardColor: Colors.white),
+              child: PopupMenuButton<PopupMenuElement>(
+                onSelected: (PopupMenuElement element) {
+                  _onMenuElementClicked(element, context);
+                },
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.white,
+                ),
+                itemBuilder: (BuildContext context) {
+                  return _getOverflowMenu(context)
+                      .map((PopupMenuElement element) {
+                    return PopupMenuItem<PopupMenuElement>(
+                      value: element,
+                      child: Text(
+                        element.title!,
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    );
+                  }).toList();
+                },
               ),
-              itemBuilder: (BuildContext context) {
-                return _getOverflowMenu(context)
-                    .map((PopupMenuElement element) {
-                  return PopupMenuItem<PopupMenuElement>(
-                    value: element,
-                    child: Text(
-                      element.title!,
-                      style: const TextStyle(color: Colors.black),
-                    ),
-                  );
-                }).toList();
-              },
             ),
-          ),
-        ],
+            Text(
+              address,
+              style: TextStyle(color: Colors.white),
+            )
+          ],
+        ),
       ),
     );
   }
