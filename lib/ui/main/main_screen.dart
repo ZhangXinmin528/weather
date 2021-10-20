@@ -40,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
   late NavigationBloc _navigationBloc;
   late ScrollController _controller;
 
-  var barAlpha = 0.0;
+  var cityAlpha = 0.0;
 
   @override
   void initState() {
@@ -57,13 +57,12 @@ class _MainScreenState extends State<MainScreen> {
     _controller = ScrollController();
     _controller.addListener(() {
       setState(() {
-        if (_controller.offset > 100) {
-          barAlpha = 1.0;
+        if (_controller.offset > 90) {
+          cityAlpha = 1.0;
         } else {
-          barAlpha = _controller.offset / 100.0;
+          cityAlpha = _controller.offset / 90.0;
         }
       });
-      print("controller..offset:${_controller.offset}..alpha:$barAlpha");
     });
   }
 
@@ -155,35 +154,38 @@ class _MainScreenState extends State<MainScreen> {
 
   ///Title
   Widget _buildCityWidget(String address) {
-    return SafeArea(
-      key: const Key("main_screen_city_desc"),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            key: const Key("main_screen_text_address"),
-            padding: EdgeInsets.only(top: 70.0),
-            child: Text(
-              //定位地址
-              address,
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.normal),
-            ),
-          ),
-          Theme(
-            data: Theme.of(context).copyWith(cardColor: Colors.white),
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 8.0,
-                top: 70.0,
-              ),
-              child: const Icon(
-                Icons.location_on,
-                color: Colors.white,
-                size: 20.0,
+    return Opacity(
+      opacity: 1 - cityAlpha,
+      child: SafeArea(
+        key: const Key("main_screen_city_desc"),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              key: const Key("main_screen_text_address"),
+              padding: EdgeInsets.only(top: 70.0),
+              child: Text(
+                //定位地址
+                address,
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.normal),
               ),
             ),
-          ),
-        ],
+            Theme(
+              data: Theme.of(context).copyWith(cardColor: Colors.white),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: 8.0,
+                  top: 70.0,
+                ),
+                child: const Icon(
+                  Icons.location_on,
+                  color: Colors.white,
+                  size: 20.0,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -299,7 +301,7 @@ class _MainScreenState extends State<MainScreen> {
     final weatherNow = weather.now;
     return Container(
       key: const Key("main_screen_other_weather"),
-      margin: EdgeInsets.only(top: 30.0, left: 16.0, right: 16.0),
+      margin: EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -791,45 +793,104 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildToolbar(BaiduLocation location) {
     final String address = "${location.city} ${location.district}";
 
-    return Opacity(
-      opacity: barAlpha,
-      child: Container(
-        key: const Key("main_screen_toolbar"),
-        color: Color.fromARGB(255, 145, 177, 230),
-        padding: EdgeInsets.only(top: 40.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Theme(
-              data: Theme.of(context).copyWith(cardColor: Colors.white),
-              child: PopupMenuButton<PopupMenuElement>(
-                onSelected: (PopupMenuElement element) {
-                  _onMenuElementClicked(element, context);
-                },
-                icon: const Icon(
-                  Icons.menu,
-                  color: Colors.white,
+    return Container(
+      key: const Key("main_screen_toolbar"),
+      color: Color.fromARGB(150, 149, 182, 226),
+      padding: EdgeInsets.only(top: 40.0),
+      child: Stack(
+        children: [
+          Opacity(
+            opacity: cityAlpha,
+            child: Row(
+              key: Key('main_screen_toolbar_title'),
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  //定位地址
+                  address,
+                  key: const Key("main_screen_text_address"),
+                  style:
+                      TextStyle(fontSize: 22.0, fontWeight: FontWeight.normal),
                 ),
-                itemBuilder: (BuildContext context) {
-                  return _getOverflowMenu(context)
-                      .map((PopupMenuElement element) {
-                    return PopupMenuItem<PopupMenuElement>(
-                      value: element,
-                      child: Text(
-                        element.title!,
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList();
-                },
-              ),
+                Theme(
+                  data: Theme.of(context).copyWith(cardColor: Colors.white),
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 8.0,
+                    ),
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.white,
+                      size: 20.0,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Text(
-              address,
-              style: TextStyle(color: Colors.white),
-            )
-          ],
-        ),
+          ),
+          Row(
+            key: Key('main_screen_toolbar_menu'),
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Theme(
+                data: Theme.of(context).copyWith(cardColor: Colors.white),
+                child: PopupMenuButton<PopupMenuElement>(
+                  onSelected: (PopupMenuElement element) {
+                    _onMenuElementClicked(element, context);
+                  },
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                  ),
+                  itemBuilder: (BuildContext context) {
+                    return _getOverflowMenu(context)
+                        .map((PopupMenuElement element) {
+                      return PopupMenuItem<PopupMenuElement>(
+                        value: element,
+                        child: Text(
+                          element.title!,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      );
+                    }).toList();
+                  },
+                ),
+              ),
+            ],
+          ),
+          Row(
+            key: Key('main_screen_toolbar_city'),
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Theme(
+                data: Theme.of(context).copyWith(cardColor: Colors.white),
+                child: PopupMenuButton<PopupMenuElement>(
+                  onSelected: (PopupMenuElement element) {
+                    _onMenuElementClicked(element, context);
+                  },
+                  icon: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  itemBuilder: (BuildContext context) {
+                    return _getOverflowMenu(context)
+                        .map((PopupMenuElement element) {
+                      return PopupMenuItem<PopupMenuElement>(
+                        value: element,
+                        child: Text(
+                          element.title!,
+                          style: const TextStyle(color: Colors.black),
+                        ),
+                      );
+                    }).toList();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
