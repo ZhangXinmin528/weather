@@ -22,7 +22,7 @@ class WeatherRemoteRepository {
     final response =
         await _weatherApiProvider.requestWeatherNow(longitude, latitude);
 
-    LogUtil.d("response=${response.data.toString()}");
+    // LogUtil.d("response=${response.data.toString()}");
     final WeatherRT weather = WeatherRT.fromJson(response.data);
     return weather;
   }
@@ -97,6 +97,7 @@ class WeatherRemoteRepository {
     final response =
         await _weatherApiProvider.requestAstronomySun(longitude, latitude);
     final AstronomySun sun = AstronomySun.fromJson(response.data);
+    // LogUtil.d("response=${response.data.toString()}");
     return sun;
   }
 
@@ -105,6 +106,7 @@ class WeatherRemoteRepository {
       double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestAstronomyMoon(longitude, latitude);
+    // LogUtil.d("response=${response.data.toString()}");
     final AstronomyMoon moon = AstronomyMoon.fromJson(response.data);
     return moon;
   }

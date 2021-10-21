@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:lottie/lottie.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
 import 'package:weather/bloc/app/app_event.dart';
 import 'package:weather/bloc/main/main_screen_bloc.dart';
@@ -139,7 +141,8 @@ class _MainScreenState extends State<MainScreen> {
                     _buildUpdateTimeWidget(),
                     _buildOtherWeatherWidget(weatherRT),
                     _buildWeatherHour(weatherHour),
-                    _buildeWeather7Day(weatherDaily),
+                    _buildWeather7Day(weatherDaily),
+                    _buildWindDesc(weatherRT),
                     _buildIndicesWidget(weatherIndices),
                     _buildWeatherFooter(),
                   ],
@@ -557,7 +560,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   ///weather 7Day
-  Widget _buildeWeather7Day(WeatherDaily weatherDaily) {
+  Widget _buildWeather7Day(WeatherDaily weatherDaily) {
     return Container(
       child: Column(
         children: [
@@ -652,6 +655,112 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
+  ///wind
+  Widget _buildWindDesc(WeatherRT weatherRT) {
+    final now = weatherRT.now;
+    return Container(
+      key: const Key("main_screen_wind_desc"),
+      child: Column(
+        children: [
+          Divider(
+            color: AppColor.line,
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
+            child: const Text(
+              "风力风向",
+              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+            ),
+          ),
+          Divider(
+            color: AppColor.line,
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              LottieBuilder.asset(
+                'assets/lottiefiles/windmillpath.json',
+                width: 150.0,
+                height: 200.0,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '风力',
+                    style: TextStyle(color: Colors.grey, fontSize: 16.0),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      '${now.windScale}级',
+                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: const Text(
+                      '风向',
+                      style: TextStyle(color: Colors.grey, fontSize: 16.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      '${now.windDir}',
+                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: 8.0,
+                    ),
+                    child: const Text(
+                      '风速',
+                      style: TextStyle(color: Colors.grey, fontSize: 16.0),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      '${now.windSpeed}公里/小时',
+                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSunAndMoon() {
+    return Container(
+      child: Column(
+        children: [
+          Divider(
+            color: AppColor.line,
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
+            child: const Text(
+              "太阳和月亮",
+              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+            ),
+          ),
+          Divider(
+            color: AppColor.line,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildWeatherFooter() {
     return Container(
       alignment: Alignment.center,
@@ -672,7 +781,7 @@ class _MainScreenState extends State<MainScreen> {
         detailedDescription = appLocalizations.error_server_connection;
         break;
       case WeatherError.locationError:
-        detailedDescription = appLocalizations.error_location_not_selected;
+        detailedDescription = appLocalizations.error_location_disabled;
         break;
       case WeatherError.data_not_available:
         detailedDescription = appLocalizations.error_date_not_available;
@@ -910,14 +1019,6 @@ class _MainScreenState extends State<MainScreen> {
   ///菜单点击
   void _onMenuElementClicked(PopupMenuElement value, BuildContext context) {
     List<Color> startGradientColors = [];
-    if (_mainScreenBloc.state is SuccessLoadMainScreenState) {
-      // final weatherResponse =
-      //     (_mainScreenBloc.state as SuccessLoadMainScreenState).weatherResponse;
-      // final LinearGradient gradient = WidgetHelper.getGradient(
-      //     sunriseTime: weatherResponse.system!.sunrise,
-      //     sunsetTime: weatherResponse.system!.sunset);
-      // startGradientColors = gradient.colors;
-    }
 
     if (value.key == const Key("menu_overflow_settings")) {
       _navigationBloc.add(SettingsScreenNavigationEvent(startGradientColors));

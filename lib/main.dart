@@ -92,7 +92,7 @@ class _WeatherAppState extends State<WeatherApp> {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('en'),
+            Locale('zh'),
           ],
           onGenerateRoute: _navigationProvider.router.generator,
         ));
