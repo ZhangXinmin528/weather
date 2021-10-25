@@ -1,7 +1,10 @@
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:weather/resources/config/colors.dart';
+import 'package:weather/ui/webview/webview.dart';
 
 class AboutPage extends StatefulWidget {
   @override
@@ -39,42 +42,35 @@ class AboutPageState extends State<AboutPage> {
 
           // 项目主页
           _buildOverviewItem(
-            icon: Icons.home,
-            text: S.of(context).programHome,
-            onTap: () => push(context,
-                page: CustomWebViewPage(
-                    title: S.of(context).appName,
-                    url: "https://github.com/hahafather007/flutter_weather",
-                    favData: null)),
-          ),
+              icon: Icons.home,
+              text: AppLocalizations.of(context)!.programHome,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return WebviewPage(
+                      "项目主页", "https://github.com/ZhangXinmin528/weather");
+                }));
+              }),
 
           // 意见反馈
           _buildOverviewItem(
             icon: Icons.feedback,
-            text: S.of(context).feedback,
-            onTap: () => openBrowser(
-                "https://github.com/hahafather007/flutter_weather/issues/new"),
+            text: AppLocalizations.of(context)!.feedback,
+            onTap: () => _launchInBrower(
+                "https://github.com/ZhangXinmin528/weather/issues/new"),
           ),
 
           // 检查更新
           _buildOverviewItem(
-            icon: Icons.autorenew,
-            text: S.of(context).checkUpdate,
-            onTap: () async {
-              if (await ChannelUtil.isDownloading()) {
-                showSnack(text: S.of(context).apkDownloading);
-              } else {
-                _viewModel.checkUpdate();
-              }
-            },
-          ),
+              icon: Icons.update,
+              text: AppLocalizations.of(context)!.checkUpdate,
+              onTap: () {}),
 
           // 分享
           _buildOverviewItem(
             icon: Icons.share,
-            text: S.of(context).shareApp,
+            text: AppLocalizations.of(context)!.shareApp,
             onTap: () {
-              Share.text(S.of(context).share, S.of(context).shareAppUrl,
+              Share.text("应用分享", "https://github.com/ZhangXinmin528/weather",
                   "text/plain");
             },
           ),
@@ -85,15 +81,15 @@ class AboutPageState extends State<AboutPage> {
           ),
 
           // 感谢
-          _buildTitle(title: S.of(context).thanks),
+          // _buildTitle(title: S.of(context).thanks),
 
           // 感谢内容
-          _buildThanks(),
+          // _buildThanks(),
 
           _buildLine(),
 
           // 联系我
-          _buildTitle(title: S.of(context).connectMe),
+          // _buildTitle(title: S.of(context).connectMe),
         ],
       ),
     );
@@ -154,23 +150,23 @@ class AboutPageState extends State<AboutPage> {
   }
 
   /// 标题
-  Widget _buildTitle({@required String title}) {
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.only(left: 16),
-      alignment: Alignment.centerLeft,
-      child: Text(
-        title,
-        style: TextStyle(fontSize: 16, color: AppColor.text2),
-      ),
-    );
-  }
+// Widget _buildTitle({@required String title}) {
+//   return Container(
+//     height: 60,
+//     padding: const EdgeInsets.only(left: 16),
+//     alignment: Alignment.centerLeft,
+//     child: Text(
+//       title,
+//       style: TextStyle(fontSize: 16, color: AppColor.text2),
+//     ),
+//   );
+// }
 
   /// 概述的Item
   Widget _buildOverviewItem(
-      {@required IconData icon,
-        @required String text,
-        @required VoidCallback onTap}) {
+      {required IconData icon,
+      required String text,
+      required VoidCallback onTap}) {
     return Material(
       child: InkWell(
         onTap: onTap,
@@ -198,5 +194,13 @@ class AboutPageState extends State<AboutPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _launchInBrower(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch the url:$url';
+    }
   }
 }

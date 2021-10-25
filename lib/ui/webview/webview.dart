@@ -32,7 +32,7 @@ class _WebviewPageState extends State<WebviewPage> {
             Navigator.pop(context);
           },
           icon: Icon(
-            Icons.arrow_back_ios,
+            Icons.arrow_back,
             color: Colors.grey,
           ),
         ),

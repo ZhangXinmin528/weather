@@ -8,6 +8,8 @@
     "checkUpdate":"检查更新",
     "shareApp":"分享应用",
     "connectMe":"联系我",
+    "shareAppTitle":"应用分享",
+    "shareAppContent":"应用下载链接：https://github.com/ZhangXinmin528/weather",
     "ok":"确定",
     "cancel":"取消",
     "pressure":"大气压",
