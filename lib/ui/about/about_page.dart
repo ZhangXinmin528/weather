@@ -1,6 +1,7 @@
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather/resources/config/colors.dart';
@@ -81,10 +82,10 @@ class AboutPageState extends State<AboutPage> {
           ),
 
           // 感谢
-          // _buildTitle(title: S.of(context).thanks),
+          _buildTitle(title: AppLocalizations.of(context)!.thanks),
 
           // 感谢内容
-          // _buildThanks(),
+          _buildThanks(),
 
           _buildLine(),
 
@@ -150,17 +151,35 @@ class AboutPageState extends State<AboutPage> {
   }
 
   /// 标题
-// Widget _buildTitle({@required String title}) {
-//   return Container(
-//     height: 60,
-//     padding: const EdgeInsets.only(left: 16),
-//     alignment: Alignment.centerLeft,
-//     child: Text(
-//       title,
-//       style: TextStyle(fontSize: 16, color: AppColor.text2),
-//     ),
-//   );
-// }
+  Widget _buildTitle({required String title}) {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.only(left: 16),
+      alignment: Alignment.centerLeft,
+      child: Text(
+        title,
+        style: TextStyle(fontSize: 16, color: AppColor.text2),
+      ),
+    );
+  }
+
+  /// 感谢内容
+  Widget _buildThanks() {
+    return Container(
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+      child: Linkify(
+        text: AppLocalizations.of(context)!.thankItems,
+        onOpen: (link) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return WebviewPage(
+                AppLocalizations.of(context)!.app_name, link.url);
+          }));
+        },
+        style: TextStyle(fontSize: 14, color: AppColor.text2, height: 1.2),
+        linkStyle: TextStyle(fontSize: 14, color: Colors.black87),
+      ),
+    );
+  }
 
   /// 概述的Item
   Widget _buildOverviewItem(

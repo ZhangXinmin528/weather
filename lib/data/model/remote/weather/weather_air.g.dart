@@ -29,7 +29,7 @@ Now _$NowFromJson(Map<String, dynamic> json) {
   return Now(
     json['pubTime'] as String,
     json['aqi'] as String,
-    json['level'] ?? "",
+    json['level'] as String,
     json['category'] as String,
     json['primary'] as String,
     json['pm10'] as String,

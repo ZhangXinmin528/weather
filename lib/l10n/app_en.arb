@@ -10,6 +10,8 @@
     "connectMe":"Contact Me",
     "shareAppTitle":"AppShare",
     "shareAppContent":"App download url：https://github.com/ZhangXinmin528/weather",
+     "thanks":"Thanks",
+     "thankItems":"• Weather data is provided by Hefeng Weather\n•Baidu Maps provides location services\n ",
     "ok":"OK",
     "cancel":"Cancel",
     "pressure":"Pressure",
