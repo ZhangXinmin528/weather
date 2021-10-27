@@ -1,0 +1,78 @@
+name: weather
+description: An weather flutter project .
+version: 1.0.0+2
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 使用Intl国际化
+  #Intl-1.国际化
+  flutter_localizations:
+    sdk: flutter
+
+  #Intl-2.引入框架
+  intl: ^0.17.0
+
+  #bloc
+  flutter_bloc: ^7.0.0
+
+  #数据相关
+  equatable: ^2.0.0
+
+  #路由管理
+  fluro: ^2.0.3
+
+  #http
+  dio: ^4.0.0
+  #网络状态
+  connectivity_plus: ^2.0.2
+
+  #sp
+  shared_preferences: ^2.0.5
+
+  #百度定位
+  flutter_bmflocation: ^2.0.0-nullsafety.0
+
+  #logger
+  pretty_dio_logger: ^1.2.0-beta-1
+  logger: ^1.0.0
+
+  #webview
+  webview_flutter: ^2.0.12
+  #lottie
+  lottie: ^1.2.1
+
+  #launching a URL
+  url_launcher: ^6.0.10
+
+  esys_flutter_share: 1.0.2
+
+  #querying information about an application package
+  package_info_plus: ^1.3.0
+
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  #序列化：高版本存在兼容问题
+  build_runner: ^1.11.5
+  json_serializable: ^4.0.2
+
+flutter:
+
+  #Intl-3.启用 generate 标志
+  generate: true
+
+  uses-material-design: true
+
+  assets:
+    - icon/
+    - images/
+    - assets/lottiefiles/
