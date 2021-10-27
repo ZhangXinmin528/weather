@@ -1,3 +1,5 @@
+import 'package:weather/data/model/remote/city/city_location.dart';
+import 'package:weather/data/model/remote/city/city_top.dart';
 import 'package:weather/data/model/remote/weather/air_daily.dart';
 import 'package:weather/data/model/remote/weather/astronomy_moon.dart';
 import 'package:weather/data/model/remote/weather/astronomy_sun.dart';
@@ -8,7 +10,6 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/model/remote/weather/weather_warning.dart';
 import 'package:weather/data/repository/remote/heweather_api_provider.dart';
-import 'package:weather/utils/log_utils.dart';
 
 class WeatherRemoteRepository {
   final HeWeatherApiProvider _weatherApiProvider;
@@ -18,7 +19,8 @@ class WeatherRemoteRepository {
   //==========================================================================//
   ///城市天气API
   ///获取实时天气信息
-  Future<WeatherRT> requestWeatherNow(double? longitude, double? latitude) async {
+  Future<WeatherRT> requestWeatherNow(
+      double? longitude, double? latitude) async {
     final response =
         await _weatherApiProvider.requestWeatherNow(longitude, latitude);
 
@@ -109,5 +111,22 @@ class WeatherRemoteRepository {
     // LogUtil.d("response=${response.data.toString()}");
     final AstronomyMoon moon = AstronomyMoon.fromJson(response.data);
     return moon;
+  }
+
+//===========================================================================//
+
+  ///地理信息API
+  ///城市信息查询：目前中国范围内
+  Future<CityLocation> requestCityLookup(String city) async {
+    final response = await _weatherApiProvider.requestCityLookup(city);
+    final CityLocation cityLocation = CityLocation.fromJson(response.data);
+    return cityLocation;
+  }
+
+  ///热门城市查询：目前中国范围内
+  Future<CityTop> requestCityTop() async {
+    final response = await _weatherApiProvider.requestCityTop();
+    final CityTop cityTop = CityTop.fromJson(response.data);
+    return cityTop;
   }
 }

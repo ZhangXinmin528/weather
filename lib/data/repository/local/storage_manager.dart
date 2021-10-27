@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/resources/config/ids.dart';
 import 'package:weather/utils/datetime_utils.dart';
@@ -11,6 +9,7 @@ class StorageManager {
 
   StorageManager(this._spUtils);
 
+  ///单位
   Future<Unit> getUnit() async {
     try {
       final int? unit = await _spUtils.getInt(Ids.storageUnitKey);
@@ -49,11 +48,11 @@ class StorageManager {
     }
   }
 
-  Future<bool> saveRefreshTime(int refreshTime) async {
+  ///定位信息
+  Future<bool> saveLocation(String location) async {
     try {
-      LogUtil.d("Save refresh time: $refreshTime");
-      final result =
-          await _spUtils.setInt(Ids.storageRefreshTimeKey, refreshTime);
+      LogUtil.d("Save location: $location");
+      final result = await _spUtils.setString(Ids.storageLocationKey, location);
       LogUtil.d("Saved with result: $result");
       return result;
     } catch (exc, stackTrace) {
@@ -62,19 +61,18 @@ class StorageManager {
     }
   }
 
-  Future<int> getRefreshTime() async {
+  Future<int> getLocation() async {
     try {
-      int? refreshTime = await _spUtils.getInt(Ids.storageRefreshTimeKey);
-      if (refreshTime == null || refreshTime == 0) {
-        refreshTime = 600000;
-      }
-      return refreshTime;
+      String? refreshTime = await _spUtils.getString(Ids.storageLocationKey);
+
+      return 0;
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");
       return 600000;
     }
   }
 
+  ///更新时间
   Future<bool> saveLastRefreshTime(int lastRefreshTime) async {
     try {
       LogUtil.d("Save refresh time: $lastRefreshTime");
@@ -101,6 +99,4 @@ class StorageManager {
       return DateTimeUtils.getNowTime();
     }
   }
-
-
 }

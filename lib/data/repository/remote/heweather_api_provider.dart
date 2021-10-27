@@ -213,7 +213,7 @@ class HeWeatherApiProvider {
   }
 
   ///热门城市查询：目前中国范围内
-  Future<Response> requestCityTop(String city) async {
+  Future<Response> requestCityTop() async {
     final path = _geoApi + _cityPoint + _topCity;
     //参数
     final Map<String, dynamic> params = {

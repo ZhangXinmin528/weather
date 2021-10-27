@@ -6,6 +6,7 @@ class ApplicationLocalRepository {
 
   ApplicationLocalRepository(this._storageManager);
 
+  //单位
   Future<Unit> getSavedUnit() async {
     return _storageManager.getUnit();
   }
@@ -22,6 +23,7 @@ class ApplicationLocalRepository {
     _storageManager.saveRefreshTime(refreshTime);
   }
 
+  //更新时间
   Future<int> getLastRefreshTime() {
     return _storageManager.getLastRefreshTime();
   }

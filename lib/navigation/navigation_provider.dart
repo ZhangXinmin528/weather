@@ -2,7 +2,7 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:weather/resources/config/navigation_path.dart';
 import 'package:weather/ui/about/about_page.dart';
-import 'package:weather/ui/main/main_screen.dart';
+import 'package:weather/ui/main/main_page.dart';
 
 ///应用导航器:定义导航路由
 class NavigationProvider {
@@ -10,7 +10,7 @@ class NavigationProvider {
 
   ///主页
   final _mainScreenHandler = Handler(handlerFunc: (context, params) {
-    return const MainScreen();
+    return const MainPage();
   });
 
   ///关于

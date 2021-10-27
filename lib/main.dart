@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
-import 'package:weather/bloc/main/main_screen_bloc.dart';
+import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/data/repository/local/application_local_repository.dart';
 import 'package:weather/data/repository/local/storage_manager.dart';

@@ -5,7 +5,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather/resources/config/colors.dart';
-import 'package:weather/ui/webview/webview.dart';
+import 'package:weather/ui/webview/webview_page.dart';
 
 class AboutPage extends StatefulWidget {
   @override

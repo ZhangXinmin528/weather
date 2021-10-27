@@ -6,9 +6,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
 import 'package:weather/bloc/app/app_event.dart';
-import 'package:weather/bloc/main/main_screen_bloc.dart';
-import 'package:weather/bloc/main/main_screen_event.dart';
-import 'package:weather/bloc/main/main_screen_state.dart';
+import 'package:weather/bloc/main/main_page_bloc.dart';
+import 'package:weather/bloc/main/main_page_event.dart';
+import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
@@ -19,7 +19,7 @@ import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/resources/config/colors.dart';
-import 'package:weather/ui/webview/webview.dart';
+import 'package:weather/ui/webview/webview_page.dart';
 import 'package:weather/ui/widget/application_colors.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
 import 'package:weather/ui/widget/widget_helper.dart';
@@ -27,16 +27,17 @@ import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+///天气主页
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _MainScreenState();
+    return _MainPageState();
   }
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainPageState extends State<MainPage> {
   late AppBloc _appBloc;
   late MainScreenBloc _mainScreenBloc;
   late NavigationBloc _navigationBloc;
