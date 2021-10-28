@@ -2,11 +2,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/bloc/app/app_event.dart';
 import 'package:weather/bloc/app/app_state.dart';
 import 'package:weather/data/model/internal/unit.dart';
-import 'package:weather/data/repository/local/application_local_repository.dart';
+import 'package:weather/data/repository/local/app_local_repository.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
-  final ApplicationLocalRepository _localRepository;
+  final AppLocalRepository _localRepository;
 
   AppBloc(this._localRepository) : super(AppState(Unit.metric));
 

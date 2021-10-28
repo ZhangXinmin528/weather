@@ -31,7 +31,7 @@ dependencies:
   #http
   dio: ^4.0.0
   #网络状态
-  connectivity_plus: ^2.0.2
+#  connectivity_plus: ^2.0.2
 
   #sp
   shared_preferences: ^2.0.5

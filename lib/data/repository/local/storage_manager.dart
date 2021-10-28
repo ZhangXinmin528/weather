@@ -1,8 +1,10 @@
+import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/resources/config/ids.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
+import 'dart:convert' as convert;
 
 class StorageManager {
   final SharedPreferencesUtils _spUtils;
@@ -61,14 +63,17 @@ class StorageManager {
     }
   }
 
-  Future<int> getLocation() async {
+  Future<BaiduLocation?> getLocation() async {
+    BaiduLocation? location;
     try {
-      String? refreshTime = await _spUtils.getString(Ids.storageLocationKey);
-
-      return 0;
+      String? result = await _spUtils.getString(Ids.storageLocationKey);
+      if (result != null && result.isNotEmpty) {
+        location = BaiduLocation.fromMap(result);
+      }
+      return location;
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");
-      return 600000;
+      return location;
     }
   }
 

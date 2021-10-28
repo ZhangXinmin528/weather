@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
-import 'package:weather/data/repository/local/application_local_repository.dart';
+import 'package:weather/data/repository/local/app_local_repository.dart';
 import 'package:weather/data/repository/local/storage_manager.dart';
 import 'package:weather/data/repository/remote/heweather_api_provider.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
@@ -38,16 +38,16 @@ class _WeatherAppState extends State<WeatherApp> {
       StorageManager(SharedPreferencesUtils());
 
   ///天气数据接口数据
-  final WeatherRemoteRepository _weatherRemoteRepository =
+  final WeatherRemoteRepository _weatherRemoteRepo =
       WeatherRemoteRepository(HeWeatherApiProvider());
 
   ///app整体缓存
-  late ApplicationLocalRepository _applicationLocalRepository;
+  late AppLocalRepository _appLocalRepo;
 
   @override
   void initState() {
     super.initState();
-    _applicationLocalRepository = ApplicationLocalRepository(_storageManager);
+    _appLocalRepo = AppLocalRepository(_storageManager);
 
     ///作用？？
     WidgetsFlutterBinding.ensureInitialized();
@@ -62,7 +62,7 @@ class _WeatherAppState extends State<WeatherApp> {
         providers: [
           BlocProvider<AppBloc>(
             create: (context) {
-              return AppBloc(_applicationLocalRepository);
+              return AppBloc(_appLocalRepo);
             },
           ),
           //导航
@@ -75,7 +75,7 @@ class _WeatherAppState extends State<WeatherApp> {
           BlocProvider<MainScreenBloc>(
             create: (context) {
               return MainScreenBloc(
-                  _weatherRemoteRepository, _applicationLocalRepository);
+                  _weatherRemoteRepo, _appLocalRepo);
             },
           ),
         ],

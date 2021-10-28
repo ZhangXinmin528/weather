@@ -1,18 +1,17 @@
 import 'dart:async';
+import 'dart:convert' as convert;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/data/model/remote/weather/astronomy_moon.dart';
-import 'package:weather/data/model/remote/weather/astronomy_sun.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
 import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
-import 'package:weather/data/repository/local/application_local_repository.dart';
+import 'package:weather/data/repository/local/app_local_repository.dart';
 import 'package:weather/data/repository/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
 import 'package:weather/utils/log_utils.dart';
@@ -21,12 +20,11 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   final LocationManager _locationManager = LocationManager();
   final WeatherRemoteRepository _weatherRemoteRepository;
 
-  final ApplicationLocalRepository _applicationLocalRepository;
+  final AppLocalRepository _appLocalRepo;
 
   late BaiduLocation? _baiduLocation;
 
-  MainScreenBloc(
-      this._weatherRemoteRepository, this._applicationLocalRepository)
+  MainScreenBloc(this._weatherRemoteRepository, this._appLocalRepo)
       : super(StartLocationState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
@@ -77,6 +75,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
       MainScreenState state) async* {
     LogUtil.e("_mapLocationChangedToState..定位数据：${_baiduLocation?.address}");
     if (_baiduLocation != null && _baiduLocation!.city != null) {
+      final String json = convert.jsonEncode(_baiduLocation!.getMap());
+      _appLocalRepo.saveLocation(json);
       //定位成功
       yield LocationSuccessState();
       add(WeatherDataLoadedMainEvent());

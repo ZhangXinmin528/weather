@@ -1,12 +1,13 @@
+import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/repository/local/storage_manager.dart';
 
-class ApplicationLocalRepository {
+class AppLocalRepository {
   final StorageManager _storageManager;
 
-  ApplicationLocalRepository(this._storageManager);
+  AppLocalRepository(this._storageManager);
 
-  //单位
+  ///单位
   Future<Unit> getSavedUnit() async {
     return _storageManager.getUnit();
   }
@@ -15,15 +16,16 @@ class ApplicationLocalRepository {
     _storageManager.saveUnit(unit);
   }
 
-  Future<int> getSavedRefreshTime() async {
-    return _storageManager.getRefreshTime();
+  ///定位信息
+  Future<BaiduLocation?> getLocation() async {
+    return _storageManager.getLocation();
   }
 
-  void saveRefreshTime(int refreshTime) {
-    _storageManager.saveRefreshTime(refreshTime);
+  void saveLocation(String location) {
+    _storageManager.saveLocation(location);
   }
 
-  //更新时间
+  ///更新时间
   Future<int> getLastRefreshTime() {
     return _storageManager.getLastRefreshTime();
   }

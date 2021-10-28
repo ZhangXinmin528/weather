@@ -1,19 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class NavigationEvent extends Equatable{
-
+class NavigationEvent extends Equatable {
   @override
   List<Object?> get props => [];
-
 }
 
 ///主页面
 class MainScreenNavigationEvent extends NavigationEvent {}
 
 ///天气信息页面
-class ForecastScreenNavigationEvent extends NavigationEvent {
-}
+class ForecastScreenNavigationEvent extends NavigationEvent {}
 
 ///关于页面
 class AboutScreenNavigationEvent extends NavigationEvent {
@@ -21,6 +18,9 @@ class AboutScreenNavigationEvent extends NavigationEvent {
 
   AboutScreenNavigationEvent(this.startGradientColors);
 }
+
+///城市管理
+class CityManageScreenNavigationEvent extends NavigationEvent {}
 
 ///设置页面
 class SettingsScreenNavigationEvent extends NavigationEvent {

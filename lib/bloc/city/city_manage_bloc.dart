@@ -8,7 +8,7 @@ class CityManageBloc extends Bloc<CityManageEvent,CityManageState>{
 
   @override
   Stream<CityManageState> mapEventToState(CityManageEvent event) {
-    // TODO: implement mapEventToState
+
     return super.mapEventToState(event);
   }
 }

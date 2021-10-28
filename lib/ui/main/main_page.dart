@@ -976,27 +976,14 @@ class _MainPageState extends State<MainPage> {
             children: [
               Theme(
                 data: Theme.of(context).copyWith(cardColor: Colors.white),
-                child: PopupMenuButton<PopupMenuElement>(
-                  onSelected: (PopupMenuElement element) {
-                    _onMenuElementClicked(element, context);
-                  },
-                  icon: const Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
-                  itemBuilder: (BuildContext context) {
-                    return _getOverflowMenu(context)
-                        .map((PopupMenuElement element) {
-                      return PopupMenuItem<PopupMenuElement>(
-                        value: element,
-                        child: Text(
-                          element.title!,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      );
-                    }).toList();
-                  },
-                ),
+                child: IconButton(
+                    onPressed: () {
+                      _navigationBloc.add(CityManageScreenNavigationEvent());
+                    },
+                    icon: Icon(
+                      Icons.add,
+                      color: Colors.white,
+                    )),
               ),
             ],
           ),

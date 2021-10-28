@@ -22,6 +22,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     } else if (event is AboutScreenNavigationEvent) {
       _navigationTo(NavigationPath.aboutPagePath);
       yield NavigationState(NavigationRoute.aboutScreen);
+    } else if (event is CityManageScreenNavigationEvent) {
+      _navigationTo(NavigationPath.cityManagePagePath);
+      yield NavigationState(NavigationRoute.cityManageScreen);
     }
 
     ///未完待续。。。
