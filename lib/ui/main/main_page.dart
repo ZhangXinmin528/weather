@@ -978,7 +978,7 @@ class _MainPageState extends State<MainPage> {
                 data: Theme.of(context).copyWith(cardColor: Colors.white),
                 child: IconButton(
                     onPressed: () {
-                      _navigationBloc.add(CityManageScreenNavigationEvent());
+                      _navigationBloc.add(CityManagePageNavigationEvent());
                     },
                     icon: Icon(
                       Icons.add,
@@ -1009,7 +1009,7 @@ class _MainPageState extends State<MainPage> {
     List<Color> startGradientColors = [];
 
     if (value.key == const Key("menu_overflow_settings")) {
-      _navigationBloc.add(SettingsScreenNavigationEvent(startGradientColors));
+      _navigationBloc.add(SettingsPageNavigationEvent(startGradientColors));
     }
     if (value.key == const Key("menu_overflow_about")) {
       _navigationBloc.add(AboutScreenNavigationEvent(startGradientColors));

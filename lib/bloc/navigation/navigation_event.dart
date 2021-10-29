@@ -7,7 +7,7 @@ class NavigationEvent extends Equatable {
 }
 
 ///主页面
-class MainScreenNavigationEvent extends NavigationEvent {}
+class MainPageNavigationEvent extends NavigationEvent {}
 
 ///天气信息页面
 class ForecastScreenNavigationEvent extends NavigationEvent {}
@@ -20,11 +20,14 @@ class AboutScreenNavigationEvent extends NavigationEvent {
 }
 
 ///城市管理
-class CityManageScreenNavigationEvent extends NavigationEvent {}
+class CityManagePageNavigationEvent extends NavigationEvent {}
+
+///城市搜索
+class CitySearchPageNavigationEvent extends NavigationEvent {}
 
 ///设置页面
-class SettingsScreenNavigationEvent extends NavigationEvent {
+class SettingsPageNavigationEvent extends NavigationEvent {
   final List<Color> startGradientColors;
 
-  SettingsScreenNavigationEvent(this.startGradientColors);
+  SettingsPageNavigationEvent(this.startGradientColors);
 }

@@ -16,15 +16,18 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
 
   @override
   Stream<NavigationState> mapEventToState(NavigationEvent event) async* {
-    if (event is MainScreenNavigationEvent) {
+    if (event is MainPageNavigationEvent) {
       _navigationTo(NavigationPath.mainPagePath);
       yield NavigationState(NavigationRoute.mainScreen);
     } else if (event is AboutScreenNavigationEvent) {
       _navigationTo(NavigationPath.aboutPagePath);
       yield NavigationState(NavigationRoute.aboutScreen);
-    } else if (event is CityManageScreenNavigationEvent) {
+    } else if (event is CityManagePageNavigationEvent) {
       _navigationTo(NavigationPath.cityManagePagePath);
       yield NavigationState(NavigationRoute.cityManageScreen);
+    } else if (event is CitySearchPageNavigationEvent) {
+      _navigationTo(NavigationPath.citySearchPagePath);
+      yield NavigationState(NavigationRoute.citySearchScreen);
     }
 
     ///未完待续。。。

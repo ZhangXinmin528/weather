@@ -3,5 +3,6 @@ enum NavigationRoute {
   forecastScreen,
   aboutScreen,
   cityManageScreen,
+  citySearchScreen,
   settingsScreen,
 }

@@ -3,4 +3,5 @@ class NavigationPath {
   static final String mainPagePath = "/";
   static final String aboutPagePath = "/aboutPage";
   static final String cityManagePagePath = "/cityManagePage";
+  static final String citySearchPagePath = "/citySearchPage";
 }
