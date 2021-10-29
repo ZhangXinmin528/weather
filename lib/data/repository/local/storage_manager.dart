@@ -4,7 +4,6 @@ import 'package:weather/resources/config/ids.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
-import 'dart:convert' as convert;
 
 class StorageManager {
   final SharedPreferencesUtils _spUtils;
@@ -104,4 +103,19 @@ class StorageManager {
       return DateTimeUtils.getNowTime();
     }
   }
+
+  ///热门城市
+  Future<bool> saveTopCities(String cities) async {
+    try {
+      LogUtil.d("Save top cities: $cities");
+      final result = await _spUtils.setString(Ids.storageTopCitiesKey, cities);
+      LogUtil.d("Saved top cities: $result");
+      return result;
+    } catch (exc, stackTrace) {
+      LogUtil.e("Exception: $exc stack trace: $stackTrace");
+      return false;
+    }
+  }
+
+
 }

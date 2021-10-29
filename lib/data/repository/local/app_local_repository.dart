@@ -33,4 +33,9 @@ class AppLocalRepository {
   void saveLastRefreshTime(int lastRefreshTime) {
     _storageManager.saveLastRefreshTime(lastRefreshTime);
   }
+
+  ///热门城市
+  void saveTopCities(String cities){
+    _storageManager.saveTopCities(cities);
+  }
 }

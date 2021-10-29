@@ -62,6 +62,9 @@ class CitySearchPageState extends State<CitySearchPage> {
           )
         ],
       ),
+      body: Stack(
+        children: [],
+      ),
     );
   }
 }
