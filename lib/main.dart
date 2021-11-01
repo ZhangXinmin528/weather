@@ -81,7 +81,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //城市搜索
           BlocProvider<CitySearchBloc>(
             create: (context) {
-              return CitySearchBloc(_appLocalRepo);
+              return CitySearchBloc(_weatherRemoteRepo, _appLocalRepo);
             },
           ),
         ],

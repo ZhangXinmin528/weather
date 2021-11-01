@@ -1,5 +1,8 @@
+import 'dart:convert' as convert;
+
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/data/model/internal/unit.dart';
+import 'package:weather/data/model/remote/city/city_top.dart';
 import 'package:weather/resources/config/ids.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
@@ -117,5 +120,17 @@ class StorageManager {
     }
   }
 
-
+  Future<CityTop?> getTopCities() async {
+    CityTop? cityTop;
+    try {
+      String? topCities = await _spUtils.getString(Ids.storageTopCitiesKey);
+      if (topCities != null && topCities.isNotEmpty) {
+        cityTop = CityTop.fromJson(convert.jsonDecode(topCities));
+      }
+      return cityTop;
+    } catch (exc, stackTrace) {
+      LogUtil.e("Exception: $exc stack trace: $stackTrace");
+      return cityTop;
+    }
+  }
 }

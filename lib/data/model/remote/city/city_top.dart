@@ -21,6 +21,21 @@ class CityTop extends Object {
 
   factory CityTop.fromJson(Map<String, dynamic> srcJson) =>
       _$CityTopFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> map = Map();
+    if (this.code.isNotEmpty) {
+      map['code'] = this.code;
+    }
+    if (this.topCityList.isNotEmpty) {
+      map['topCityList'] = this.topCityList.map((e) => e.toJson()).toList();
+    }
+    if (this.refer.isNotEmpty) {
+      map['refer'] = this.refer;
+    }
+
+    return map;
+  }
 }
 
 @JsonSerializable()
@@ -82,6 +97,24 @@ class TopCityList extends Object {
 
   factory TopCityList.fromJson(Map<String, dynamic> srcJson) =>
       _$TopCityListFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = Map();
+    map['name'] = this.name;
+    map['id'] = this.id;
+    map['lat'] = this.lat;
+    map['lon'] = this.lon;
+    map['adm2'] = this.adm2;
+    map['adm1'] = this.adm1;
+    map['country'] = this.country;
+    map['tz'] = this.tz;
+    map['utcOffset'] = this.utcOffset;
+    map['isDst'] = this.isDst;
+    map['type'] = this.type;
+    map['rank'] = this.rank;
+    map['fxLink'] = this.fxLink;
+    return map;
+  }
 }
 
 @JsonSerializable()

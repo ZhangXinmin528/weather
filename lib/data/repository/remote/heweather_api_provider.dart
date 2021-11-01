@@ -73,7 +73,7 @@ class HeWeatherApiProvider {
     _baseOptions.receiveTimeout = 30 * 1000;
     _dio = Dio(_baseOptions);
 
-    _dio.interceptors.add(PrettyDioLogger());
+    // _dio.interceptors.add(PrettyDioLogger());
   }
 
   ///城市天气API
@@ -219,6 +219,7 @@ class HeWeatherApiProvider {
     final Map<String, dynamic> params = {
       'key': AppConfig.weather_key,
       'range': "cn",
+      'number': "20",
     };
     return await _dio.get(path, queryParameters: params);
   }
