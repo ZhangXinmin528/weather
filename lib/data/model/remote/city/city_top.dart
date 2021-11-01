@@ -30,8 +30,8 @@ class CityTop extends Object {
     if (this.topCityList.isNotEmpty) {
       map['topCityList'] = this.topCityList.map((e) => e.toJson()).toList();
     }
-    if (this.refer.isNotEmpty) {
-      map['refer'] = this.refer;
+    if (this.refer != null) {
+      map['refer'] = this.refer.toJson();
     }
 
     return map;
@@ -132,4 +132,11 @@ class Refer extends Object {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = Map();
+    map['sources'] = this.sources.map((e) => e).toList();
+    map['license'] = this.license.map((e) => e).toList();
+    return map;
+  }
 }

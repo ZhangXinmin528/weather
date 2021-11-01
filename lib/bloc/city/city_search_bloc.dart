@@ -26,7 +26,6 @@ class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
 
   ///热门城市
   Stream<CitySearchState> _mapTopCityToState(CitySearchState state) async* {
-    LogUtil.d("_mapTopCityToState()~");
     if (state is TopCitiesInitDataState) {
       CityTop? topCities;
       List<TopCityList> cityList;
@@ -35,7 +34,7 @@ class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
 
       if (topCities == null) {
         topCities = await _weatherRemoteRepository.requestCityTop();
-        final cities = convert.jsonEncode(topCities);
+        final cities = convert.jsonEncode(topCities.toJson());
         _appLocalRepo.saveTopCities(cities);
       }
 
