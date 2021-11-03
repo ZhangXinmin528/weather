@@ -364,6 +364,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.1.0"
+  loading_indicator:
+    dependency: "direct main"
+    description:
+      name: loading_indicator
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.2"
   logger:
     dependency: "direct main"
     description:

@@ -7,23 +7,22 @@ class DateTimeUtils {
   static const int minutesAsMs = 60000;
   static const int secondsAsMs = 1000;
 
-  static const String defaultFormat = 'dd/MM/yyyy';
+  static const String defaultFormat = 'yyyyMMdd HH:mm:ss';
+  static const String dateFormat = 'dd/MM/yyyy';
   static const String dailyFormat = 'MM/dd';
   static const String weatherTimeFormat = 'HH:mm';
 
   static const String weatherHourFormat = 'dd/MM HH:mm';
 
-  ///格式化日期，格式
+  ///=============================格式化时间戳===============================///
+  ///格式化日期，格式:dd/MM/yyyy
   static String defaultFormatDateTime(DateTime dateTime) {
     return DateFormat(defaultFormat).format(dateTime);
   }
 
+  ///指定格式格式化日期
   static String formatDateTime(DateTime dateTime, String format) {
     return DateFormat(format).format(dateTime);
-  }
-
-  static int getNowTime() {
-    return DateTime.now().microsecondsSinceEpoch;
   }
 
   ///format string datetime to another format string
@@ -37,10 +36,29 @@ class DateTimeUtils {
     return DateFormat(format).format(DateTime.parse(formattedString).toLocal());
   }
 
+  ///=============================获取当前时间戳===============================///
   ///获取当前时间戳
   ///格式：HH:mm:ss
   static String formatNowTime() {
     return formatDateTime(DateTime.now(), weatherTimeFormat);
+  }
+
+  ///获取当前时间
+  static int getNowTime() {
+    return DateTime.now().microsecondsSinceEpoch;
+  }
+
+  ///获取格式化的当前时间
+  ///格式：yyyyMMdd HH:mm:ss
+  static String getFormatedNowTimeString() {
+    return defaultFormatDateTime(DateTime.now());
+  }
+
+  ///=============================获取时间间隔===============================///
+
+  ///获取时间间隔
+  static String getTimeSpanByNow(int millseconds) {
+    return DateFormat(defaultFormat).formatDuration(DateTime.now());
   }
 
   ///格式化时间：12：00

@@ -1,17 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
-import 'package:weather/bloc/app/app_bloc.dart';
-import 'package:weather/bloc/app/app_event.dart';
-import 'package:weather/bloc/main/main_page_bloc.dart';
-import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
-import 'package:weather/bloc/navigation/navigation_event.dart';
-import 'package:weather/data/model/internal/overflow_menu_element.dart';
+import 'package:weather/bloc/weather/weather_page_bloc.dart';
+import 'package:weather/bloc/weather/weather_page_event.dart';
+import 'package:weather/bloc/weather/weather_page_state.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
@@ -20,88 +16,69 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview_page.dart';
+import 'package:weather/ui/widget/application_colors.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
+import 'package:weather/ui/widget/widget_helper.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
-///天气主页
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+///各个城市天气主页
+class WeatherPage extends StatefulWidget {
+  const WeatherPage({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _MainPageState();
+    return _WeatherPageState();
   }
 }
 
-class _MainPageState extends State<MainPage> {
-  late AppBloc _appBloc;
-  late MainScreenBloc _mainScreenBloc;
+class _WeatherPageState extends State<WeatherPage> {
+  late WeatherPageBloc _weatherPageBloc;
   late NavigationBloc _navigationBloc;
-  late ScrollController _controller;
-
-  var cityAlpha = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _appBloc = BlocProvider.of(context);
-    _appBloc.add(LoadSettingsAppEvent());
 
-    _mainScreenBloc = BlocProvider.of(context);
-    //开始定位
-    _mainScreenBloc.add(StartLocationEvent());
+    _weatherPageBloc = BlocProvider.of(context);
+    //开始请求天气
+    _weatherPageBloc.add(InitWeatherPageEvent());
 
     _navigationBloc = BlocProvider.of(context);
-
-    _controller = ScrollController();
-    _controller.addListener(() {
-      // setState(() {
-      // if (_controller.offset > 90) {
-      //   cityAlpha = 1.0;
-      // } else {
-      //   cityAlpha = _controller.offset / 90.0;
-      // }
-      // });
-    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<MainScreenBloc, MainScreenState>(
-          builder: (context, state) {
-        return Stack(
-          children: [
-            if (state is StartLocationState) ...[
-              //开始定位
-              _buildLightBackground(),
-              const LoadingWidget(),
-            ] else if (state is SuccessLoadMainScreenState) ...[
-              _buildWeatherNowWidget(state),
-              _buildToolbar(state.location),
-            ] else ...[
-              _buildLightBackground(),
-              if (state is FailedLoadMainScreenState)
-                _buildFailedToLoadDataWidget(state.error)
-              else
-                const SizedBox()
-            ],
+    return BlocBuilder<WeatherPageBloc, WeatherPageState>(
+        builder: (context, state) {
+      return Stack(
+        children: [
+          if (state is StartReuestWeatherState) ...[
+            //开始定位
+            _buildLightBackground(),
+            const LoadingWidget(),
+          ] else if (state is RequestWeatherSuccessState) ...[
+            _buildWeatherNowWidget(state),
+          ] else ...[
+            _buildLightBackground(),
+            if (state is RequestWeatherFailedState)
+              _buildFailedToLoadDataWidget(state.error)
+            else
+              const SizedBox()
           ],
-        );
-      }),
-    );
+        ],
+      );
+    });
   }
 
   /// 展示天气实时数据
-  Widget _buildWeatherNowWidget(SuccessLoadMainScreenState state) {
+  Widget _buildWeatherNowWidget(RequestWeatherSuccessState state) {
     final WeatherRT weatherRT = state.weather;
     final WeatherAir weatherAir = state.weatherAir;
     final WeatherIndices weatherIndices = state.weatherIndices;
@@ -114,13 +91,12 @@ class _MainPageState extends State<MainPage> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        // _mainScreenBloc.add(RefreshMainEvent());
+        // _weatherPageBloc.add(RefreshMainEvent());
       },
       displacement: 70,
       edgeOffset: 30,
       child: LayoutBuilder(builder: (context, viewportConstrants) {
         return SingleChildScrollView(
-          controller: _controller,
           child: ConstrainedBox(
             constraints:
                 BoxConstraints(minHeight: viewportConstrants.maxHeight),
@@ -750,7 +726,7 @@ class _MainPageState extends State<MainPage> {
     return _buildErrorWidget(
       "${appLocalizations.error_failed_to_load_weather_data} $detailedDescription",
       () {
-        // _mainScreenBloc.add(RefreshMainEvent());
+        // _weatherPageBloc.add(RefreshMainEvent());
       },
       key: const Key("main_screen_failed_to_load_data_widget"),
     );
@@ -842,120 +818,5 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
-  }
-
-  ///构建标题栏
-  Widget _buildToolbar(BaiduLocation location) {
-    final String address = "${location.city} ${location.district}";
-
-    return Container(
-      key: const Key("main_screen_toolbar"),
-      color: Color.fromARGB(255, 149, 182, 226),
-      padding: EdgeInsets.only(top: 40.0),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Row(
-            key: Key('main_screen_toolbar_title'),
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                //定位地址
-                address,
-                key: const Key("main_screen_text_address"),
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.normal),
-              ),
-              Theme(
-                data: Theme.of(context).copyWith(cardColor: Colors.white),
-                child: Padding(
-                  padding: EdgeInsets.only(left: 8.0, top: 6.0),
-                  child: const Icon(
-                    Icons.location_on,
-                    color: Colors.white,
-                    size: 18.0,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            key: Key('main_screen_toolbar_menu'),
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Theme(
-                data: Theme.of(context).copyWith(cardColor: Colors.white),
-                child: PopupMenuButton<PopupMenuElement>(
-                  onSelected: (PopupMenuElement element) {
-                    _onMenuElementClicked(element, context);
-                  },
-                  icon: const Icon(
-                    Icons.more_vert,
-                    color: Colors.white,
-                  ),
-                  elevation: 1,
-                  offset: Offset(0, 50.0),
-                  itemBuilder: (BuildContext context) {
-                    return _getOverflowMenu(context)
-                        .map((PopupMenuElement element) {
-                      return PopupMenuItem<PopupMenuElement>(
-                        value: element,
-                        child: Text(
-                          element.title!,
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      );
-                    }).toList();
-                  },
-                ),
-              ),
-            ],
-          ),
-          Row(
-            key: Key('main_screen_toolbar_city'),
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Theme(
-                data: Theme.of(context).copyWith(cardColor: Colors.white),
-                child: IconButton(
-                    onPressed: () {
-                      _navigationBloc.add(CityManagePageNavigationEvent());
-                    },
-                    icon: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    )),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  ///菜单项
-  List<PopupMenuElement> _getOverflowMenu(BuildContext context) {
-    final applicationLocalization = AppLocalizations.of(context)!;
-    final List<PopupMenuElement> menuList = [];
-    menuList.add(PopupMenuElement(
-        key: const Key("menu_overflow_settings"),
-        title: applicationLocalization.settings));
-    menuList.add(PopupMenuElement(
-        key: const Key("menu_overflow_about"),
-        title: applicationLocalization.about));
-    return menuList;
-  }
-
-  ///菜单点击
-  void _onMenuElementClicked(PopupMenuElement value, BuildContext context) {
-    List<Color> startGradientColors = [];
-
-    if (value.key == const Key("menu_overflow_settings")) {
-      _navigationBloc.add(SettingsPageNavigationEvent(startGradientColors));
-    }
-    if (value.key == const Key("menu_overflow_about")) {
-      _navigationBloc.add(AboutScreenNavigationEvent(startGradientColors));
-    }
   }
 }

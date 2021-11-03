@@ -3,8 +3,8 @@ import 'dart:convert' as convert;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
-import 'package:weather/bloc/main/main_page_event.dart';
-import 'package:weather/bloc/main/main_page_state.dart';
+import 'package:weather/bloc/main/main_page_event1.dart';
+import 'package:weather/bloc/main/main_page_state1.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
@@ -16,7 +16,7 @@ import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
 import 'package:weather/utils/log_utils.dart';
 
-class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
+class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   final LocationManager _locationManager = LocationManager();
   final WeatherRemoteRepository _weatherRemoteRepository;
 
@@ -24,8 +24,8 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
   late BaiduLocation? _baiduLocation;
 
-  MainScreenBloc(this._weatherRemoteRepository, this._appLocalRepo)
-      : super(StartLocationState()) {
+  MainPageBloc(this._weatherRemoteRepository, this._appLocalRepo)
+      : super(InitLocationState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
       _baiduLocation = value;
@@ -38,16 +38,15 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   }
 
   @override
-  Stream<MainScreenState> mapEventToState(MainScreenEvent event) async* {
+  Stream<MainPageState> mapEventToState(MainPageState event) async* {
     LogUtil.d("mapEventToState..$event");
 
-    if (event is StartLocationEvent) {
-      //开始定位
+    if (event is InitLocationState) {
       yield* _mapStartLocationToState(state);
-    // } else if (event is RefreshMainEvent) {
-    //   //刷新定位
-    //   yield* _mapRefreshToState(state);
-    // } else if (event is LocationChangedEvent) {
+      // } else if (event is RefreshMainEvent) {
+      //   //刷新定位
+      //   yield* _mapRefreshToState(state);
+    } else if (event is LocationChangedEvent) {
       //定位数据变化
       yield* _mapLocationChangedToState(state);
     } else if (event is WeatherDataLoadedMainEvent) {
@@ -57,22 +56,16 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
   }
 
   ///开始定位
-  Stream<MainScreenState> _mapStartLocationToState(
-      MainScreenState state) async* {
-    LogUtil.d("_mapStartLocationToState：${state is StartLocationState}");
-    if (state is StartLocationState) {
+  Stream<MainPageState> _mapStartLocationToState(MainPageState state) async* {
+    LogUtil.d("_mapStartLocationToState：${state is InitLocationState}");
+    if (state is InitLocationState) {
+
       _locationManager.startLocation();
     }
   }
 
-  ///刷新
-  Stream<MainScreenState> _mapRefreshToState(MainScreenState state) async* {
-    _locationManager.startLocation();
-  }
-
   ///定位相关逻辑
-  Stream<MainScreenState> _mapLocationChangedToState(
-      MainScreenState state) async* {
+  Stream<MainPageState> _mapLocationChangedToState(MainPageState state) async* {
     LogUtil.e("_mapLocationChangedToState..定位数据：${_baiduLocation?.address}");
     if (_baiduLocation != null && _baiduLocation!.city != null) {
       final String json = convert.jsonEncode(_baiduLocation!.getMap());
@@ -87,7 +80,7 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     }
   }
 
-  Stream<MainScreenState> _mapWeatherToState(MainScreenState state) async* {
+  Stream<MainPageState> _mapWeatherToState(MainPageState state) async* {
     LogUtil.d("定位成功..加载天气数据~");
 
     if (state is LocationSuccessState) {
@@ -149,12 +142,5 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
     } else {
       yield const FailedLoadMainScreenState(WeatherError.locationError);
     }
-  }
-
-  @override
-  void onTransition(Transition<MainScreenEvent, MainScreenState> transition) {
-    super.onTransition(transition);
-    LogUtil.d("MainScreenBloc..$transition");
-    // print(transition);
   }
 }

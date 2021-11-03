@@ -6,14 +6,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
 import 'package:weather/bloc/city/city_search_bloc.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
+import 'package:weather/bloc/main/main_page_bloc1.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
-import 'package:weather/data/repository/local/app_local_repository.dart';
-import 'package:weather/data/repository/local/storage_manager.dart';
-import 'package:weather/data/repository/remote/heweather_api_provider.dart';
-import 'package:weather/data/repository/remote/weather_remote_repo.dart';
+import 'package:weather/bloc/weather/weather_page_bloc.dart';
 import 'package:weather/navigation/navigation_provider.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
 import 'package:weather/weather_observer.dart';
+
+import 'data/repo/local/app_local_repository.dart';
+import 'data/repo/local/storage_manager.dart';
+import 'data/repo/remote/heweather_api_provider.dart';
+import 'data/repo/remote/weather_remote_repo.dart';
 
 void main() {
   Bloc.observer = WeatherObserver();
@@ -73,9 +76,15 @@ class _WeatherAppState extends State<WeatherApp> {
             },
           ),
           //主页面
-          BlocProvider<MainScreenBloc>(
+          BlocProvider<MainPageBloc>(
             create: (context) {
-              return MainScreenBloc(_weatherRemoteRepo, _appLocalRepo);
+              return MainPageBloc(_weatherRemoteRepo, _appLocalRepo);
+            },
+          ),
+          //天气页面
+          BlocProvider<WeatherPageBloc>(
+            create: (context) {
+              return WeatherPageBloc(_weatherRemoteRepo);
             },
           ),
           //城市搜索

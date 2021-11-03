@@ -16,5 +16,3 @@ class LocationChangedEvent extends MainScreenEvent {}
 ///天气信息展示
 class WeatherDataLoadedMainEvent extends MainScreenEvent {}
 
-///下拉刷新
-class RefreshMainEvent extends MainScreenEvent {}

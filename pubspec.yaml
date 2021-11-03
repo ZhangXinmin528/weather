@@ -48,6 +48,8 @@ dependencies:
   #lottie
   lottie: ^1.2.1
 
+  loading_indicator: ^3.0.2
+
   #launching a URL
   url_launcher: ^6.0.10
 

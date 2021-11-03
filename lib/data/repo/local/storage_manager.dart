@@ -79,6 +79,30 @@ class StorageManager {
     }
   }
 
+  ///定位时间
+  Future<bool> saveLocationTime() async {
+    try {
+      final time = DateTimeUtils.getFormatedNowTimeString();
+      LogUtil.d("Save location time : $time");
+      final result = await _spUtils.setString(Ids.storageLocationTimeKey, time);
+      LogUtil.d("Saved with result: $result");
+      return result;
+    } catch (exc, stackTrace) {
+      LogUtil.e("Exception: $exc stack trace: $stackTrace");
+      return false;
+    }
+  }
+
+  Future<String?> getLocationTime() async {
+    try {
+      String? result = await _spUtils.getString(Ids.storageLocationTimeKey);
+      return result;
+    } catch (exc, stackTrace) {
+      LogUtil.e("Exception: $exc stack trace: $stackTrace");
+      return "";
+    }
+  }
+
   ///更新时间
   Future<bool> saveLastRefreshTime(int lastRefreshTime) async {
     try {

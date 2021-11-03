@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/bloc/app/app_event.dart';
 import 'package:weather/bloc/app/app_state.dart';
 import 'package:weather/data/model/internal/unit.dart';
-import 'package:weather/data/repository/local/app_local_repository.dart';
+import 'package:weather/data/repo/local/app_local_repository.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {

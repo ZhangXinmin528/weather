@@ -9,7 +9,8 @@ import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/model/remote/weather/weather_warning.dart';
-import 'package:weather/data/repository/remote/heweather_api_provider.dart';
+
+import 'heweather_api_provider.dart';
 
 class WeatherRemoteRepository {
   final HeWeatherApiProvider _weatherApiProvider;

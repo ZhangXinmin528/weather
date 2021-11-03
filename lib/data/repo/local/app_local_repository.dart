@@ -1,7 +1,7 @@
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/remote/city/city_top.dart';
-import 'package:weather/data/repository/local/storage_manager.dart';
+import 'package:weather/data/repo/local/storage_manager.dart';
 
 class AppLocalRepository {
   final StorageManager _storageManager;
