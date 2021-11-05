@@ -57,8 +57,10 @@ class DateTimeUtils {
   ///=============================获取时间间隔===============================///
 
   ///获取时间间隔
-  static String getTimeSpanByNow(int millseconds) {
-    return DateFormat(defaultFormat).formatDuration(DateTime.now());
+  static int getTimeSpanByNow(String formattedString) {
+    final preDateTime = DateTime.parse(formattedString);
+    final int minutes = DateTime.now().difference(preDateTime).inMinutes;
+    return minutes;
   }
 
   ///格式化时间：12：00

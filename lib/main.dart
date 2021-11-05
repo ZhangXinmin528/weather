@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
 import 'package:weather/bloc/city/city_search_bloc.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
-import 'package:weather/bloc/main/main_page_bloc1.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/weather/weather_page_bloc.dart';
 import 'package:weather/navigation/navigation_provider.dart';

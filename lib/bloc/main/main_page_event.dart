@@ -1,18 +1,17 @@
 import 'package:equatable/equatable.dart';
 
-abstract class MainScreenEvent extends Equatable {
-  const MainScreenEvent();
+abstract class MainPageEvent extends Equatable {
+  const MainPageEvent();
 
   @override
   List<Object?> get props => [];
 }
 
 ///开始定位
-class StartLocationEvent extends MainScreenEvent {}
+class RequestLocationEvent extends MainPageEvent {}
 
 ///定位改变
-class LocationChangedEvent extends MainScreenEvent {}
+class LocationChangedEvent extends MainPageEvent {}
 
-///天气信息展示
-class WeatherDataLoadedMainEvent extends MainScreenEvent {}
-
+///添加天气信息展示
+class AddWeatherTabToMainEvent extends MainPageEvent {}

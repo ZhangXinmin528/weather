@@ -71,6 +71,7 @@ class _CityManangePageState extends State<CityManagementPage> {
                   child: TextButton.icon(
                       onPressed: () {
                         _navigationBloc.add(CitySearchPageNavigationEvent());
+                        Navigator.of(context).pop();
                       },
                       style: ButtonStyle(
                           overlayColor:

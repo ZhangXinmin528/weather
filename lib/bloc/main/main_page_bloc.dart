@@ -5,18 +5,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
+import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/data/model/remote/weather/weather_air.dart';
-import 'package:weather/data/model/remote/weather/weather_daily.dart';
-import 'package:weather/data/model/remote/weather/weather_hour.dart';
-import 'package:weather/data/model/remote/weather/weather_indices.dart';
-import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/local/app_local_repository.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
+import 'package:weather/ui/weather/weather_page.dart';
+import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
-class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
+class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   final LocationManager _locationManager = LocationManager();
   final WeatherRemoteRepository _weatherRemoteRepository;
 
@@ -24,137 +22,118 @@ class MainScreenBloc extends Bloc<MainScreenEvent, MainScreenState> {
 
   late BaiduLocation? _baiduLocation;
 
-  MainScreenBloc(this._weatherRemoteRepository, this._appLocalRepo)
-      : super(StartLocationState()) {
+  final List<TabElement> tabList = [];
+
+  MainPageBloc(this._weatherRemoteRepository, this._appLocalRepo)
+      : super(InitLocationState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
       _baiduLocation = value;
-      Future.delayed(Duration(seconds: 1), () {
-        add(LocationChangedEvent());
-      });
-      _locationManager.stopLocation();
+      if (_baiduLocation != null && _baiduLocation!.city!.isNotEmpty) {
+        Future.delayed(Duration(seconds: 1), () {
+          add(LocationChangedEvent());
+        });
+        _locationManager.stopLocation();
+        final String json = convert.jsonEncode(_baiduLocation!.getMap());
+        _appLocalRepo.saveLocation(json);
+        _appLocalRepo.saveLocationTime();
+      }
       LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
     });
   }
 
   @override
-  Stream<MainScreenState> mapEventToState(MainScreenEvent event) async* {
+  Stream<MainPageState> mapEventToState(MainPageEvent event) async* {
     LogUtil.d("mapEventToState..$event");
 
-    if (event is StartLocationEvent) {
-      //开始定位
+    if (event is RequestLocationEvent) {
       yield* _mapStartLocationToState(state);
-    // } else if (event is RefreshMainEvent) {
-    //   //刷新定位
-    //   yield* _mapRefreshToState(state);
-    // } else if (event is LocationChangedEvent) {
+      // } else if (event is RefreshMainEvent) {
+      //   //刷新定位
+      //   yield* _mapRefreshToState(state);
+    } else if (event is LocationChangedEvent) {
       //定位数据变化
       yield* _mapLocationChangedToState(state);
-    } else if (event is WeatherDataLoadedMainEvent) {
-      //请求天气数据
-      yield* _mapWeatherToState(state);
+    } else if (event is AddWeatherTabToMainEvent) {
+      //添加天气tab
+      yield* _mapAddWeatherTabToState(state);
     }
   }
 
   ///开始定位
-  Stream<MainScreenState> _mapStartLocationToState(
-      MainScreenState state) async* {
-    LogUtil.d("_mapStartLocationToState：${state is StartLocationState}");
-    if (state is StartLocationState) {
-      _locationManager.startLocation();
+  Stream<MainPageState> _mapStartLocationToState(MainPageState state) async* {
+    LogUtil.d("_mapStartLocationToState()~");
+    if (state is InitLocationState) {
+      final time = await _appLocalRepo.getLocationTime();
+      if (time != null && time.isNotEmpty) {
+        final int span = DateTimeUtils.getTimeSpanByNow(time);
+        LogUtil.d("location.. span:：$span..time:$time");
+        if (span > 5) {
+          _locationManager.startLocation();
+        } else {
+          _baiduLocation = await _appLocalRepo.getLocation();
+          if (_baiduLocation != null && _baiduLocation!.city != null) {
+            Future.delayed(Duration(seconds: 1), () {
+              add(LocationChangedEvent());
+            });
+          } else {
+            _locationManager.startLocation();
+          }
+        }
+      } else {
+        _locationManager.startLocation();
+      }
     }
-  }
-
-  ///刷新
-  Stream<MainScreenState> _mapRefreshToState(MainScreenState state) async* {
-    _locationManager.startLocation();
   }
 
   ///定位相关逻辑
-  Stream<MainScreenState> _mapLocationChangedToState(
-      MainScreenState state) async* {
+  Stream<MainPageState> _mapLocationChangedToState(MainPageState state) async* {
     LogUtil.e("_mapLocationChangedToState..定位数据：${_baiduLocation?.address}");
     if (_baiduLocation != null && _baiduLocation!.city != null) {
-      final String json = convert.jsonEncode(_baiduLocation!.getMap());
-      _appLocalRepo.saveLocation(json);
-      //定位成功
       yield LocationSuccessState();
-      add(WeatherDataLoadedMainEvent());
+      add(AddWeatherTabToMainEvent());
     } else {
       LogUtil.e("定位回调了..定位失败~");
       //定位失败
-      yield FailedLoadMainScreenState(WeatherError.locationError);
+      yield FailedLoadMainPageState(WeatherError.locationError);
     }
   }
 
-  Stream<MainScreenState> _mapWeatherToState(MainScreenState state) async* {
-    LogUtil.d("定位成功..加载天气数据~");
-
+  Stream<MainPageState> _mapAddWeatherTabToState(MainPageState state) async* {
     if (state is LocationSuccessState) {
-      if (_baiduLocation != null) {
-        //获取天气信息
-        final WeatherRT weatherNow =
-            await _weatherRemoteRepository.requestWeatherNow(
-                _baiduLocation!.longitude, _baiduLocation!.latitude);
+      if (_baiduLocation != null && _baiduLocation!.city != null) {
+        LogUtil.d("_mapAddWeatherTabToState()..定位成功~");
+        final String name =
+            "${_baiduLocation!.city} ${_baiduLocation?.district}";
+        //定位成功
 
-        //实时空气质量
-        final WeatherAir weatherAir = await _weatherRemoteRepository
-            .requestAirNow(_baiduLocation!.longitude, _baiduLocation!.latitude);
+        tabList.add(generateTab(
+            name, _baiduLocation!.latitude!, _baiduLocation!.longitude!));
 
-        //24H
-        final WeatherHour weatherHour =
-            await _weatherRemoteRepository.requestWeather24H(
-                _baiduLocation!.longitude, _baiduLocation!.latitude);
-
-        //7D
-        final WeatherDaily weatherDaily =
-            await _weatherRemoteRepository.requestWether7D(
-                _baiduLocation!.longitude, _baiduLocation!.latitude);
-
-        //当天天气指数
-        final WeatherIndices weatherIndices =
-            await _weatherRemoteRepository.requestIndices1D(
-                _baiduLocation!.longitude, _baiduLocation!.latitude);
-
-        //极端天气预警
-        // final WeatherWarning warning =
-        //     await _weatherRemoteRepository.requestWarningNow(
-        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
-
-        //空气质量预报
-        // final AirDaily airDaily = await _weatherRemoteRepository.requestAir5D(
-        //     _baiduLocation!.longitude, _baiduLocation!.latitude);
-
-        //日出日落
-        // final AstronomySun sun =
-        //     await _weatherRemoteRepository.requestAstronomySun(
-        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
-
-        //月升月落
-        // final AstronomyMoon moon =
-        //     await _weatherRemoteRepository.requestAstronomyMoon(
-        //         _baiduLocation!.longitude, _baiduLocation!.latitude);
-
-        if (weatherNow != null) {
-          if (weatherNow.code != "200") {
-            yield FailedLoadMainScreenState(WeatherError.data_not_available);
-          } else {
-            yield SuccessLoadMainScreenState(weatherNow, weatherAir,
-                weatherDaily, weatherHour, weatherIndices, _baiduLocation!);
-          }
-        } else {
-          yield const FailedLoadMainScreenState(WeatherError.connectionError);
-        }
+        yield AddWeatherTabState(tabList);
       }
-    } else {
-      yield const FailedLoadMainScreenState(WeatherError.locationError);
+    } else if (state is AddSelectedCityToTabState) {
+      LogUtil.d("_mapAddWeatherTabToState()..添加搜索城市~");
+
+      tabList.add(generateTab(
+          state.city, double.parse(state.lat), double.parse(state.lon)));
+
+      yield AddWeatherTabState(tabList);
     }
   }
 
   @override
-  void onTransition(Transition<MainScreenEvent, MainScreenState> transition) {
+  void onTransition(Transition<MainPageEvent, MainPageState> transition) {
     super.onTransition(transition);
-    LogUtil.d("MainScreenBloc..$transition");
-    // print(transition);
+    LogUtil.d("天气主页面..onTransition:$transition");
+  }
+
+  TabElement generateTab(String name, double latitude, double longitude) {
+    final CityElement cityElement = CityElement(name, latitude, longitude);
+
+    final WeatherPage weatherPage = WeatherPage(cityElement);
+
+    final TabElement tab = TabElement(name, cityElement, weatherPage);
+    return tab;
   }
 }

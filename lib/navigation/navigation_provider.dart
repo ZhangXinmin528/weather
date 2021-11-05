@@ -4,7 +4,7 @@ import 'package:weather/resources/config/navigation_path.dart';
 import 'package:weather/ui/about/about_page.dart';
 import 'package:weather/ui/city/city_manage_page.dart';
 import 'package:weather/ui/city/city_search_page.dart';
-import 'package:weather/ui/main/main_page1.dart';
+import 'package:weather/ui/main/main_page.dart';
 
 ///应用导航器:定义导航路由
 class NavigationProvider {
@@ -12,7 +12,7 @@ class NavigationProvider {
 
   ///主页
   final _mainScreenHandler = Handler(handlerFunc: (context, params) {
-    return const MainPage1();
+    return const MainPage();
   });
 
   ///关于
@@ -47,7 +47,7 @@ class NavigationProvider {
       natigatorKey.currentState!.context,
       path,
       routeSettings: routeSettings,
-      transition: TransitionType.material,
+      transition: TransitionType.fadeIn,
       transitionDuration: const Duration(milliseconds: 300),
     );
   }

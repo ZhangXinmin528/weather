@@ -3,6 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/bloc/city/city_search_bloc.dart';
 import 'package:weather/bloc/city/city_search_event.dart';
 import 'package:weather/bloc/city/city_search_state.dart';
+import 'package:weather/bloc/main/main_page_bloc.dart';
+import 'package:weather/bloc/main/main_page_event.dart';
+import 'package:weather/bloc/main/main_page_state.dart';
+import 'package:weather/bloc/navigation/navigation_bloc.dart';
+import 'package:weather/bloc/navigation/navigation_event.dart';
 
 class CitySearchPage extends StatefulWidget {
   @override
@@ -13,14 +18,22 @@ class CitySearchPage extends StatefulWidget {
 
 class CitySearchPageState extends State<CitySearchPage> {
   late CitySearchBloc _citySearchBloc;
+  late MainPageBloc _mainPageBloc;
+  late NavigationBloc _navigationBloc;
   late TextEditingController _editingController;
   bool visible = false;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _citySearchBloc = BlocProvider.of(context);
     _citySearchBloc.add(TopCityEvent());
+    _citySearchBloc.emit(TopCitiesInitDataState());
+
+    _mainPageBloc = BlocProvider.of(context);
+
+    _navigationBloc = BlocProvider.of(context);
 
     _editingController = TextEditingController();
     _editingController.addListener(() {
@@ -78,10 +91,12 @@ class CitySearchPageState extends State<CitySearchPage> {
             ),
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.search,
+            focusNode: _focusNode,
             onEditingComplete: () {
               final text = _editingController.text;
               if (text.isNotEmpty) {
                 _citySearchBloc.add(CityLookupEvent(text));
+                _focusNode.unfocus();
               } else {
                 final snackBar = SnackBar(
                     content: Text(
@@ -89,7 +104,6 @@ class CitySearchPageState extends State<CitySearchPage> {
                   style: TextStyle(color: Colors.red),
                 ));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                // SnackBar(content: content)
               }
             },
             autofocus: false,
@@ -108,6 +122,7 @@ class CitySearchPageState extends State<CitySearchPage> {
               ),
             ),
             onTap: () {
+              _navigationBloc.add(CityManagePageNavigationEvent());
               Navigator.pop(context);
             },
           )
@@ -174,7 +189,10 @@ class CitySearchPageState extends State<CitySearchPage> {
                 ),
               ),
               onTap: () {
-                //点击事件
+                _mainPageBloc.add(AddWeatherTabToMainEvent());
+                _mainPageBloc.emit(
+                    AddSelectedCityToTabState(city.name, city.lat, city.lon));
+                Navigator.of(context).pop();
               },
             );
           },
@@ -205,7 +223,10 @@ class CitySearchPageState extends State<CitySearchPage> {
               ),
             ),
             onTap: () {
-              print("点击了$index");
+              _mainPageBloc.add(AddWeatherTabToMainEvent());
+              _mainPageBloc.emit(AddSelectedCityToTabState(
+                  location.name, location.lat, location.lon));
+              Navigator.of(context).pop();
             },
           );
         },

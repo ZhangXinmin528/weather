@@ -57,7 +57,7 @@ class StorageManager {
     try {
       LogUtil.d("Save location: $location");
       final result = await _spUtils.setString(Ids.storageLocationKey, location);
-      LogUtil.d("Saved with result: $result");
+      LogUtil.d("Saved location with result: $result");
       return result;
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");
@@ -69,8 +69,10 @@ class StorageManager {
     BaiduLocation? location;
     try {
       String? result = await _spUtils.getString(Ids.storageLocationKey);
+      LogUtil.d("getLocation:：$result");
       if (result != null && result.isNotEmpty) {
-        location = BaiduLocation.fromMap(result);
+        final map = convert.jsonDecode(result);
+        location = BaiduLocation.fromMap(map);
       }
       return location;
     } catch (exc, stackTrace) {
@@ -85,7 +87,7 @@ class StorageManager {
       final time = DateTimeUtils.getFormatedNowTimeString();
       LogUtil.d("Save location time : $time");
       final result = await _spUtils.setString(Ids.storageLocationTimeKey, time);
-      LogUtil.d("Saved with result: $result");
+      LogUtil.d("Saved location time with result: $result");
       return result;
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");
@@ -109,7 +111,7 @@ class StorageManager {
       LogUtil.d("Save refresh time: $lastRefreshTime");
       final result =
           await _spUtils.setInt(Ids.storageLastRefreshTimeKey, lastRefreshTime);
-      LogUtil.d("Saved with result: $result");
+      LogUtil.d("Saved refresh time with result: $result");
       return result;
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");
@@ -136,7 +138,7 @@ class StorageManager {
     try {
       LogUtil.d("Save top cities: $cities");
       final result = await _spUtils.setString(Ids.storageTopCitiesKey, cities);
-      LogUtil.d("Saved top cities: $result");
+      LogUtil.d("Saved top cities top cities: $result");
       return result;
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");

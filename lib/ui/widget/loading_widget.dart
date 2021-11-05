@@ -8,12 +8,21 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 200),
+      margin: EdgeInsets.only(top: 160),
+      padding: EdgeInsets.all(26.0),
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      ),
       alignment: Alignment.topCenter,
+      width: 80,
+      height: 80,
       child: LoadingIndicator(
-        indicatorType: Indicator.ballClipRotateMultiple,
+        indicatorType: Indicator.ballClipRotate,
         strokeWidth: 2,
-        colors: [Colors.white, Colors.lightBlueAccent],
+        colors: [
+          Colors.white,
+        ],
       ),
     );
   }

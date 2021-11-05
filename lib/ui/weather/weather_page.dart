@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:lottie/lottie.dart';
-import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/weather/weather_page_bloc.dart';
 import 'package:weather/bloc/weather/weather_page_event.dart';
 import 'package:weather/bloc/weather/weather_page_state.dart';
+import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
@@ -16,34 +16,38 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview_page.dart';
-import 'package:weather/ui/widget/application_colors.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
-import 'package:weather/ui/widget/widget_helper.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
 ///各个城市天气主页
 class WeatherPage extends StatefulWidget {
-  const WeatherPage({Key? key}) : super(key: key);
+  final CityElement _cityElement;
+
+  WeatherPage(this._cityElement, {Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _WeatherPageState();
+    return _WeatherPageState(_cityElement);
   }
 }
 
 class _WeatherPageState extends State<WeatherPage> {
   late WeatherPageBloc _weatherPageBloc;
   late NavigationBloc _navigationBloc;
+  final CityElement _cityElement;
+
+  _WeatherPageState(this._cityElement);
 
   @override
   void initState() {
     super.initState();
-
+    LogUtil.d("WeatherPage..initState()..city:${_cityElement.name}~");
     _weatherPageBloc = BlocProvider.of(context);
     //开始请求天气
-    _weatherPageBloc.add(InitWeatherPageEvent());
+    _weatherPageBloc.add(InitWeatherPageEvent(_cityElement));
+    _weatherPageBloc.emit(StartReuestWeatherState());
 
     _navigationBloc = BlocProvider.of(context);
   }
@@ -58,15 +62,15 @@ class _WeatherPageState extends State<WeatherPage> {
     return BlocBuilder<WeatherPageBloc, WeatherPageState>(
         builder: (context, state) {
       return Stack(
+        alignment: Alignment.topCenter,
         children: [
           if (state is StartReuestWeatherState) ...[
+            // _buildLightBackground(),
             //开始定位
-            _buildLightBackground(),
             const LoadingWidget(),
           ] else if (state is RequestWeatherSuccessState) ...[
             _buildWeatherNowWidget(state),
           ] else ...[
-            _buildLightBackground(),
             if (state is RequestWeatherFailedState)
               _buildFailedToLoadDataWidget(state.error)
             else
@@ -79,6 +83,8 @@ class _WeatherPageState extends State<WeatherPage> {
 
   /// 展示天气实时数据
   Widget _buildWeatherNowWidget(RequestWeatherSuccessState state) {
+    LogUtil.d(
+        "WeatherPage.._buildWeatherNowWidget()..city:${_cityElement.name}~");
     final WeatherRT weatherRT = state.weather;
     final WeatherAir weatherAir = state.weatherAir;
     final WeatherIndices weatherIndices = state.weatherIndices;
@@ -420,6 +426,7 @@ class _WeatherPageState extends State<WeatherPage> {
             padding: EdgeInsets.all(10),
             child: GridView.builder(
               shrinkWrap: true,
+              padding: EdgeInsets.all(4),
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
@@ -517,6 +524,7 @@ class _WeatherPageState extends State<WeatherPage> {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
+              padding: EdgeInsets.only(top: 0.0),
               itemBuilder: (conteext, index) {
                 final daily = weatherDaily.daily[index];
 
@@ -759,7 +767,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   ///随天气变化背景
-  Widget _buildWeatherChangedBg(SuccessLoadMainScreenState state) {
+  Widget _buildWeatherChangedBg(RequestWeatherSuccessState state) {
     final hour = DateTime.now().hour;
     var icon = state.weather.now.icon;
     String bgSufix = "";

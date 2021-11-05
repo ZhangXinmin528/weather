@@ -1,24 +1,16 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_bmflocation/flutter_baidu_location.dart';
-import 'package:weather/data/model/internal/unit.dart';
+import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/data/model/remote/weather/weather_air.dart';
-import 'package:weather/data/model/remote/weather/weather_daily.dart';
-import 'package:weather/data/model/remote/weather/weather_hour.dart';
-import 'package:weather/data/model/remote/weather/weather_indices.dart';
-import 'package:weather/data/model/remote/weather/weather_now.dart';
 
-class MainScreenState extends Equatable {
-  final Unit? unit;
-
-  const MainScreenState({this.unit});
+class MainPageState extends Equatable {
+  const MainPageState();
 
   @override
-  List<Object?> get props => [unit];
+  List<Object?> get props => [];
 }
 
-///开始定位
-class StartLocationState extends MainScreenState {}
+///定位信息获取
+class InitLocationState extends MainPageState {}
 
 ///定位失败
 // class LocationFaliedState extends MainScreenState {
@@ -31,35 +23,36 @@ class StartLocationState extends MainScreenState {}
 // }
 
 ///定位成功
-class LocationSuccessState extends MainScreenState {}
+class LocationSuccessState extends MainPageState {}
 
-///加载主屏幕
-class LoadingMainScreenState extends MainScreenState {}
+///添加主屏幕tab
+class AddWeatherTabState extends MainPageState {
+  final List<TabElement> tabList;
 
-///主屏幕数据加载成功
-class SuccessLoadMainScreenState extends MainScreenState {
-  final WeatherRT weather;
-  final WeatherAir weatherAir;
-  final WeatherDaily weatherDaily;
-  final WeatherIndices weatherIndices;
-  final WeatherHour weatherHour;
-
-  final BaiduLocation location;
-
-  SuccessLoadMainScreenState(this.weather, this.weatherAir, this.weatherDaily,
-      this.weatherHour, this.weatherIndices, this.location);
+  AddWeatherTabState(this.tabList);
 
   @override
-  List<Object?> get props =>
-      [weather, weatherAir, weatherDaily, location, unit];
+  List<Object?> get props => [tabList];
+}
+
+///添加搜素城市到主屏幕tab
+class AddSelectedCityToTabState extends MainPageState {
+  final String city;
+  final String lat;
+  final String lon;
+
+  AddSelectedCityToTabState(this.city, this.lat, this.lon);
+
+  @override
+  List<Object?> get props => [city, lat, lon];
 }
 
 ///主页面加载天气失败
-class FailedLoadMainScreenState extends MainScreenState {
+class FailedLoadMainPageState extends MainPageState {
   final WeatherError error;
 
-  const FailedLoadMainScreenState(this.error);
+  const FailedLoadMainPageState(this.error);
 
   @override
-  List<Object?> get props => [unit, error];
+  List<Object?> get props => [error];
 }

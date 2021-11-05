@@ -8,6 +8,7 @@ import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
   final WeatherRemoteRepository _weatherRemoteRepository;
@@ -18,14 +19,16 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
   @override
   Stream<WeatherPageState> mapEventToState(WeatherPageEvent event) async* {
     if (event is InitWeatherPageEvent) {
-      yield* _mapInitWeatherEventToState(state);
+      yield* _mapInitWeatherEventToState(event, state);
     }
   }
 
   Stream<WeatherPageState> _mapInitWeatherEventToState(
-      WeatherPageState state) async* {
-    final latitude = 39.918049;
-    final longitude = 116.289024;
+      InitWeatherPageEvent event, WeatherPageState state) async* {
+    LogUtil.d(
+        "WeatherPageBloc.._mapInitWeatherEventToState()..city:${event.cityElement.name}~");
+    final latitude = event.cityElement.latitude;
+    final longitude = event.cityElement.longitude;
     //开始请求天气数据
     if (state is StartReuestWeatherState) {
       //获取天气信息
@@ -78,5 +81,11 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
         yield const RequestWeatherFailedState(WeatherError.connectionError);
       }
     }
+  }
+
+  @override
+  void onTransition(Transition<WeatherPageEvent, WeatherPageState> transition) {
+    super.onTransition(transition);
+    LogUtil.d("天气tab页面..onTransition:$transition");
   }
 }

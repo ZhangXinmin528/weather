@@ -26,6 +26,15 @@ class AppLocalRepository {
     _storageManager.saveLocation(location);
   }
 
+  ///定位保存时间
+  Future<String?> getLocationTime() async {
+    return _storageManager.getLocationTime();
+  }
+
+  void saveLocationTime() {
+    _storageManager.saveLocationTime();
+  }
+
   ///更新时间
   Future<int> getLastRefreshTime() {
     return _storageManager.getLastRefreshTime();
@@ -40,7 +49,7 @@ class AppLocalRepository {
     _storageManager.saveTopCities(cities);
   }
 
-  Future<CityTop?> getTopCities() async{
+  Future<CityTop?> getTopCities() async {
     return await _storageManager.getTopCities();
   }
 }
