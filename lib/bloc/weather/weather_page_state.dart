@@ -7,7 +7,6 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 
 class WeatherPageState extends Equatable {
-
   const WeatherPageState();
 
   @override
@@ -15,8 +14,7 @@ class WeatherPageState extends Equatable {
 }
 
 ///开始请求天气数据
-class StartReuestWeatherState extends WeatherPageState {
-}
+class StartReuestWeatherState extends WeatherPageState {}
 
 ///天气数据请求成功
 class RequestWeatherSuccessState extends WeatherPageState {

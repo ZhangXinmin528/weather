@@ -5,4 +5,5 @@ class Ids {
   static const String storageUnitKey = "weather_unit";
   static const String storageLastRefreshTimeKey = "last_refresh_time";
   static const String storageTopCitiesKey = "top_cities";
+  static const String storageCityListKey = "city_manage_list";
 }

@@ -7,6 +7,9 @@ abstract class MainPageEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+///加载已添加城市列表
+class LoadCityListEvent extends MainPageEvent {}
+
 ///开始定位
 class RequestLocationEvent extends MainPageEvent {}
 

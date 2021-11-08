@@ -1,6 +1,7 @@
 import 'dart:convert' as convert;
 
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
+import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/remote/city/city_top.dart';
 import 'package:weather/resources/config/ids.dart';
@@ -138,7 +139,7 @@ class StorageManager {
     try {
       LogUtil.d("Save top cities: $cities");
       final result = await _spUtils.setString(Ids.storageTopCitiesKey, cities);
-      LogUtil.d("Saved top cities top cities: $result");
+      LogUtil.d("Saved top cities: $result");
       return result;
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");
@@ -157,6 +158,41 @@ class StorageManager {
     } catch (exc, stackTrace) {
       LogUtil.e("Exception: $exc stack trace: $stackTrace");
       return cityTop;
+    }
+  }
+
+  ///城市列表
+  Future<bool> saveCityList(List<TabElement> tabList) async {
+    try {
+      final Map<String, dynamic> map = Map();
+      map['cityList'] = tabList.map((e) => e.toJson()).toList();
+
+      final json = convert.jsonEncode(map);
+      LogUtil.d("Save city list: ${json}");
+      final result = await _spUtils.setString(Ids.storageCityListKey, json);
+      LogUtil.d("Saved city list: $result");
+      return result;
+    } catch (exc, stackTrace) {
+      LogUtil.e("Exception: $exc stack trace: $stackTrace");
+      return false;
+    }
+  }
+
+  Future<List<TabElement>?> getCityList() async {
+    List<TabElement>? tabList;
+    try {
+      String? cities = await _spUtils.getString(Ids.storageCityListKey);
+      if (cities != null && cities.isNotEmpty) {
+        final map = convert.jsonDecode(cities);
+        tabList = (map['cityList'] as List<dynamic>)
+            .map((e) => TabElement.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+      LogUtil.d("getCityList()..size: ${tabList?.length}");
+      return tabList;
+    } catch (exc, stackTrace) {
+      LogUtil.e("Exception: $exc stack trace: $stackTrace");
+      return tabList;
     }
   }
 }

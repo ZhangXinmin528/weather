@@ -1,4 +1,5 @@
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
+import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/unit.dart';
 import 'package:weather/data/model/remote/city/city_top.dart';
 import 'package:weather/data/repo/local/storage_manager.dart';
@@ -51,5 +52,14 @@ class AppLocalRepository {
 
   Future<CityTop?> getTopCities() async {
     return await _storageManager.getTopCities();
+  }
+
+  ///管理城市列表
+  void saveCityList(List<TabElement> cities) {
+    _storageManager.saveCityList(cities);
+  }
+
+  Future<List<TabElement>?> getCityList() async {
+    return await _storageManager.getCityList();
   }
 }

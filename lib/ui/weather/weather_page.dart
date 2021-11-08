@@ -67,7 +67,7 @@ class _WeatherPageState extends State<WeatherPage> {
           if (state is StartReuestWeatherState) ...[
             // _buildLightBackground(),
             //开始定位
-            const LoadingWidget(),
+            // const LoadingWidget(),
           ] else if (state is RequestWeatherSuccessState) ...[
             _buildWeatherNowWidget(state),
           ] else ...[

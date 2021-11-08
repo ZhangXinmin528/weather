@@ -9,6 +9,9 @@ class MainPageState extends Equatable {
   List<Object?> get props => [];
 }
 
+///加载城市列表
+class LoadCityListState extends MainPageState {}
+
 ///定位信息获取
 class InitLocationState extends MainPageState {}
 
@@ -28,11 +31,12 @@ class LocationSuccessState extends MainPageState {}
 ///添加主屏幕tab
 class AddWeatherTabState extends MainPageState {
   final List<TabElement> tabList;
+  final bool isInit;
 
-  AddWeatherTabState(this.tabList);
+  AddWeatherTabState(this.isInit, this.tabList);
 
   @override
-  List<Object?> get props => [tabList];
+  List<Object?> get props => [isInit, tabList];
 }
 
 ///添加搜素城市到主屏幕tab

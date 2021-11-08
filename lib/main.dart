@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
+import 'package:weather/bloc/city/city_manage_bloc.dart';
 import 'package:weather/bloc/city/city_search_bloc.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
@@ -84,6 +85,12 @@ class _WeatherAppState extends State<WeatherApp> {
           BlocProvider<WeatherPageBloc>(
             create: (context) {
               return WeatherPageBloc(_weatherRemoteRepo);
+            },
+          ),
+          //城市搜索
+          BlocProvider<CityManageBloc>(
+            create: (context) {
+              return CityManageBloc(_appLocalRepo);
             },
           ),
           //城市搜索

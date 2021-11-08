@@ -25,6 +25,7 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
 
   Stream<WeatherPageState> _mapInitWeatherEventToState(
       InitWeatherPageEvent event, WeatherPageState state) async* {
+    ///TODO:缓存某城市天气数据，key = lat&lon;
     LogUtil.d(
         "WeatherPageBloc.._mapInitWeatherEventToState()..city:${event.cityElement.name}~");
     final latitude = event.cityElement.latitude;

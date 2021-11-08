@@ -11,6 +11,7 @@ import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
+import 'package:weather/ui/weather/weather_page.dart';
 import 'package:weather/ui/widget/application_colors.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
 import 'package:weather/ui/widget/widget_helper.dart';
@@ -37,6 +38,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   final List<TabElement> tabList = [];
   late String currentCity = "";
   late PageController _pageController;
+  late int selectedIndex = 0;
 
   @override
   void initState() {
@@ -45,8 +47,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     _appBloc.add(LoadSettingsAppEvent());
 
     _mainPageBloc = BlocProvider.of(context);
-    //开始定位
-    _mainPageBloc.add(RequestLocationEvent());
+    _mainPageBloc.add(LoadCityListEvent());
 
     _navigationBloc = BlocProvider.of(context);
 
@@ -80,13 +81,14 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 tabList.clear();
                 tabList.addAll(tabs);
                 int index = 0;
-                if (tabList.length > 1) {
+                if (tabList.length > 1 && !state.isInit) {
                   index = tabList.length - 1;
                 } else {
                   index = 0;
                 }
-                _pageController.animateToPage(index,
-                    duration: Duration(seconds: 1), curve: Curves.ease);
+                if (index != 0)
+                  _pageController.animateToPage(index,
+                      duration: Duration(seconds: 1), curve: Curves.ease);
               });
             }
           }
@@ -115,11 +117,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       children: [
         PageView.builder(
           itemBuilder: (context, index) {
-            return tabList[index].weatherPage;
+            return WeatherPage(tabList[index].cityElement);
           },
           onPageChanged: (index) {
             setState(() {
               currentCity = tabList[index].title;
+              selectedIndex = index;
             });
           },
           reverse: false,
@@ -128,7 +131,33 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           scrollDirection: Axis.horizontal,
           controller: _pageController,
         ),
-        // _buildPageViewIndicator(),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List<Widget>.generate(
+                tabList.length,
+                (index) {
+                  return Container(
+                    width: 10.0,
+                    height: 10.0,
+                    margin: const EdgeInsets.all(4.0),
+                    decoration: BoxDecoration(
+                      color: index == selectedIndex
+                          ? Color.fromARGB(255, 149, 182, 226)
+                          : Colors.black38,
+                      shape: BoxShape.circle,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        )
       ],
     );
   }
@@ -139,15 +168,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       visible: loadingVisiable,
     );
   }
-
-  // Widget _buildPageViewIndicator() {
-  //   return TabPageSelector(
-  //     controller: _pageController,
-  //     color: Colors.white,
-  //     indicatorSize: 10,
-  //     selectedColor: Colors.grey,
-  //   );
-  // }
 
   ///失败页面
   Widget _buildFailedToLoadDataWidget(WeatherError error) {
@@ -255,9 +275,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   ///构建标题栏
   Widget _buildToolbar() {
-    if (currentCity == null || currentCity.isEmpty) {
-      currentCity = AppLocalizations.of(context)!.app_name;
-    }
     return Container(
       key: const Key("main_screen_toolbar"),
       color: Color.fromARGB(255, 149, 182, 226),

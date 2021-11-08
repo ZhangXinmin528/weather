@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-class CityManageEvent extends Equatable {
+abstract class CityManageEvent extends Equatable {}
+
+///初始化城市列表
+class InitCityListEvent extends CityManageEvent {
   @override
   List<Object?> get props => [];
 }

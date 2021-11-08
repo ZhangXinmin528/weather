@@ -10,7 +10,6 @@ import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/repo/local/app_local_repository.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
-import 'package:weather/ui/weather/weather_page.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
@@ -25,7 +24,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   final List<TabElement> tabList = [];
 
   MainPageBloc(this._weatherRemoteRepository, this._appLocalRepo)
-      : super(InitLocationState()) {
+      : super(LoadCityListState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
       _baiduLocation = value;
@@ -46,17 +45,32 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   Stream<MainPageState> mapEventToState(MainPageEvent event) async* {
     LogUtil.d("mapEventToState..$event");
 
-    if (event is RequestLocationEvent) {
+    if (event is LoadCityListEvent) {
+      //加载城市列表
+      yield* _mapLoadCityListToState(state);
+    } else if (event is RequestLocationEvent) {
+      //定位相关
       yield* _mapStartLocationToState(state);
-      // } else if (event is RefreshMainEvent) {
-      //   //刷新定位
-      //   yield* _mapRefreshToState(state);
     } else if (event is LocationChangedEvent) {
       //定位数据变化
       yield* _mapLocationChangedToState(state);
     } else if (event is AddWeatherTabToMainEvent) {
       //添加天气tab
       yield* _mapAddWeatherTabToState(state);
+    }
+  }
+
+  Stream<MainPageState> _mapLoadCityListToState(MainPageState state) async* {
+    if (state is LoadCityListState) {
+      final List<TabElement>? tabs = await _appLocalRepo.getCityList();
+      if (tabs != null && tabs.isNotEmpty) {
+        tabList.addAll(tabs);
+        LogUtil.d("MainPageBloc..city list size:${tabs.length}");
+        yield AddWeatherTabState(true, tabList);
+      } else {
+        yield InitLocationState();
+        add(RequestLocationEvent());
+      }
     }
   }
 
@@ -107,18 +121,26 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
             "${_baiduLocation!.city} ${_baiduLocation?.district}";
         //定位成功
 
-        tabList.add(generateTab(
-            name, _baiduLocation!.latitude!, _baiduLocation!.longitude!));
+        final TabElement tabElement = generateTab(
+            name, _baiduLocation!.latitude!, _baiduLocation!.longitude!);
+        if (!containCity(tabElement.cityElement)) {
+          tabList.add(tabElement);
+          _appLocalRepo.saveCityList(tabList);
+        }
 
-        yield AddWeatherTabState(tabList);
+        yield AddWeatherTabState(false, tabList);
       }
     } else if (state is AddSelectedCityToTabState) {
       LogUtil.d("_mapAddWeatherTabToState()..添加搜索城市~");
 
-      tabList.add(generateTab(
-          state.city, double.parse(state.lat), double.parse(state.lon)));
+      final TabElement tabElement = generateTab(
+          state.city, double.parse(state.lat), double.parse(state.lon));
+      if (!containCity(tabElement.cityElement)) {
+        tabList.add(tabElement);
+        _appLocalRepo.saveCityList(tabList);
+      }
 
-      yield AddWeatherTabState(tabList);
+      yield AddWeatherTabState(false, tabList);
     }
   }
 
@@ -129,11 +151,20 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   }
 
   TabElement generateTab(String name, double latitude, double longitude) {
-    final CityElement cityElement = CityElement(name, latitude, longitude);
-
-    final WeatherPage weatherPage = WeatherPage(cityElement);
-
-    final TabElement tab = TabElement(name, cityElement, weatherPage);
+    final String key = "$latitude&$longitude";
+    final CityElement cityElement = CityElement(
+        key: key, name: name, latitude: latitude, longitude: longitude);
+    final TabElement tab = TabElement(name, cityElement);
     return tab;
+  }
+
+  bool containCity(CityElement city) {
+    bool state = false;
+    if (tabList.isNotEmpty) {
+      tabList.forEach((element) {
+        state = state || (city.key == element.cityElement.key);
+      });
+    }
+    return state;
   }
 }
