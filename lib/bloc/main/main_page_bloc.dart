@@ -64,6 +64,9 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     if (state is LoadCityListState) {
       final List<TabElement>? tabs = await _appLocalRepo.getCityList();
       if (tabs != null && tabs.isNotEmpty) {
+        if (tabList.isNotEmpty) {
+          tabList.clear();
+        }
         tabList.addAll(tabs);
         LogUtil.d("MainPageBloc..city list size:${tabs.length}");
         yield AddWeatherTabState(true, tabList);

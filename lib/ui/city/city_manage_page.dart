@@ -4,8 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/bloc/city/city_manage_bloc.dart';
 import 'package:weather/bloc/city/city_manage_event.dart';
 import 'package:weather/bloc/city/city_manage_state.dart';
+import 'package:weather/bloc/main/main_page_bloc.dart';
+import 'package:weather/bloc/main/main_page_event.dart';
+import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
+import 'package:weather/data/model/internal/tab_element.dart';
+import 'package:weather/utils/log_utils.dart';
 
 ///城市管理
 class CityManagementPage extends StatefulWidget {
@@ -20,7 +25,13 @@ class CityManagementPage extends StatefulWidget {
 class _CityManangePageState extends State<CityManagementPage> {
   late NavigationBloc _navigationBloc;
   late CityManageBloc _cityManageBloc;
+  late MainPageBloc _mainPageBloc;
+
   IconData _menuIcon = Icons.reorder;
+  bool _isEditedMode = false;
+  late String _title = "城市管理";
+  late bool _changed = false;
+  List<TabElement> _tabList = [];
 
   @override
   void initState() {
@@ -29,6 +40,8 @@ class _CityManangePageState extends State<CityManagementPage> {
     _cityManageBloc = BlocProvider.of(context);
     _cityManageBloc.add(InitCityListEvent());
     _cityManageBloc.emit(InitCityListState());
+
+    _mainPageBloc = BlocProvider.of(context);
   }
 
   @override
@@ -40,6 +53,10 @@ class _CityManangePageState extends State<CityManagementPage> {
             SliverAppBar(
               leading: IconButton(
                   onPressed: () {
+                    if (_changed) {
+                      _mainPageBloc.add(LoadCityListEvent());
+                      _mainPageBloc.emit(LoadCityListState());
+                    }
                     Navigator.pop(context);
                   },
                   icon: Icon(
@@ -55,14 +72,22 @@ class _CityManangePageState extends State<CityManagementPage> {
                   onPressed: () {
                     if (_menuIcon == Icons.reorder) {
                       //进入编辑模式
+                      _isEditedMode = true;
                       setState(() {
                         _menuIcon = Icons.save;
+                        _title = "编辑模式";
                       });
                     } else {
                       //保存配置
+                      _isEditedMode = false;
                       setState(() {
                         _menuIcon = Icons.reorder;
+                        _title = "城市管理";
                       });
+                      if (_changed) {
+                        _cityManageBloc.add(SaveChangedEvent());
+                        _cityManageBloc.emit(SaveCityChangedState(_tabList));
+                      }
                     }
                   },
                   icon: Icon(_menuIcon),
@@ -71,7 +96,7 @@ class _CityManangePageState extends State<CityManagementPage> {
               ],
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(
-                  '城市管理',
+                  _title,
                   style: TextStyle(color: Colors.black),
                 ),
               ),
@@ -125,71 +150,161 @@ class _CityManangePageState extends State<CityManagementPage> {
     return BlocBuilder<CityManageBloc, CityManageState>(
         builder: (context, state) {
       if (state is CityListSuccessState) {
-        return _buildReorderableListWidget(state);
+        if (_menuIcon == Icons.save) {
+          return _buildReorderableListWidget(state);
+        } else {
+          return _buildCityListWidget(state);
+        }
       } else {
         return SizedBox();
       }
     });
   }
 
+  ///不可编辑列表
+  Widget _buildCityListWidget(CityListSuccessState state) {
+    final tabList = state.tabList;
+    return Container(
+      child: ListView.builder(
+        padding: EdgeInsets.all(0),
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          final tab = tabList[index];
+          return _buildListItemWidget(
+              key: Key("city_manage_page_listview_common"),
+              tab: tab,
+              orderEnable: false);
+        },
+        itemCount: tabList.length,
+      ),
+    );
+  }
+
+  ///可编辑列表
   Widget _buildReorderableListWidget(CityListSuccessState state) {
     final tabList = state.tabList;
+    if (_tabList.isNotEmpty) {
+      _tabList.clear();
+    }
+    _tabList.addAll(tabList);
+    final bodyList = _tabList.sublist(1, tabList.length);
+    final tabHeader = _tabList[0];
     return Container(
       child: ReorderableListView.builder(
           key: Key('city_manage_page_listview'),
           shrinkWrap: true,
+          header: _buildListItemWidget(
+              key: Key("city_manage_page_listview_header"),
+              tab: tabHeader,
+              orderEnable: false),
           physics: NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
-            final tab = tabList[index];
-            return Card(
-              key: Key('city_manage_page_listview_item:$index'),
-              margin: EdgeInsets.only(
-                  top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
-              color: Color.fromARGB(255, 99, 153, 237),
-              elevation: 4.0,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(12.0))),
-              child: Container(
-                padding: EdgeInsets.only(
-                    left: 12.0, right: 12.0, top: 18.0, bottom: 18.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      tab.title,
-                      style: TextStyle(color: Colors.white, fontSize: 22.0),
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          "11°",
-                          style: TextStyle(color: Colors.white, fontSize: 20.0),
-                        ),
-                        Text(
-                          "多云",
-                          style: TextStyle(color: Colors.white, fontSize: 14.0),
-                        )
-                      ],
-                    )
-                  ],
+            final tab = bodyList[index];
+            return Dismissible(
+                key: Key(
+                    'city_manage_page_listview_item_dismiss:${tab.cityElement.longitude}&${tab.cityElement.latitude}'),
+                secondaryBackground: Container(
+                  color: Colors.red,
+                  margin: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.only(right: 16.0),
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "删除",
+                    style: TextStyle(color: Colors.black, fontSize: 18.0),
+                  ),
                 ),
-              ),
-            );
+                background: Container(
+                  color: Colors.white,
+                ),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  LogUtil.d("CityManagePage..onDismissed");
+                  setState(() {
+                    _changed = true;
+                    _tabList.removeAt(index + 1);
+                    tabList.removeAt(index + 1);
+                  });
+
+                  ///TODO:需要删除对应城市的缓存数据
+                },
+                confirmDismiss: (direction) {
+                  return Future<bool>.delayed(Duration(milliseconds: 100), () {
+                    return _menuIcon == Icons.save;
+                  });
+                },
+                child: _buildListItemWidget(
+                    key: Key('city_manage_page_listview_item:$index'),
+                    tab: tab,
+                    orderEnable: true));
           },
-          itemCount: tabList.length,
+          itemCount: bodyList.length,
           onReorder: (oldIndex, newIndex) {
             if (_menuIcon == Icons.save) {
               setState(() {
                 if (oldIndex < newIndex) {
                   newIndex -= 1;
                 }
-                final temp = tabList.removeAt(oldIndex);
-                tabList.insert(newIndex, temp);
+                _changed = true;
+                _tabList.insert(newIndex + 1, _tabList.removeAt(oldIndex + 1));
+                tabList.insert(newIndex + 1, tabList.removeAt(oldIndex + 1));
               });
             }
-
-            print("oldIndex:$oldIndex..newIndex:$newIndex");
           }),
+    );
+  }
+
+  ///列表的item
+  Widget _buildListItemWidget(
+      {required Key key, required TabElement tab, required bool orderEnable}) {
+    return Card(
+      key: key,
+      margin: EdgeInsets.only(top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
+      color: Color.fromARGB(255, 99, 153, 237),
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12.0))),
+      child: Container(
+        padding:
+            EdgeInsets.only(left: 12.0, right: 12.0, top: 18.0, bottom: 18.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Visibility(
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 4.0),
+                    child: Icon(
+                      Icons.reorder,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  visible: _isEditedMode && orderEnable,
+                ),
+                Text(
+                  tab.title,
+                  style: TextStyle(color: Colors.white, fontSize: 22.0),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                Text(
+                  "11°",
+                  style: TextStyle(color: Colors.white, fontSize: 20.0),
+                ),
+                Text(
+                  "多云",
+                  style: TextStyle(color: Colors.white, fontSize: 14.0),
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

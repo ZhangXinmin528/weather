@@ -7,3 +7,9 @@ class InitCityListEvent extends CityManageEvent {
   @override
   List<Object?> get props => [];
 }
+
+///城市列表发生变化
+class SaveChangedEvent extends CityManageEvent {
+  @override
+  List<Object?> get props => [];
+}

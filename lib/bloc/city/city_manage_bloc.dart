@@ -15,6 +15,8 @@ class CityManageBloc extends Bloc<CityManageEvent, CityManageState> {
   Stream<CityManageState> mapEventToState(CityManageEvent event) async* {
     if (event is InitCityListEvent) {
       yield* _mapInitCityListToState(state);
+    } else if (event is SaveChangedEvent) {
+      yield* _mapSaveChangedToState(state);
     }
   }
 
@@ -24,9 +26,22 @@ class CityManageBloc extends Bloc<CityManageEvent, CityManageState> {
       final List<TabElement>? tabs = await _appLocalRepo.getCityList();
       if (tabs != null && tabs.isNotEmpty) {
         yield CityListSuccessState(tabs);
-        LogUtil.d("CityManageBloc..city list size:${tabs[0].title}");
+        LogUtil.d("CityManageBloc..city list:${tabs[0].title}");
       } else {
         yield CityListFailedState(WeatherError.data_not_available);
+      }
+    }
+  }
+
+  Stream<CityManageState> _mapSaveChangedToState(CityManageState state) async* {
+    if (state is SaveCityChangedState) {
+      final List<TabElement>? tabList = state.tabList;
+      if (tabList != null && tabList.isNotEmpty) {
+        LogUtil.d(
+            "CityManageBloc..save changed city list size:${tabList.length}");
+        _appLocalRepo.saveCityList(tabList);
+        add(InitCityListEvent());
+        yield InitCityListState();
       }
     }
   }

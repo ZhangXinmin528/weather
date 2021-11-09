@@ -29,3 +29,13 @@ class CityListFailedState extends CityManageState {
   @override
   List<Object?> get props => [error];
 }
+
+///保存城市列表调整
+class SaveCityChangedState extends CityManageState {
+  final List<TabElement> tabList;
+
+  SaveCityChangedState(this.tabList);
+
+  @override
+  List<Object?> get props => [tabList];
+}

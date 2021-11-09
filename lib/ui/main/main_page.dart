@@ -86,9 +86,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 } else {
                   index = 0;
                 }
-                if (index != 0)
-                  _pageController.animateToPage(index,
-                      duration: Duration(seconds: 1), curve: Curves.ease);
+                currentCity = tabList[index].title;
+                _pageController.animateToPage(index,
+                    duration: Duration(seconds: 1), curve: Curves.ease);
               });
             }
           }
