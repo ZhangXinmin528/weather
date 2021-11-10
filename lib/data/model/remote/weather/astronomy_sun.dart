@@ -33,6 +33,10 @@ class AstronomySun {
 
   factory AstronomySun.fromJson(Map<String, dynamic> srcJson) =>
       _$AstronomySunFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$AstronomySunToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -50,4 +54,8 @@ class Refer {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

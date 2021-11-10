@@ -27,11 +27,16 @@ class WeatherAir {
     this.updateTime,
     this.fxLink,
     this.now,
-    /*this.station,*/ this.refer,
+    // this.station,
+    this.refer,
   );
 
   factory WeatherAir.fromJson(Map<String, dynamic> srcJson) =>
       _$WeatherAirFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$WeatherAirToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -84,6 +89,10 @@ class Now {
   );
 
   factory Now.fromJson(Map<String, dynamic> srcJson) => _$NowFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$NowToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -145,6 +154,10 @@ class Station {
 
   factory Station.fromJson(Map<String, dynamic> srcJson) =>
       _$StationFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$StationToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -162,4 +175,8 @@ class Refer {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

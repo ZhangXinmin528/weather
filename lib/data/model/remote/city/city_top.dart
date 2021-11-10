@@ -23,18 +23,7 @@ class CityTop extends Object {
       _$CityTopFromJson(srcJson);
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> map = Map();
-    if (this.code.isNotEmpty) {
-      map['code'] = this.code;
-    }
-    if (this.topCityList.isNotEmpty) {
-      map['topCityList'] = this.topCityList.map((e) => e.toJson()).toList();
-    }
-    if (this.refer != null) {
-      map['refer'] = this.refer.toJson();
-    }
-
-    return map;
+    return _$CityTopToJson(this);
   }
 }
 
@@ -99,21 +88,7 @@ class TopCityList extends Object {
       _$TopCityListFromJson(srcJson);
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = Map();
-    map['name'] = this.name;
-    map['id'] = this.id;
-    map['lat'] = this.lat;
-    map['lon'] = this.lon;
-    map['adm2'] = this.adm2;
-    map['adm1'] = this.adm1;
-    map['country'] = this.country;
-    map['tz'] = this.tz;
-    map['utcOffset'] = this.utcOffset;
-    map['isDst'] = this.isDst;
-    map['type'] = this.type;
-    map['rank'] = this.rank;
-    map['fxLink'] = this.fxLink;
-    return map;
+    return _$TopCityListToJson(this);
   }
 }
 
@@ -134,9 +109,6 @@ class Refer extends Object {
       _$ReferFromJson(srcJson);
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = Map();
-    map['sources'] = this.sources.map((e) => e).toList();
-    map['license'] = this.license.map((e) => e).toList();
-    return map;
+    return _$ReferToJson(this);
   }
 }

@@ -7,7 +7,7 @@ import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/data/repo/local/app_local_repository.dart';
+import 'package:weather/data/repo/local/app_local_repo.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
 import 'package:weather/utils/datetime_utils.dart';
@@ -17,7 +17,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   final LocationManager _locationManager = LocationManager();
   final WeatherRemoteRepository _weatherRemoteRepository;
 
-  final AppLocalRepository _appLocalRepo;
+  final AppLocalRepo _appLocalRepo;
 
   late BaiduLocation? _baiduLocation;
 

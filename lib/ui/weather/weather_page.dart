@@ -45,8 +45,8 @@ class _WeatherPageState extends State<WeatherPage> {
     LogUtil.d("WeatherPage..initState()..city:${_cityElement.name}~");
     _weatherPageBloc = BlocProvider.of(context);
     //开始请求天气
-    _weatherPageBloc.add(InitWeatherPageEvent(_cityElement));
-    _weatherPageBloc.emit(StartReuestWeatherState());
+    _weatherPageBloc.add(LoadCachedWeatherEvent(_cityElement));
+    _weatherPageBloc.emit(LoadCachedWeatherDataState());
 
     _navigationBloc = BlocProvider.of(context);
   }

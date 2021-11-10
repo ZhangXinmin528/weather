@@ -13,6 +13,9 @@ class WeatherPageState extends Equatable {
   List<Object?> get props => [];
 }
 
+///加载缓存的天气数据
+class LoadCachedWeatherDataState extends WeatherPageState {}
+
 ///开始请求天气数据
 class StartReuestWeatherState extends WeatherPageState {}
 

@@ -21,6 +21,10 @@ class CityLocation extends Object {
 
   factory CityLocation.fromJson(Map<String, dynamic> srcJson) =>
       _$CityLocationFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$CityLocationToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -82,6 +86,10 @@ class Location extends Object {
 
   factory Location.fromJson(Map<String, dynamic> srcJson) =>
       _$LocationFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$LocationToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -99,4 +107,8 @@ class Refer extends Object {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

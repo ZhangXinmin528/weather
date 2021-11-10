@@ -9,12 +9,13 @@ import 'package:weather/bloc/city/city_search_bloc.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/weather/weather_page_bloc.dart';
+import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/navigation/navigation_provider.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
 import 'package:weather/weather_observer.dart';
 
-import 'data/repo/local/app_local_repository.dart';
-import 'data/repo/local/storage_manager.dart';
+import 'data/repo/local/app_local_repo.dart';
+import 'data/repo/local/sp_manager.dart';
 import 'data/repo/remote/heweather_api_provider.dart';
 import 'data/repo/remote/weather_remote_repo.dart';
 
@@ -38,26 +39,26 @@ class _WeatherAppState extends State<WeatherApp> {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
   ///sp
-  final StorageManager _storageManager =
-      StorageManager(SharedPreferencesUtils());
+  final SPManager _storageManager = SPManager(SharedPreferencesUtils());
 
   ///天气数据接口数据
   final WeatherRemoteRepository _weatherRemoteRepo =
       WeatherRemoteRepository(HeWeatherApiProvider());
 
   ///app整体缓存
-  late AppLocalRepository _appLocalRepo;
+  late AppLocalRepo _appLocalRepo;
 
   @override
   void initState() {
     super.initState();
-    _appLocalRepo = AppLocalRepository(_storageManager);
+    _appLocalRepo = AppLocalRepo(_storageManager);
 
     ///作用？？
     WidgetsFlutterBinding.ensureInitialized();
 
     //初始化路由表
     _navigationProvider.defineRotes();
+    SqliteManager.INSTANCE.getDatabase;
   }
 
   @override
@@ -87,7 +88,7 @@ class _WeatherAppState extends State<WeatherApp> {
               return WeatherPageBloc(_weatherRemoteRepo);
             },
           ),
-          //城市搜索
+          //城市管理
           BlocProvider<CityManageBloc>(
             create: (context) {
               return CityManageBloc(_appLocalRepo);

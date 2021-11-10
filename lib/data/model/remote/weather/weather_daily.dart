@@ -2,10 +2,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'weather_daily.g.dart';
 
-
 @JsonSerializable()
-class WeatherDaily{
-
+class WeatherDaily {
   @JsonKey(name: 'code')
   String code;
 
@@ -21,16 +19,24 @@ class WeatherDaily{
   @JsonKey(name: 'refer')
   Refer refer;
 
-  WeatherDaily(this.code,this.updateTime,this.fxLink,this.daily,this.refer,);
+  WeatherDaily(
+    this.code,
+    this.updateTime,
+    this.fxLink,
+    this.daily,
+    this.refer,
+  );
 
-  factory WeatherDaily.fromJson(Map<String, dynamic> srcJson) => _$WeatherDailyFromJson(srcJson);
+  factory WeatherDaily.fromJson(Map<String, dynamic> srcJson) =>
+      _$WeatherDailyFromJson(srcJson);
 
+  Map<String, dynamic> toJson() {
+    return _$WeatherDailyToJson(this);
+  }
 }
 
-
 @JsonSerializable()
-class Daily{
-
+class Daily {
   @JsonKey(name: 'fxDate')
   String fxDate;
 
@@ -109,24 +115,60 @@ class Daily{
   @JsonKey(name: 'uvIndex')
   String uvIndex;
 
-  Daily(this.fxDate,this.sunrise,this.sunset,this.moonrise,this.moonset,this.moonPhase,this.tempMax,this.tempMin,this.iconDay,this.textDay,this.iconNight,this.textNight,this.wind360Day,this.windDirDay,this.windScaleDay,this.windSpeedDay,this.wind360Night,this.windDirNight,this.windScaleNight,this.windSpeedNight,this.humidity,this.precip,this.pressure,this.vis,this.cloud,this.uvIndex,);
+  Daily(
+    this.fxDate,
+    this.sunrise,
+    this.sunset,
+    this.moonrise,
+    this.moonset,
+    this.moonPhase,
+    this.tempMax,
+    this.tempMin,
+    this.iconDay,
+    this.textDay,
+    this.iconNight,
+    this.textNight,
+    this.wind360Day,
+    this.windDirDay,
+    this.windScaleDay,
+    this.windSpeedDay,
+    this.wind360Night,
+    this.windDirNight,
+    this.windScaleNight,
+    this.windSpeedNight,
+    this.humidity,
+    this.precip,
+    this.pressure,
+    this.vis,
+    this.cloud,
+    this.uvIndex,
+  );
 
-  factory Daily.fromJson(Map<String, dynamic> srcJson) => _$DailyFromJson(srcJson);
+  factory Daily.fromJson(Map<String, dynamic> srcJson) =>
+      _$DailyFromJson(srcJson);
 
+  Map<String, dynamic> toJson() {
+    return _$DailyToJson(this);
+  }
 }
 
-
 @JsonSerializable()
-class Refer{
-
+class Refer {
   @JsonKey(name: 'sources')
   List<String> sources;
 
   @JsonKey(name: 'license')
   List<String> license;
 
-  Refer(this.sources,this.license,);
+  Refer(
+    this.sources,
+    this.license,
+  );
 
-  factory Refer.fromJson(Map<String, dynamic> srcJson) => _$ReferFromJson(srcJson);
+  factory Refer.fromJson(Map<String, dynamic> srcJson) =>
+      _$ReferFromJson(srcJson);
 
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

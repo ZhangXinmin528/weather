@@ -9,10 +9,11 @@ import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
 
-class StorageManager {
+///用于存储SharedPreference
+class SPManager {
   final SharedPreferencesUtils _spUtils;
 
-  StorageManager(this._spUtils);
+  SPManager(this._spUtils);
 
   ///单位
   Future<Unit> getUnit() async {

@@ -30,6 +30,10 @@ class WeatherRT {
 
   factory WeatherRT.fromJson(Map<String, dynamic> srcJson) =>
       _$WeatherRTFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$WeatherRTToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -98,6 +102,10 @@ class Now {
   );
 
   factory Now.fromJson(Map<String, dynamic> srcJson) => _$NowFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$NowToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -115,4 +123,8 @@ class Refer {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

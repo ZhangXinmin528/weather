@@ -4,12 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/bloc/city/city_search_event.dart';
 import 'package:weather/bloc/city/city_search_state.dart';
 import 'package:weather/data/model/remote/city/city_top.dart';
-import 'package:weather/data/repo/local/app_local_repository.dart';
+import 'package:weather/data/repo/local/app_local_repo.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
-  final AppLocalRepository _appLocalRepo;
+  final AppLocalRepo _appLocalRepo;
   final WeatherRemoteRepository _weatherRemoteRepository;
 
   CitySearchBloc(this._weatherRemoteRepository, this._appLocalRepo)

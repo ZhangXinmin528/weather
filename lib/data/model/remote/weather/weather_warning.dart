@@ -29,6 +29,10 @@ class WeatherWarning {
 
   factory WeatherWarning.fromJson(Map<String, dynamic> srcJson) =>
       _$WeatherWarningFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$WeatherWarningToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -74,6 +78,10 @@ class Warning {
 
   factory Warning.fromJson(Map<String, dynamic> srcJson) =>
       _$WarningFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$WarningToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -91,4 +99,8 @@ class Refer {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

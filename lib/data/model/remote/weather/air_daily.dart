@@ -29,6 +29,10 @@ class AirDaily {
 
   factory AirDaily.fromJson(Map<String, dynamic> srcJson) =>
       _$AirDailyFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$AirDailyToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -58,6 +62,10 @@ class Daily {
 
   factory Daily.fromJson(Map<String, dynamic> srcJson) =>
       _$DailyFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$DailyToJson(this);
+  }
 }
 
 @JsonSerializable()

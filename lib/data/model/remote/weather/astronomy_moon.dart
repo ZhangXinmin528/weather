@@ -37,6 +37,10 @@ class AstronomyMoon {
 
   factory AstronomyMoon.fromJson(Map<String, dynamic> srcJson) =>
       _$AstronomyMoonFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$AstronomyMoonToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -62,6 +66,10 @@ class MoonPhase {
 
   factory MoonPhase.fromJson(Map<String, dynamic> srcJson) =>
       _$MoonPhaseFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$MoonPhaseToJson(this);
+  }
 }
 
 @JsonSerializable()
@@ -79,4 +87,8 @@ class Refer {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

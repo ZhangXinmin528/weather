@@ -6,11 +6,20 @@ class WeatherPageEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-///加载天气数据
-class InitWeatherPageEvent extends WeatherPageEvent {
+///加载缓存的天气数据¬
+class LoadCachedWeatherEvent extends WeatherPageEvent{
   final CityElement cityElement;
 
-  InitWeatherPageEvent(this.cityElement);
+  LoadCachedWeatherEvent(this.cityElement);
+
+  @override
+  List<Object?> get props => [cityElement];
+}
+///网络请求天气数据
+class InitWeatherNetEvent extends WeatherPageEvent {
+  final CityElement cityElement;
+
+  InitWeatherNetEvent(this.cityElement);
 
   @override
   List<Object?> get props => [cityElement];
