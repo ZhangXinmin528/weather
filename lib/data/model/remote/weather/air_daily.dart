@@ -83,4 +83,8 @@ class Refer {
 
   factory Refer.fromJson(Map<String, dynamic> srcJson) =>
       _$ReferFromJson(srcJson);
+
+  Map<String, dynamic> toJson() {
+    return _$ReferToJson(this);
+  }
 }

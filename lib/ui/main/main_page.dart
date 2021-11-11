@@ -69,27 +69,31 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       body: BlocListener<MainPageBloc, MainPageState>(
         listener: (context, state) {
           if (state is InitLocationState) {
-          } else if (state is LocationSuccessState) {
+          } else {
             setState(() {
               loadingVisiable = false;
             });
-          } else if (state is AddWeatherTabState) {
-            final tabs = state.tabList;
-            LogUtil.d("BlocListener..size:${tabs.length}");
-            if (tabs != null && tabs.isNotEmpty) {
+            if (state is AddWeatherTabState) {
               setState(() {
-                tabList.clear();
-                tabList.addAll(tabs);
-                int index = 0;
-                if (tabList.length > 1 && !state.isInit) {
-                  index = tabList.length - 1;
-                } else {
-                  index = 0;
-                }
-                currentCity = tabList[index].title;
-                _pageController.animateToPage(index,
-                    duration: Duration(seconds: 1), curve: Curves.ease);
+                loadingVisiable = false;
               });
+              final tabs = state.tabList;
+              LogUtil.d("BlocListener..size:${tabs.length}");
+              if (tabs != null && tabs.isNotEmpty) {
+                setState(() {
+                  tabList.clear();
+                  tabList.addAll(tabs);
+                  int index = 0;
+                  if (tabList.length > 1 && !state.isInit) {
+                    index = tabList.length - 1;
+                  } else {
+                    index = 0;
+                  }
+                  currentCity = tabList[index].title;
+                  _pageController.animateToPage(index,
+                      duration: Duration(seconds: 1), curve: Curves.ease);
+                });
+              }
             }
           }
         },
@@ -97,8 +101,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            // _buildLightBackground(),
-            _buildLoadingWidget(),
+            _buildLightBackground(),
+            // _buildLoadingWidget(),
             _buildWeatherTabWidget(),
             _buildToolbar()
           ],
@@ -127,7 +131,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           },
           reverse: false,
           itemCount: tabList.length,
-          physics: BouncingScrollPhysics(),
+          // physics: BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           controller: _pageController,
         ),

@@ -33,4 +33,23 @@ abstract class AppColor {
   static const kale = Color(0xFF4E673F);
   static const pinkYarrow = Color(0xFFC72B6C);
   static const niagara = Color(0xFF4C829E);
+
+  ///空气质量
+  ///一级
+  static const airExcellent = Color(0xFF95B359);
+
+  ///二级
+  static const airGood = Color(0xFFD9D459);
+
+  ///三级
+  static const airLow = Color(0xFFE0991D);
+
+  ///四级
+  static const airMid = Color(0xFFD96161);
+
+  ///五级
+  static const airBad = Color(0xFFCB90F0);
+
+  ///六级
+  static const airSerious = Color(0xFFD9416F);
 }

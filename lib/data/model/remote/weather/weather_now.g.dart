@@ -20,8 +20,8 @@ Map<String, dynamic> _$WeatherRTToJson(WeatherRT instance) => <String, dynamic>{
       'code': instance.code,
       'updateTime': instance.updateTime,
       'fxLink': instance.fxLink,
-      'now': instance.now,
-      'refer': instance.refer,
+      'now': instance.now.toJson(),
+      'refer': instance.refer.toJson(),
     };
 
 Now _$NowFromJson(Map<String, dynamic> json) {

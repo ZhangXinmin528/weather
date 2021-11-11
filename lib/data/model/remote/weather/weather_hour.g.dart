@@ -23,8 +23,8 @@ Map<String, dynamic> _$WeatherHourToJson(WeatherHour instance) =>
       'code': instance.code,
       'updateTime': instance.updateTime,
       'fxLink': instance.fxLink,
-      'hourly': instance.hourly,
-      'refer': instance.refer,
+      'hourly': instance.hourly.map((e) => e.toJson()).toList(),
+      'refer': instance.refer.toJson(),
     };
 
 Hourly _$HourlyFromJson(Map<String, dynamic> json) {

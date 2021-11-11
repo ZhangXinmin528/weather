@@ -4,18 +4,33 @@ class TabElement {
 
   final CityElement cityElement;
 
-  TabElement(this.title, this.cityElement);
+  //温度
+  final String? temp;
+
+  //天气描述
+  final String? text;
+
+  //天气icon
+  final String? icon;
+
+  TabElement(this.title, this.cityElement, {this.temp, this.text, this.icon});
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> jsonMap = Map();
     jsonMap['title'] = this.title;
+    jsonMap['temp'] = this.temp ?? "";
+    jsonMap['text'] = this.text ?? "";
+    jsonMap['icon'] = this.icon ?? "";
     jsonMap['cityElement'] = this.cityElement;
     return jsonMap;
   }
 
   factory TabElement.fromJson(Map<String, dynamic> json) {
     return TabElement(json['title'] as String,
-        CityElement.fromJson(json['cityElement'] as Map<String, dynamic>));
+        CityElement.fromJson(json['cityElement'] as Map<String, dynamic>),
+        temp: json['temp'] as String,
+        text: json['text'] as String,
+        icon: json['icon'] as String);
   }
 }
 

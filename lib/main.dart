@@ -58,7 +58,6 @@ class _WeatherAppState extends State<WeatherApp> {
 
     //初始化路由表
     _navigationProvider.defineRotes();
-    SqliteManager.INSTANCE.getDatabase;
   }
 
   @override

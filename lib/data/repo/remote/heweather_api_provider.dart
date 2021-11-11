@@ -73,7 +73,7 @@ class HeWeatherApiProvider {
     _baseOptions.receiveTimeout = 30 * 1000;
     _dio = Dio(_baseOptions);
 
-    _dio.interceptors.add(PrettyDioLogger());
+    // _dio.interceptors.add(PrettyDioLogger());
   }
 
   ///城市天气API

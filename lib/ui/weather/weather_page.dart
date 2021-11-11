@@ -19,6 +19,7 @@ import 'package:weather/ui/webview/webview_page.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
 import 'package:weather/utils/log_utils.dart';
+import 'package:weather/utils/weather_utils.dart';
 
 ///各个城市天气主页
 class WeatherPage extends StatefulWidget {
@@ -63,7 +64,7 @@ class _WeatherPageState extends State<WeatherPage> {
       return Stack(
         alignment: Alignment.topCenter,
         children: [
-          if (state is StartReuestWeatherState) ...[
+          if (state is StartRequestWeatherState) ...[
             // _buildLightBackground(),
             //开始定位
             // const LoadingWidget(),
@@ -221,7 +222,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   TextSpan(
                     text: weatherAirNow.aqi,
                     style: TextStyle(
-                      color: Colors.lightGreen,
+                      color: WeatherUtils.getAQIColor(weatherAirNow.level),
                       fontSize: 16.0,
                     ),
                   ),
@@ -402,6 +403,7 @@ class _WeatherPageState extends State<WeatherPage> {
     final indicesDaily = weatherIndices.daily;
 
     return Container(
+      color: Colors.white,
       child: Column(
         children: [
           Divider(
@@ -429,8 +431,8 @@ class _WeatherPageState extends State<WeatherPage> {
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
-                mainAxisSpacing: 0.5,
-                crossAxisSpacing: 0.5,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
                 childAspectRatio: 1,
               ),
               itemBuilder: (context, index) {
@@ -503,6 +505,7 @@ class _WeatherPageState extends State<WeatherPage> {
   ///weather 7Day
   Widget _buildWeather7Day(WeatherDaily weatherDaily) {
     return Container(
+      color: Colors.white,
       child: Column(
         children: [
           Divider(
@@ -602,6 +605,7 @@ class _WeatherPageState extends State<WeatherPage> {
     final now = weatherRT.now;
     return Container(
       key: const Key("main_screen_wind_desc"),
+      color: Colors.white,
       child: Column(
         children: [
           Divider(

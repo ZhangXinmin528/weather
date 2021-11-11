@@ -24,7 +24,7 @@ Map<String, dynamic> _$AstronomySunToJson(AstronomySun instance) =>
       'fxLink': instance.fxLink,
       'sunrise': instance.sunrise,
       'sunset': instance.sunset,
-      'refer': instance.refer,
+      'refer': instance.refer.toJson(),
     };
 
 Refer _$ReferFromJson(Map<String, dynamic> json) {

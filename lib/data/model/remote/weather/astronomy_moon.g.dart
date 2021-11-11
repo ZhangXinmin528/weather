@@ -27,8 +27,8 @@ Map<String, dynamic> _$AstronomyMoonToJson(AstronomyMoon instance) =>
       'fxLink': instance.fxLink,
       'moonrise': instance.moonrise,
       'moonset': instance.moonset,
-      'moonPhase': instance.moonPhase,
-      'refer': instance.refer,
+      'moonPhase': instance.moonPhase.map((e) => e.toJson()).toList(),
+      'refer': instance.refer.toJson(),
     };
 
 MoonPhase _$MoonPhaseFromJson(Map<String, dynamic> json) {

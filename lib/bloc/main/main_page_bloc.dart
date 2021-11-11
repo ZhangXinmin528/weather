@@ -120,8 +120,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     if (state is LocationSuccessState) {
       if (_baiduLocation != null && _baiduLocation!.city != null) {
         LogUtil.d("_mapAddWeatherTabToState()..定位成功~");
-        final String name =
-            "${_baiduLocation!.city} ${_baiduLocation?.district}";
+        final String name = "${_baiduLocation?.district}";
         //定位成功
 
         final TabElement tabElement = generateTab(

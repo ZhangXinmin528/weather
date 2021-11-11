@@ -18,9 +18,10 @@ class LoadCachedWeatherEvent extends WeatherPageEvent{
 ///网络请求天气数据
 class InitWeatherNetEvent extends WeatherPageEvent {
   final CityElement cityElement;
+  final bool hasCached;
 
-  InitWeatherNetEvent(this.cityElement);
+  InitWeatherNetEvent(this.cityElement,this.hasCached);
 
   @override
-  List<Object?> get props => [cityElement];
+  List<Object?> get props => [cityElement,hasCached];
 }

@@ -4,10 +4,12 @@ import 'package:weather/bloc/city/city_manage_state.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/repo/local/app_local_repo.dart';
+import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class CityManageBloc extends Bloc<CityManageEvent, CityManageState> {
   final AppLocalRepo _appLocalRepo;
+
 
   CityManageBloc(this._appLocalRepo) : super(InitCityListState());
 

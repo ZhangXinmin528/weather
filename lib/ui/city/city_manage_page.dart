@@ -10,6 +10,8 @@ import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
+import 'package:weather/data/model/remote/weather/weather_now.dart';
+import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/utils/log_utils.dart';
 
 ///城市管理
@@ -23,6 +25,8 @@ class CityManagementPage extends StatefulWidget {
 }
 
 class _CityManangePageState extends State<CityManagementPage> {
+  final SqliteManager _sqliteManager = SqliteManager.INSTANCE;
+
   late NavigationBloc _navigationBloc;
   late CityManageBloc _cityManageBloc;
   late MainPageBloc _mainPageBloc;
@@ -171,6 +175,7 @@ class _CityManangePageState extends State<CityManagementPage> {
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           final tab = tabList[index];
+
           return _buildListItemWidget(
               key: Key("city_manage_page_listview_common"),
               tab: tab,
@@ -257,6 +262,35 @@ class _CityManangePageState extends State<CityManagementPage> {
   ///列表的item
   Widget _buildListItemWidget(
       {required Key key, required TabElement tab, required bool orderEnable}) {
+    return FutureBuilder(
+        future: _sqliteManager.queryCityWeatherNow(tab.cityElement.key),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final Map<String, dynamic>? map =
+                snapshot.data as Map<String, dynamic>?;
+            if (map != null) {
+              final WeatherRT weatherNow = WeatherRT.fromJson(
+                  map[SqliteManager.weatherRTKey] as Map<String, dynamic>);
+
+              final Now now = weatherNow.now;
+              return _buildListCardItem(
+                  key: key, tab: tab, orderEnable: orderEnable, now: now);
+            } else {
+              return _buildListCardItem(
+                  key: key, tab: tab, orderEnable: orderEnable);
+            }
+          } else {
+            return _buildListCardItem(
+                key: key, tab: tab, orderEnable: orderEnable);
+          }
+        });
+  }
+
+  Widget _buildListCardItem(
+      {required Key key,
+      required TabElement tab,
+      required bool orderEnable,
+      Now? now}) {
     return Card(
       key: key,
       margin: EdgeInsets.only(top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
@@ -290,17 +324,20 @@ class _CityManangePageState extends State<CityManagementPage> {
                 ),
               ],
             ),
-            Column(
-              children: [
-                Text(
-                  "11°",
-                  style: TextStyle(color: Colors.white, fontSize: 20.0),
-                ),
-                Text(
-                  "多云",
-                  style: TextStyle(color: Colors.white, fontSize: 14.0),
-                )
-              ],
+            Visibility(
+              child: Column(
+                children: [
+                  Text(
+                    "${now?.temp}°",
+                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  ),
+                  Text(
+                    "${now?.text}",
+                    style: TextStyle(color: Colors.white, fontSize: 14.0),
+                  )
+                ],
+              ),
+              visible: now != null,
             ),
           ],
         ),

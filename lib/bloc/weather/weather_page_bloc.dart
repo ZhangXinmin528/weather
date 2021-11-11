@@ -34,12 +34,11 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
     final CityElement cityElement = event.cityElement;
     final String key = cityElement.key;
 
-    //加载天气数据缓存¬
+    //加载天气数据缓存
     if (state is LoadCachedWeatherDataState) {
       //加载缓存的天气数据
-      final Map<String, dynamic>? result =
-          await _sqliteManager.queryCityWeather(key);
-
+      final Map? result = await _sqliteManager.queryCityWeather(key);
+      LogUtil.d("WeatherPageBloc.._mapLoadCachedWeatherToState()..缓存:$result~");
       if (result != null) {
         final timeStamp = result[SqliteManager.timeStampKey];
         final span = DateTimeUtils.getTimeSpanByNow(timeStamp);
@@ -48,32 +47,36 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
             "WeatherPageBloc.._mapLoadCachedWeatherToState()..缓存时间间隔:$span~");
 
         if (span < 5) {
-          final WeatherRT weatherNow =
-              WeatherRT.fromJson(result[SqliteManager.weatherRTKey]);
+          final WeatherRT weatherNow = WeatherRT.fromJson(
+              result[SqliteManager.weatherRTKey] as Map<String, dynamic>);
 
-          final WeatherAir weatherAir =
-              WeatherAir.fromJson(result[SqliteManager.weatherAirKey]);
+          final WeatherAir weatherAir = WeatherAir.fromJson(
+              result[SqliteManager.weatherAirKey] as Map<String, dynamic>);
 
-          final WeatherHour weatherHour =
-              WeatherHour.fromJson(result[SqliteManager.weatherHourKey]);
+          final WeatherHour weatherHour = WeatherHour.fromJson(
+              result[SqliteManager.weatherHourKey] as Map<String, dynamic>);
 
-          final WeatherDaily weatherDaily =
-              WeatherDaily.fromJson(result[SqliteManager.weatherDailyKey]);
+          final WeatherDaily weatherDaily = WeatherDaily.fromJson(
+              result[SqliteManager.weatherDailyKey] as Map<String, dynamic>);
 
-          final WeatherIndices weatherIndices =
-              WeatherIndices.fromJson(result[SqliteManager.weatherIndicesKey]);
+          final WeatherIndices weatherIndices = WeatherIndices.fromJson(
+              result[SqliteManager.weatherIndicesKey] as Map<String, dynamic>);
 
           if (weatherNow != null && weatherNow.code == "200") {
             yield RequestWeatherSuccessState(weatherNow, weatherAir,
                 weatherDaily, weatherIndices, weatherHour);
           } else {
-            yield StartReuestWeatherState();
-            add(InitWeatherNetEvent(cityElement));
+            //缓存失效，更新缓存
+            yield StartRequestWeatherState();
+            add(InitWeatherNetEvent(cityElement, true));
           }
+        } else {
+          yield StartRequestWeatherState();
+          add(InitWeatherNetEvent(cityElement, true));
         }
       } else {
-        yield StartReuestWeatherState();
-        add(InitWeatherNetEvent(cityElement));
+        yield StartRequestWeatherState();
+        add(InitWeatherNetEvent(cityElement, false));
       }
     }
   }
@@ -90,7 +93,7 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
     LogUtil.d(
         "WeatherPageBloc.._mapInitWeatherEventToState()..当前查询城市:${cityElement.name}~");
 
-    if (state is StartReuestWeatherState) {
+    if (state is StartRequestWeatherState) {
       //获取天气信息
       final WeatherRT weatherNow =
           await _weatherRemoteRepository.requestWeatherNow(longitude, latitude);
@@ -131,12 +134,20 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
       //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
       if (weatherNow != null && weatherNow.code == "200") {
+        if (event.hasCached) {
+          final index = await _sqliteManager.updateCityWeather(key, weatherNow,
+              weatherAir, weatherHour, weatherDaily, weatherIndices);
+          LogUtil.d("天气tab页面..更新数据库:$index");
+        } else {
+          final index = await _sqliteManager.insertCityWeather(key, weatherNow,
+              weatherAir, weatherHour, weatherDaily, weatherIndices);
+          LogUtil.d("天气tab页面..插入数据库:$index");
+        }
+
         yield RequestWeatherSuccessState(
             weatherNow, weatherAir, weatherDaily, weatherIndices, weatherHour);
-        _sqliteManager.updateCityWeather(key, weatherNow, weatherAir,
-            weatherHour, weatherDaily, weatherIndices);
       } else {
-        yield const RequestWeatherFailedState(WeatherError.connectionError);
+        yield RequestWeatherFailedState(WeatherError.connectionError);
       }
     }
   }

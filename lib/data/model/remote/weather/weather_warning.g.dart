@@ -23,8 +23,8 @@ Map<String, dynamic> _$WeatherWarningToJson(WeatherWarning instance) =>
       'code': instance.code,
       'updateTime': instance.updateTime,
       'fxLink': instance.fxLink,
-      'warning': instance.warning,
-      'refer': instance.refer,
+      'warning': instance.warning.map((e) => e.toJson()).toList(),
+      'refer': instance.refer.toJson(),
     };
 
 Warning _$WarningFromJson(Map<String, dynamic> json) {

@@ -6,18 +6,21 @@ import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 
-class WeatherPageState extends Equatable {
-  const WeatherPageState();
+abstract class WeatherPageState extends Equatable {
+  WeatherPageState();
+}
 
+///加载缓存的天气数据
+class LoadCachedWeatherDataState extends WeatherPageState {
   @override
   List<Object?> get props => [];
 }
 
-///加载缓存的天气数据
-class LoadCachedWeatherDataState extends WeatherPageState {}
-
 ///开始请求天气数据
-class StartReuestWeatherState extends WeatherPageState {}
+class StartRequestWeatherState extends WeatherPageState {
+  @override
+  List<Object?> get props => [];
+}
 
 ///天气数据请求成功
 class RequestWeatherSuccessState extends WeatherPageState {
@@ -42,7 +45,7 @@ class RequestWeatherSuccessState extends WeatherPageState {
 class RequestWeatherFailedState extends WeatherPageState {
   final WeatherError error;
 
-  const RequestWeatherFailedState(this.error);
+  RequestWeatherFailedState(this.error);
 
   @override
   List<Object?> get props => [error];
