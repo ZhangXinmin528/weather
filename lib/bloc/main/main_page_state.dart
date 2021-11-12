@@ -51,6 +51,16 @@ class AddSelectedCityToTabState extends MainPageState {
   List<Object?> get props => [city, lat, lon];
 }
 
+///切换Tab
+class SwitchWeatherTabState extends MainPageState {
+  final int index;
+
+  SwitchWeatherTabState(this.index);
+
+  @override
+  List<Object?> get props => [index];
+}
+
 ///主页面加载天气失败
 class FailedLoadMainPageState extends MainPageState {
   final WeatherError error;

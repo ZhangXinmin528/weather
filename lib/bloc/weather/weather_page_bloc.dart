@@ -38,7 +38,7 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
     if (state is LoadCachedWeatherDataState) {
       //加载缓存的天气数据
       final Map? result = await _sqliteManager.queryCityWeather(key);
-      LogUtil.d("WeatherPageBloc.._mapLoadCachedWeatherToState()..缓存:$result~");
+      // LogUtil.d("WeatherPageBloc.._mapLoadCachedWeatherToState()..缓存:$result~");
       if (result != null) {
         final timeStamp = result[SqliteManager.timeStampKey];
         final span = DateTimeUtils.getTimeSpanByNow(timeStamp);
@@ -63,8 +63,8 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
               result[SqliteManager.weatherIndicesKey] as Map<String, dynamic>);
 
           if (weatherNow != null && weatherNow.code == "200") {
-            yield RequestWeatherSuccessState(weatherNow, weatherAir,
-                weatherDaily, weatherIndices, weatherHour);
+            yield LoadWeatherToPageState(key,weatherNow, weatherAir, weatherDaily,
+                weatherIndices, weatherHour);
           } else {
             //缓存失效，更新缓存
             yield StartRequestWeatherState();
@@ -90,8 +90,8 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
     final latitude = cityElement.latitude;
     final longitude = cityElement.longitude;
 
-    LogUtil.d(
-        "WeatherPageBloc.._mapInitWeatherEventToState()..当前查询城市:${cityElement.name}~");
+    // LogUtil.d(
+    //     "WeatherPageBloc.._mapInitWeatherEventToState()..当前查询城市:${cityElement.name}~");
 
     if (state is StartRequestWeatherState) {
       //获取天气信息
@@ -144,8 +144,8 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
           LogUtil.d("天气tab页面..插入数据库:$index");
         }
 
-        yield RequestWeatherSuccessState(
-            weatherNow, weatherAir, weatherDaily, weatherIndices, weatherHour);
+        yield LoadWeatherToPageState(
+            key,weatherNow, weatherAir, weatherDaily, weatherIndices, weatherHour);
       } else {
         yield RequestWeatherFailedState(WeatherError.connectionError);
       }
@@ -155,6 +155,6 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
   @override
   void onTransition(Transition<WeatherPageEvent, WeatherPageState> transition) {
     super.onTransition(transition);
-    LogUtil.d("天气tab页面..onTransition:$transition");
+    // LogUtil.d("天气tab页面..onTransition:$transition");
   }
 }

@@ -3,7 +3,7 @@ import 'package:weather/resources/config/colors.dart';
 
 class WeatherUtils {
   ///获取空气质量对应颜色
-  static Color getAQIColor(String level) {
+  static Color getAQIColor(String? level) {
     switch (level) {
       case "1":
         return AppColor.airExcellent;

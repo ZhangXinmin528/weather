@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class IconUtils {
-  static Widget getWeatherNowIcon(String code, {double? size}) {
+  static Widget getWeatherNowIcon(String? code, {double? size}) {
     switch (code) {
       case "100":
         return Image.asset(

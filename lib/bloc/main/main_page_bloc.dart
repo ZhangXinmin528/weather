@@ -8,14 +8,12 @@ import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/repo/local/app_local_repo.dart';
-import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   final LocationManager _locationManager = LocationManager();
-  final WeatherRemoteRepository _weatherRemoteRepository;
 
   final AppLocalRepo _appLocalRepo;
 
@@ -23,8 +21,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   final List<TabElement> tabList = [];
 
-  MainPageBloc(this._weatherRemoteRepository, this._appLocalRepo)
-      : super(LoadCityListState()) {
+  MainPageBloc(this._appLocalRepo) : super(LoadCityListState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
       _baiduLocation = value;
@@ -149,7 +146,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   @override
   void onTransition(Transition<MainPageEvent, MainPageState> transition) {
     super.onTransition(transition);
-    LogUtil.d("天气主页面..onTransition:$transition");
+    LogUtil.d("MainPageBloc..onTransition:$transition");
   }
 
   TabElement generateTab(String name, double latitude, double longitude) {

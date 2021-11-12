@@ -1,7 +1,7 @@
 ///用于构建tab
 class TabElement {
   final String title;
-
+  int? positon;
   final CityElement cityElement;
 
   //温度
@@ -13,11 +13,13 @@ class TabElement {
   //天气icon
   final String? icon;
 
-  TabElement(this.title, this.cityElement, {this.temp, this.text, this.icon});
+  TabElement(this.title, this.cityElement,
+      {this.positon, this.temp, this.text, this.icon});
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> jsonMap = Map();
     jsonMap['title'] = this.title;
+    jsonMap['position'] = this.positon;
     jsonMap['temp'] = this.temp ?? "";
     jsonMap['text'] = this.text ?? "";
     jsonMap['icon'] = this.icon ?? "";
@@ -28,6 +30,7 @@ class TabElement {
   factory TabElement.fromJson(Map<String, dynamic> json) {
     return TabElement(json['title'] as String,
         CityElement.fromJson(json['cityElement'] as Map<String, dynamic>),
+        positon: (json['position'] ?? 0) as int,
         temp: json['temp'] as String,
         text: json['text'] as String,
         icon: json['icon'] as String);

@@ -9,7 +9,6 @@ import 'package:weather/bloc/city/city_search_bloc.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/weather/weather_page_bloc.dart';
-import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/navigation/navigation_provider.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
 import 'package:weather/weather_observer.dart';
@@ -78,7 +77,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //主页面
           BlocProvider<MainPageBloc>(
             create: (context) {
-              return MainPageBloc(_weatherRemoteRepo, _appLocalRepo);
+              return MainPageBloc(_appLocalRepo);
             },
           ),
           //天气页面

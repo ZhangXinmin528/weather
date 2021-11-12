@@ -8,11 +8,14 @@ import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
+import 'package:weather/bloc/weather/weather_page_bloc.dart';
+import 'package:weather/bloc/weather/weather_page_state.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/ui/weather/weather_page.dart';
 import 'package:weather/ui/widget/application_colors.dart';
+import 'package:weather/ui/widget/custom_page_view.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
 import 'package:weather/ui/widget/widget_helper.dart';
 import 'package:weather/utils/log_utils.dart';
@@ -37,7 +40,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   //tab
   final List<TabElement> tabList = [];
   late String currentCity = "";
-  late PageController _pageController;
+  late CustomPageController _pageController;
   late int selectedIndex = 0;
 
   @override
@@ -51,10 +54,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     _navigationBloc = BlocProvider.of(context);
 
-    _pageController = PageController(
+
+    _pageController = CustomPageController(
       initialPage: 0,
       keepPage: true,
     );
+
+    _pageController.addListener(() {
+      final offset = _pageController.offset;
+      final page = _pageController.page;
+
+      // LogUtil.e("pageview滑动监听..offset:$offset..page:$page");
+    });
   }
 
   @override
@@ -69,14 +80,14 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       body: BlocListener<MainPageBloc, MainPageState>(
         listener: (context, state) {
           if (state is InitLocationState) {
+          } else if (state is SwitchWeatherTabState) {
+            final int position = state.index;
+            _pageController.jumpToPage(position);
           } else {
             setState(() {
               loadingVisiable = false;
             });
             if (state is AddWeatherTabState) {
-              setState(() {
-                loadingVisiable = false;
-              });
               final tabs = state.tabList;
               LogUtil.d("BlocListener..size:${tabs.length}");
               if (tabs != null && tabs.isNotEmpty) {
@@ -90,8 +101,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     index = 0;
                   }
                   currentCity = tabList[index].title;
-                  _pageController.animateToPage(index,
-                      duration: Duration(seconds: 1), curve: Curves.ease);
+                  _pageController.jumpToPage(index);
                 });
               }
             }
@@ -119,7 +129,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        PageView.builder(
+        CustomPageView.builder(
           itemBuilder: (context, index) {
             return WeatherPage(tabList[index].cityElement);
           },
@@ -128,10 +138,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               currentCity = tabList[index].title;
               selectedIndex = index;
             });
+            // LogUtil.e("pageview滑动监听..onPageChanged:$index");
           },
           reverse: false,
           itemCount: tabList.length,
-          // physics: BouncingScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           controller: _pageController,
         ),

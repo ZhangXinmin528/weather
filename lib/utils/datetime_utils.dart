@@ -32,7 +32,11 @@ class DateTimeUtils {
 
   ///format utc datetime string to another format string
   ///ex. 2021-10-14T13:37+08:00
-  static String formatUTCDateTimeString(String formattedString, String format) {
+  static String formatUTCDateTimeString(
+      String? formattedString, String format) {
+    if (formattedString == null || formattedString.isEmpty) {
+      return "";
+    }
     return DateFormat(format).format(DateTime.parse(formattedString).toLocal());
   }
 

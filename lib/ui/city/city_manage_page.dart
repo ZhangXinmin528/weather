@@ -175,7 +175,7 @@ class _CityManangePageState extends State<CityManagementPage> {
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           final tab = tabList[index];
-
+          tab.positon = index;
           return _buildListItemWidget(
               key: Key("city_manage_page_listview_common"),
               tab: tab,
@@ -230,8 +230,7 @@ class _CityManangePageState extends State<CityManagementPage> {
                     _tabList.removeAt(index + 1);
                     tabList.removeAt(index + 1);
                   });
-
-                  ///TODO:需要删除对应城市的缓存数据
+                  _sqliteManager.deleteCityWeather(tab.cityElement.key);
                 },
                 confirmDismiss: (direction) {
                   return Future<bool>.delayed(Duration(milliseconds: 100), () {
@@ -292,56 +291,68 @@ class _CityManangePageState extends State<CityManagementPage> {
       required bool orderEnable,
       Now? now}) {
     return Card(
-      key: key,
-      margin: EdgeInsets.only(top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
-      color: Color.fromARGB(255, 99, 153, 237),
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(12.0))),
-      child: Container(
-        padding:
-            EdgeInsets.only(left: 12.0, right: 12.0, top: 18.0, bottom: 18.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+        key: key,
+        margin: EdgeInsets.only(top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
+        color: Color.fromARGB(255, 99, 153, 237),
+        elevation: 4.0,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            LogUtil.d(
+                "_buildListCardItem()..orderEnable：$orderEnable..position:${tab.positon}");
+            if (_menuIcon != Icons.save &&
+                !orderEnable &&
+                tab.positon != null) {
+              Navigator.of(context).pop();
+              _mainPageBloc.emit(SwitchWeatherTabState(tab.positon!));
+            }
+          },
+          child: Container(
+            padding: EdgeInsets.only(
+                left: 12.0, right: 12.0, top: 18.0, bottom: 18.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Visibility(
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 4.0),
-                    child: Icon(
-                      Icons.reorder,
-                      color: Colors.white,
-                      size: 20,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Visibility(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 4.0),
+                        child: Icon(
+                          Icons.reorder,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      visible: _isEditedMode && orderEnable,
                     ),
-                  ),
-                  visible: _isEditedMode && orderEnable,
+                    Text(
+                      tab.title,
+                      style: TextStyle(color: Colors.white, fontSize: 22.0),
+                    ),
+                  ],
                 ),
-                Text(
-                  tab.title,
-                  style: TextStyle(color: Colors.white, fontSize: 22.0),
+                Visibility(
+                  child: Column(
+                    children: [
+                      Text(
+                        "${now?.temp}°",
+                        style: TextStyle(color: Colors.white, fontSize: 20.0),
+                      ),
+                      Text(
+                        "${now?.text}",
+                        style: TextStyle(color: Colors.white, fontSize: 14.0),
+                      )
+                    ],
+                  ),
+                  visible: now != null,
                 ),
               ],
             ),
-            Visibility(
-              child: Column(
-                children: [
-                  Text(
-                    "${now?.temp}°",
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
-                  ),
-                  Text(
-                    "${now?.text}",
-                    style: TextStyle(color: Colors.white, fontSize: 14.0),
-                  )
-                ],
-              ),
-              visible: now != null,
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }

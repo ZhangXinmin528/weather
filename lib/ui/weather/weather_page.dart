@@ -47,13 +47,20 @@ class _WeatherPageState extends State<WeatherPage> {
     _weatherPageBloc = BlocProvider.of(context);
     //开始请求天气
     _weatherPageBloc.add(LoadCachedWeatherEvent(_cityElement));
+
     _weatherPageBloc.emit(LoadCachedWeatherDataState());
 
     _navigationBloc = BlocProvider.of(context);
   }
 
   @override
+  void didUpdateWidget(covariant WeatherPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // LogUtil.d("WeatherPage..didUpdateWidget()..city:${_cityElement.name}~");
+  }
+  @override
   void dispose() {
+    // LogUtil.d("WeatherPage..dispose()..city:${_cityElement.name}~");
     super.dispose();
   }
 
@@ -65,10 +72,8 @@ class _WeatherPageState extends State<WeatherPage> {
         alignment: Alignment.topCenter,
         children: [
           if (state is StartRequestWeatherState) ...[
-            // _buildLightBackground(),
-            //开始定位
-            // const LoadingWidget(),
-          ] else if (state is RequestWeatherSuccessState) ...[
+
+          ] else if (state is LoadWeatherToPageState) ...[
             _buildWeatherNowWidget(state),
           ] else ...[
             if (state is RequestWeatherFailedState)
@@ -82,9 +87,11 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   /// 展示天气实时数据
-  Widget _buildWeatherNowWidget(RequestWeatherSuccessState state) {
-    LogUtil.d(
-        "WeatherPage.._buildWeatherNowWidget()..city:${_cityElement.name}~");
+  Widget _buildWeatherNowWidget(LoadWeatherToPageState state) {
+    // if(state.key != _cityElement.key){
+    //
+    //   return SizedBox();
+    // }
     final WeatherRT weatherRT = state.weather;
     final WeatherAir weatherAir = state.weatherAir;
     final WeatherIndices weatherIndices = state.weatherIndices;
@@ -770,7 +777,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   ///随天气变化背景
-  Widget _buildWeatherChangedBg(RequestWeatherSuccessState state) {
+  Widget _buildWeatherChangedBg(LoadWeatherToPageState state) {
     final hour = DateTime.now().hour;
     var icon = state.weather.now.icon;
     String bgSufix = "";
