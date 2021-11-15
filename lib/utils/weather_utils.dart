@@ -18,7 +18,7 @@ class WeatherUtils {
       case "6":
         return AppColor.airSerious;
       default:
-        return AppColor.airExcellent;
+        return AppColor.ground;
     }
   }
 }

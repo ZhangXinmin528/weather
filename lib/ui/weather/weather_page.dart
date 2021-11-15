@@ -55,19 +55,35 @@ class _WeatherPageState extends State<WeatherPage>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    LogUtil.d(
+        "WeatherPage..didChangeDependencies()..city:${_cityElement.name}~");
+  }
+
+  @override
   void didUpdateWidget(covariant WeatherPage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // LogUtil.d("WeatherPage..didUpdateWidget()..city:${_cityElement.name}~");
+    // _weatherPageBloc.emit(LoadCachedWeatherDataState());
+    LogUtil.d(
+        "WeatherPage..didUpdateWidget()..city:${_cityElement.name}~");
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    LogUtil.d("WeatherPage..deactivate()..city:${_cityElement.name}~");
   }
 
   @override
   void dispose() {
-    // LogUtil.d("WeatherPage..dispose()..city:${_cityElement.name}~");
+    LogUtil.d("WeatherPage..dispose()..city:${_cityElement.name}~");
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // super.build(context);
     return BlocBuilder<WeatherPageBloc, WeatherPageState>(
         builder: (context, state) {
       return Stack(
@@ -90,10 +106,9 @@ class _WeatherPageState extends State<WeatherPage>
 
   /// 展示天气实时数据
   Widget _buildWeatherNowWidget(LoadWeatherToPageState state) {
-    // if(state.key != _cityElement.key){
-    //
-    //   return SizedBox();
-    // }
+    if (state.key != _cityElement.key) {
+      return SizedBox();
+    }
     final WeatherRT weatherRT = state.weather;
     final WeatherAir weatherAir = state.weatherAir;
     final WeatherIndices weatherIndices = state.weatherIndices;
