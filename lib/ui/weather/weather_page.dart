@@ -33,7 +33,8 @@ class WeatherPage extends StatefulWidget {
   }
 }
 
-class _WeatherPageState extends State<WeatherPage> {
+class _WeatherPageState extends State<WeatherPage>
+    with AutomaticKeepAliveClientMixin {
   late WeatherPageBloc _weatherPageBloc;
   late NavigationBloc _navigationBloc;
   final CityElement _cityElement;
@@ -58,6 +59,7 @@ class _WeatherPageState extends State<WeatherPage> {
     super.didUpdateWidget(oldWidget);
     // LogUtil.d("WeatherPage..didUpdateWidget()..city:${_cityElement.name}~");
   }
+
   @override
   void dispose() {
     // LogUtil.d("WeatherPage..dispose()..city:${_cityElement.name}~");
@@ -71,9 +73,9 @@ class _WeatherPageState extends State<WeatherPage> {
       return Stack(
         alignment: Alignment.topCenter,
         children: [
-          if (state is StartRequestWeatherState) ...[
-
-          ] else if (state is LoadWeatherToPageState) ...[
+          if (state is StartRequestWeatherState)
+            ...[]
+          else if (state is LoadWeatherToPageState) ...[
             _buildWeatherNowWidget(state),
           ] else ...[
             if (state is RequestWeatherFailedState)
@@ -221,7 +223,7 @@ class _WeatherPageState extends State<WeatherPage> {
               text: TextSpan(
                 text: weatherAirNow.category,
                 style: TextStyle(
-                  color: Colors.white,
+                  color: WeatherUtils.getAQIColor(weatherAirNow.level),
                   fontSize: 16.0,
                 ),
                 children: <TextSpan>[
@@ -837,4 +839,7 @@ class _WeatherPageState extends State<WeatherPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => false;
 }

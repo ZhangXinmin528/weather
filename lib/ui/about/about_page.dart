@@ -18,80 +18,95 @@ class AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: const Key('about_page'),
-      appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context)!.about,
-          style: Theme.of(context).appBarTheme.titleTextStyle,
-        ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Theme.of(context).accentColor,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.only(),
-        physics: ClampingScrollPhysics(),
-        children: [
-          _buildAppName(),
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.black,
+                ),
+              ),
+              pinned: true,
+              expandedHeight: 120.0,
+              backgroundColor: Colors.white,
+              forceElevated: innerBoxIsScrolled,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(
+                  AppLocalizations.of(context)!.about,
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+          ];
+        },
+        body: ListView(
+          padding: const EdgeInsets.only(),
+          physics: ClampingScrollPhysics(),
+          children: [
+            _buildAppName(),
 
-          // 项目主页
-          _buildOverviewItem(
-              icon: Icons.home,
-              text: AppLocalizations.of(context)!.programHome,
+            const SizedBox(
+              height: 4.0,
+            ),
+
+            // 项目主页
+            _buildOverviewItem(
+                icon: Icons.home,
+                text: AppLocalizations.of(context)!.programHome,
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return WebviewPage(
+                        "项目主页", "https://github.com/ZhangXinmin528/weather");
+                  }));
+                }),
+
+            // 意见反馈
+            _buildOverviewItem(
+              icon: Icons.feedback,
+              text: AppLocalizations.of(context)!.feedback,
+              onTap: () => _launchInBrower(
+                  "https://github.com/ZhangXinmin528/weather/issues/new"),
+            ),
+
+            // 检查更新
+            _buildOverviewItem(
+                icon: Icons.update,
+                text: AppLocalizations.of(context)!.checkUpdate,
+                onTap: () {}),
+
+            // 分享
+            _buildOverviewItem(
+              icon: Icons.share,
+              text: AppLocalizations.of(context)!.shareApp,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return WebviewPage(
-                      "项目主页", "https://github.com/ZhangXinmin528/weather");
-                }));
-              }),
+                Share.text("应用分享", "https://github.com/ZhangXinmin528/weather",
+                    "text/plain");
+              },
+            ),
 
-          // 意见反馈
-          _buildOverviewItem(
-            icon: Icons.feedback,
-            text: AppLocalizations.of(context)!.feedback,
-            onTap: () => _launchInBrower(
-                "https://github.com/ZhangXinmin528/weather/issues/new"),
-          ),
+            const SizedBox(
+              height: 4.0,
+            ),
 
-          // 检查更新
-          _buildOverviewItem(
-              icon: Icons.update,
-              text: AppLocalizations.of(context)!.checkUpdate,
-              onTap: () {}),
+            // 感谢
+            _buildTitle(title: AppLocalizations.of(context)!.thanks),
 
-          // 分享
-          _buildOverviewItem(
-            icon: Icons.share,
-            text: AppLocalizations.of(context)!.shareApp,
-            onTap: () {
-              Share.text("应用分享", "https://github.com/ZhangXinmin528/weather",
-                  "text/plain");
-            },
-          ),
+            // 感谢内容
+            _buildThanks(),
 
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: _buildLine(),
-          ),
+            const SizedBox(
+              height: 4.0,
+            ),
 
-          // 感谢
-          _buildTitle(title: AppLocalizations.of(context)!.thanks),
-
-          // 感谢内容
-          _buildThanks(),
-
-          _buildLine(),
-
-          // 联系我
-          // _buildTitle(title: S.of(context).connectMe),
-        ],
+            // 联系我
+            // _buildTitle(title: S.of(context).connectMe),
+          ],
+        ),
       ),
     );
   }
@@ -99,13 +114,19 @@ class AboutPageState extends State<AboutPage> {
   /// app名称和版本
   Widget _buildAppName() {
     return Container(
-      height: 120,
+      height: 220,
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          Image.asset(
+            "images/ic_launcher.png",
+            width: 80,
+            height: 80,
+          ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 18),
+            padding: const EdgeInsets.only(top: 10.0,bottom: 18),
             child: Text(
               AppLocalizations.of(context)!.app_name,
               style: TextStyle(
@@ -128,7 +149,7 @@ class AboutPageState extends State<AboutPage> {
                 );
               } else {
                 return Text(
-                  "",
+                  "--",
                   style: TextStyle(
                       fontSize: 14,
                       color: Colors.black87,
@@ -142,23 +163,16 @@ class AboutPageState extends State<AboutPage> {
     );
   }
 
-  Widget _buildLine() {
-    return Container(
-      margin: const EdgeInsets.only(left: 16, right: 16),
-      height: 1,
-      color: AppColor.line2,
-    );
-  }
-
   /// 标题
   Widget _buildTitle({required String title}) {
     return Container(
       height: 60,
       padding: const EdgeInsets.only(left: 16),
+      color: Colors.white,
       alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: TextStyle(fontSize: 16, color: AppColor.text2),
+        style: TextStyle(fontSize: 18, color: AppColor.text1),
       ),
     );
   }
@@ -167,6 +181,7 @@ class AboutPageState extends State<AboutPage> {
   Widget _buildThanks() {
     return Container(
       padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+      color: Colors.white,
       child: Linkify(
         text: AppLocalizations.of(context)!.thankItems,
         onOpen: (link) {
@@ -175,8 +190,8 @@ class AboutPageState extends State<AboutPage> {
                 AppLocalizations.of(context)!.app_name, link.url);
           }));
         },
-        style: TextStyle(fontSize: 14, color: AppColor.text2, height: 1.2),
-        linkStyle: TextStyle(fontSize: 14, color: Colors.black87),
+        style: TextStyle(fontSize: 16, color: AppColor.text2, height: 1.2),
+        linkStyle: TextStyle(fontSize: 16, color: Colors.black87),
       ),
     );
   }
@@ -187,6 +202,7 @@ class AboutPageState extends State<AboutPage> {
       required String text,
       required VoidCallback onTap}) {
     return Material(
+      color: Colors.white,
       child: InkWell(
         onTap: onTap,
         child: Container(

@@ -8,14 +8,11 @@ import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
-import 'package:weather/bloc/weather/weather_page_bloc.dart';
-import 'package:weather/bloc/weather/weather_page_state.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/ui/weather/weather_page.dart';
 import 'package:weather/ui/widget/application_colors.dart';
-import 'package:weather/ui/widget/custom_page_view.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
 import 'package:weather/ui/widget/widget_helper.dart';
 import 'package:weather/utils/log_utils.dart';
@@ -40,7 +37,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   //tab
   final List<TabElement> tabList = [];
   late String currentCity = "";
-  late CustomPageController _pageController;
+  late PageController _pageController;
   late int selectedIndex = 0;
 
   @override
@@ -54,8 +51,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     _navigationBloc = BlocProvider.of(context);
 
-
-    _pageController = CustomPageController(
+    _pageController = PageController(
       initialPage: 0,
       keepPage: true,
     );
@@ -129,7 +125,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        CustomPageView.builder(
+        PageView.builder(
           itemBuilder: (context, index) {
             return WeatherPage(tabList[index].cityElement);
           },
@@ -369,9 +365,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   List<PopupMenuElement> _getOverflowMenu(BuildContext context) {
     final applicationLocalization = AppLocalizations.of(context)!;
     final List<PopupMenuElement> menuList = [];
-    menuList.add(PopupMenuElement(
-        key: const Key("menu_overflow_settings"),
-        title: applicationLocalization.settings));
+    // menuList.add(PopupMenuElement(
+    //     key: const Key("menu_overflow_settings"),
+    //     title: applicationLocalization.settings));
     menuList.add(PopupMenuElement(
         key: const Key("menu_overflow_about"),
         title: applicationLocalization.about));
