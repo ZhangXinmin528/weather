@@ -15,8 +15,6 @@ import 'package:weather/weather_observer.dart';
 
 import 'data/repo/local/app_local_repo.dart';
 import 'data/repo/local/sp_manager.dart';
-import 'data/repo/remote/heweather_api_provider.dart';
-import 'data/repo/remote/weather_remote_repo.dart';
 
 void main() {
   Bloc.observer = WeatherObserver();
@@ -39,10 +37,6 @@ class _WeatherAppState extends State<WeatherApp> {
 
   ///sp
   final SPManager _storageManager = SPManager(SharedPreferencesUtils());
-
-  ///天气数据接口数据
-  final WeatherRemoteRepository _weatherRemoteRepo =
-      WeatherRemoteRepository(HeWeatherApiProvider());
 
   ///app整体缓存
   late AppLocalRepo _appLocalRepo;
@@ -83,7 +77,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //天气页面
           BlocProvider<WeatherPageBloc>(
             create: (context) {
-              return WeatherPageBloc(_weatherRemoteRepo);
+              return WeatherPageBloc();
             },
           ),
           //城市管理
@@ -95,7 +89,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //城市搜索
           BlocProvider<CitySearchBloc>(
             create: (context) {
-              return CitySearchBloc(_weatherRemoteRepo, _appLocalRepo);
+              return CitySearchBloc(_appLocalRepo);
             },
           ),
         ],

@@ -43,20 +43,19 @@ android {
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-//    signingConfigs {
-//
-//        def filePath = '../sign/keystore.jks'
-//        def pwd = properties.getProperty("sign.pwd")
-//        def alias = properties.getProperty("sign.alias")
-//
-//        release {
-//            storeFile file(filePath)
-//            storePassword pwd
-//            keyAlias alias
-//            keyPassword pwd
-//        }
-//
-//    }
+    signingConfigs {
+        def filePath = '../android/sign/keystore.jks'
+        def pwd = properties.getProperty("sign.pwd")
+        def alias = properties.getProperty("sign.alias")
+
+        release {
+            storeFile file(filePath)
+            storePassword pwd
+            keyAlias alias
+            keyPassword pwd
+        }
+
+    }
 
     buildTypes {
         release {

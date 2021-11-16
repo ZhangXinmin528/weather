@@ -6,14 +6,12 @@ import 'package:weather/bloc/city/city_search_state.dart';
 import 'package:weather/data/model/remote/city/city_top.dart';
 import 'package:weather/data/repo/local/app_local_repo.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
-import 'package:weather/utils/log_utils.dart';
 
 class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
   final AppLocalRepo _appLocalRepo;
-  final WeatherRemoteRepository _weatherRemoteRepository;
+  final WeatherRemoteRepo _weatherRemoteRepository = WeatherRemoteRepo.INSTANCE;
 
-  CitySearchBloc(this._weatherRemoteRepository, this._appLocalRepo)
-      : super(TopCitiesInitDataState());
+  CitySearchBloc(this._appLocalRepo) : super(TopCitiesInitDataState());
 
   @override
   Stream<CitySearchState> mapEventToState(CitySearchEvent event) async* {

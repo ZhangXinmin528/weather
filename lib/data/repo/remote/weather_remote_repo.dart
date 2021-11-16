@@ -12,16 +12,21 @@ import 'package:weather/data/model/remote/weather/weather_warning.dart';
 
 import 'heweather_api_provider.dart';
 
-class WeatherRemoteRepository {
-  final HeWeatherApiProvider _weatherApiProvider;
+class WeatherRemoteRepo {
+  late HeWeatherApiProvider _weatherApiProvider;
 
-  WeatherRemoteRepository(this._weatherApiProvider);
+  WeatherRemoteRepo._internal() {
+    _weatherApiProvider = HeWeatherApiProvider();
+  }
+
+  static final WeatherRemoteRepo INSTANCE = WeatherRemoteRepo._internal();
 
   //==========================================================================//
   ///城市天气API
   ///获取实时天气信息
   Future<WeatherRT> requestWeatherNow(
       double? longitude, double? latitude) async {
+
     final response =
         await _weatherApiProvider.requestWeatherNow(longitude, latitude);
 

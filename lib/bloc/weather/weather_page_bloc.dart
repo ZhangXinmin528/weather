@@ -14,11 +14,10 @@ import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
-  final WeatherRemoteRepository _weatherRemoteRepository;
+  final WeatherRemoteRepo _weatherRemoteRepository = WeatherRemoteRepo.INSTANCE;
   final SqliteManager _sqliteManager = SqliteManager.INSTANCE;
 
-  WeatherPageBloc(this._weatherRemoteRepository)
-      : super(LoadCachedWeatherDataState());
+  WeatherPageBloc() : super(LoadCachedWeatherDataState());
 
   @override
   Stream<WeatherPageState> mapEventToState(WeatherPageEvent event) async* {
@@ -63,8 +62,8 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
               result[SqliteManager.weatherIndicesKey] as Map<String, dynamic>);
 
           if (weatherNow != null && weatherNow.code == "200") {
-            yield LoadWeatherToPageState(key,weatherNow, weatherAir, weatherDaily,
-                weatherIndices, weatherHour);
+            yield LoadWeatherToPageState(key, weatherNow, weatherAir,
+                weatherDaily, weatherIndices, weatherHour);
           } else {
             //缓存失效，更新缓存
             yield StartRequestWeatherState();
@@ -144,8 +143,8 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
           LogUtil.d("天气tab页面..插入数据库:$index");
         }
 
-        yield LoadWeatherToPageState(
-            key,weatherNow, weatherAir, weatherDaily, weatherIndices, weatherHour);
+        yield LoadWeatherToPageState(key, weatherNow, weatherAir, weatherDaily,
+            weatherIndices, weatherHour);
       } else {
         yield RequestWeatherFailedState(WeatherError.connectionError);
       }

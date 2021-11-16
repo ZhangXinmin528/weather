@@ -581,6 +581,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.0"
+  retry:
+    dependency: "direct main"
+    description:
+      name: retry
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.0+1"
   shared_preferences:
     dependency: "direct main"
     description:

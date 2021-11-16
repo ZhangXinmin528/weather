@@ -65,8 +65,7 @@ class _WeatherPageState extends State<WeatherPage>
   void didUpdateWidget(covariant WeatherPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     // _weatherPageBloc.emit(LoadCachedWeatherDataState());
-    LogUtil.d(
-        "WeatherPage..didUpdateWidget()..city:${_cityElement.name}~");
+    LogUtil.d("WeatherPage..didUpdateWidget()..city:${_cityElement.name}~");
   }
 
   @override

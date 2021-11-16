@@ -12,6 +12,9 @@ WeatherAir _$WeatherAirFromJson(Map<String, dynamic> json) {
     json['updateTime'] as String,
     json['fxLink'] as String,
     Now.fromJson(json['now'] as Map<String, dynamic>),
+    (json['station'] as List<dynamic>)
+        .map((e) => Station.fromJson(e as Map<String, dynamic>))
+        .toList(),
     Refer.fromJson(json['refer'] as Map<String, dynamic>),
   );
 }
@@ -22,6 +25,7 @@ Map<String, dynamic> _$WeatherAirToJson(WeatherAir instance) =>
       'updateTime': instance.updateTime,
       'fxLink': instance.fxLink,
       'now': instance.now.toJson(),
+      'station': instance.station.map((e) => e.toJson()).toList(),
       'refer': instance.refer.toJson(),
     };
 

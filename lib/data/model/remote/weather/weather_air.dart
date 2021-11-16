@@ -16,8 +16,8 @@ class WeatherAir {
   @JsonKey(name: 'now')
   Now now;
 
-  // @JsonKey(name: 'station')
-  // List<Station> station;
+  @JsonKey(name: 'station')
+  List<Station> station;
 
   @JsonKey(name: 'refer')
   Refer refer;
@@ -27,7 +27,7 @@ class WeatherAir {
     this.updateTime,
     this.fxLink,
     this.now,
-    // this.station,
+    this.station,
     this.refer,
   );
 
