@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retry/retry.dart';
+import 'package:weather/http/http_exception.dart';
 import 'package:weather/http/interceptor/http_interceptor.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class DioClient {
   late Dio _dio;
@@ -25,73 +27,102 @@ class DioClient {
 
   static final DioClient instance = DioClient._internal();
 
-  Future<Response<T>> get<T>(
+  final Function() _defaultStart = () {};
+
+  final Function(HttpException exception) _defaultError = (error) {
+    LogUtil.e(error.toString());
+  };
+
+  Future<Response?> get(
     String path, {
+    Function()? onStart,
+    Function(HttpException exception)? onError,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
   }) async {
-    final Response<T> response = await onRetry(
-      () => _dio.get<T>(path,
-          queryParameters: queryParameters,
-          options: options,
-          cancelToken: cancelToken,
-          onReceiveProgress: onReceiveProgress),
-    );
+    final response = onRetry(
+        () => _dio.get(path,
+            queryParameters: queryParameters,
+            options: options,
+            cancelToken: cancelToken,
+            onReceiveProgress: onReceiveProgress),
+        onStart: onStart ?? _defaultStart,
+        onError: onError ?? _defaultError);
+
     return response;
   }
 
-  Future<Response<T>> post<T>(
+  Future<Response?> post(
     String path, {
-    data,
+    Function()? onStart,
+    Function(HttpException exception)? onError,
     Map<String, dynamic>? queryParameters,
+    data,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
     final response = await onRetry(
-      () => _dio.post<T>(path,
-          data: data,
-          queryParameters: queryParameters,
-          options: options,
-          cancelToken: cancelToken,
-          onSendProgress: onSendProgress,
-          onReceiveProgress: onReceiveProgress),
-    );
+        () => _dio.post(path,
+            data: data,
+            queryParameters: queryParameters,
+            options: options,
+            cancelToken: cancelToken,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress),
+        onStart: onStart ?? _defaultStart,
+        onError: onError ?? _defaultError);
 
     return response;
   }
 
-  Future<Response> download(
+  Future<Response?> download(
     String urlPath,
     savePath, {
-    ProgressCallback? onReceiveProgress,
+    Function()? onStart,
+    Function(HttpException exception)? onError,
     Map<String, dynamic>? queryParameters,
+    ProgressCallback? onReceiveProgress,
     CancelToken? cancelToken,
     bool deleteOnError = true,
     String lengthHeader = Headers.contentLengthHeader,
     data,
     Options? options,
   }) async {
-    final Response response = await onRetry(
-      () => _dio.download(urlPath, savePath,
-          onReceiveProgress: onReceiveProgress,
-          queryParameters: queryParameters,
-          cancelToken: cancelToken,
-          deleteOnError: deleteOnError,
-          lengthHeader: lengthHeader,
-          data: data,
-          options: options),
-    );
+    final Response? response = await onRetry(
+        () => _dio.download(urlPath, savePath,
+            onReceiveProgress: onReceiveProgress,
+            queryParameters: queryParameters,
+            cancelToken: cancelToken,
+            deleteOnError: deleteOnError,
+            lengthHeader: lengthHeader,
+            data: data,
+            options: options),
+        onStart: onStart ?? _defaultStart,
+        onError: onError ?? _defaultError);
 
     return response;
   }
 
-  Future<T> onRetry<T>(FutureOr<T> Function() fn) {
-    return retry(fn,
-        maxAttempts: 3,
-        retryIf: (err) => err is DioError && !CancelToken.isCancel(err));
+  Future<T>? onRetry<T>(
+    FutureOr<T> Function() fn, {
+    required Function() onStart,
+    required Function(HttpException exception) onError,
+  }) {
+    try {
+      onStart();
+      return retry(fn,
+          maxAttempts: 3,
+          retryIf: (err) =>
+              err is DioError &&
+              err.type != DioErrorType.other &&
+              !CancelToken.isCancel(err));
+    } on DioError catch (error) {
+      onError(error.error);
+      return null;
+    }
   }
 }

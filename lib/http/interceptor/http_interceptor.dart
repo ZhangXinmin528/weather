@@ -17,7 +17,7 @@ class HttpInterceptor extends InterceptorsWrapper {
   void onError(DioError err, ErrorInterceptorHandler handler) {
     final HttpException exception = HttpException.generate(err);
     err.error = exception;
-    LogUtil.d("request error:${err.toString()}");
+    // LogUtil.d("request error:${err.toString()}");
 
     super.onError(err, handler);
   }

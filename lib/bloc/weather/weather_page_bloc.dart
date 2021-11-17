@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather/bloc/weather/weather_page_event.dart';
 import 'package:weather/bloc/weather/weather_page_state.dart';
@@ -94,8 +96,16 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
 
     if (state is StartRequestWeatherState) {
       //获取天气信息
-      final WeatherRT weatherNow =
-          await _weatherRemoteRepository.requestWeatherNow(longitude, latitude);
+      final StreamController<WeatherRT> _weather = StreamController();
+      _weatherRemoteRepository.requestWeatherNow(longitude, latitude,
+          onResponse: (map) {
+            final WeatherRT weatherRT = WeatherRT.fromJson(map!);
+            _weather.add(weatherRT);
+          });
+
+      _weather.stream.listen((event) {
+        yield RequestWeatherFailedState(WeatherError.connectionError);
+      });
 
       //实时空气质量
       final WeatherAir weatherAir =

@@ -9,7 +9,7 @@ import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 
 class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
   final AppLocalRepo _appLocalRepo;
-  final WeatherRemoteRepo _weatherRemoteRepository = WeatherRemoteRepo.INSTANCE;
+  final WeatherRemoteRepo _weatherRemoteRepository = WeatherRemoteRepo();
 
   CitySearchBloc(this._appLocalRepo) : super(TopCitiesInitDataState());
 

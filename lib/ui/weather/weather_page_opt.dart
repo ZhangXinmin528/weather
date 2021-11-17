@@ -18,7 +18,7 @@ class WeatherPageOpt extends StatefulWidget {
 }
 
 class _WeatherPageOptState extends State<WeatherPageOpt> {
-  final WeatherRemoteRepo _weatherRemoteRepo = WeatherRemoteRepo.INSTANCE;
+  final WeatherRemoteRepo _weatherRemoteRepo = WeatherRemoteRepo();
   final StreamController<WeatherRT> _weather = StreamController();
   final CityElement _cityElement;
 
@@ -93,10 +93,11 @@ class _WeatherPageOptState extends State<WeatherPageOpt> {
     final latitude = element.latitude;
     final longitude = element.longitude;
 
-    final WeatherRT weatherRT =
-        await _weatherRemoteRepo.requestWeatherNow(longitude, latitude);
-
-    _weather.add(weatherRT);
+    _weatherRemoteRepo.requestWeatherNow(longitude, latitude,
+        onResponse: (map) {
+      final WeatherRT weatherRT = WeatherRT.fromJson(map!);
+      _weather.add(weatherRT);
+    });
   }
 
   @override
