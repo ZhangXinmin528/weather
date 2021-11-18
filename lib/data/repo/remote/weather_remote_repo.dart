@@ -140,7 +140,6 @@ class WeatherRemoteRepo {
     double? longitude,
     double? latitude, {
     Function()? onStart,
-    required Function(Map<String, dynamic>? map) onResponse,
     Function(HttpException error)? onError,
   }) async {
     final path = _weatherApi + _cityWeatherPoint + _cityWeather24H;
@@ -349,7 +348,7 @@ class WeatherRemoteRepo {
       'location': "$city",
       'range': "cn",
     };
-    final response = _dioClient.get(
+    final response =await _dioClient.get(
       path,
       queryParameters: params,
       onStart: onStart,
@@ -374,7 +373,7 @@ class WeatherRemoteRepo {
       'range': "cn",
       'number': "20",
     };
-    final response = _dioClient.get(
+    final response = await _dioClient.get(
       path,
       queryParameters: params,
       onStart: onStart,

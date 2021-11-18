@@ -127,6 +127,10 @@ class _CityManangePageState extends State<CityManagementPage> {
                   child: TextButton.icon(
                       onPressed: () {
                         _navigationBloc.add(CitySearchPageNavigationEvent());
+                        if (_changed) {
+                          _mainPageBloc.add(LoadCityListEvent());
+                          _mainPageBloc.emit(LoadCityListState());
+                        }
                         Navigator.of(context).pop();
                       },
                       style: ButtonStyle(

@@ -32,7 +32,7 @@ class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
 
       if (topCities == null) {
         topCities = await _weatherRemoteRepository.requestCityTop();
-        final cities = convert.jsonEncode(topCities.toJson());
+        final cities = convert.jsonEncode(topCities?.toJson());
         _appLocalRepo.saveTopCities(cities);
       }
 

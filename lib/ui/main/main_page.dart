@@ -11,11 +11,8 @@ import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/ui/weather/weather_page.dart';
 import 'package:weather/ui/weather/weather_page_opt.dart';
-import 'package:weather/ui/widget/application_colors.dart';
 import 'package:weather/ui/widget/loading_widget.dart';
-import 'package:weather/ui/widget/widget_helper.dart';
 import 'package:weather/utils/log_utils.dart';
 
 ///天气主页
@@ -44,6 +41,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    LogUtil.e("MainPage..initState()~");
     _appBloc = BlocProvider.of(context);
     _appBloc.add(LoadSettingsAppEvent());
 
@@ -56,13 +54,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       initialPage: 0,
       keepPage: true,
     );
-
-    _pageController.addListener(() {
-      final offset = _pageController.offset;
-      final page = _pageController.page;
-
-      // LogUtil.e("pageview滑动监听..offset:$offset..page:$page");
-    });
   }
 
   @override
@@ -98,7 +89,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     index = 0;
                   }
                   currentCity = tabList[index].title;
-                  _pageController.jumpToPage(index);
+                  // LogUtil.d("BlocListener..jumpToPage:$index");
+                  _pageController.animateToPage(index,
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn);
                 });
               }
             }
@@ -203,19 +197,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         // _mainScreenBloc.add(RefreshMainEvent());
       },
       key: const Key("main_screen_failed_to_load_data_widget"),
-    );
-  }
-
-  ///背景色
-  Widget _buildGradientWidget() {
-    return Container(
-      key: const Key("main_screen_gradient_widget"),
-      decoration: BoxDecoration(
-        gradient: WidgetHelper.buildGradient(
-          ApplicationColors.nightStartColor,
-          ApplicationColors.nightEndColor,
-        ),
-      ),
     );
   }
 

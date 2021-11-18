@@ -237,7 +237,7 @@ class _WeatherPageState extends State<WeatherPage>
               text: TextSpan(
                 text: weatherAirNow.category,
                 style: TextStyle(
-                  color: WeatherUtils.getAQIColor(weatherAirNow.level),
+                  color: WeatherUtils.getAQIColorByLevel(weatherAirNow.level),
                   fontSize: 16.0,
                 ),
                 children: <TextSpan>[
@@ -245,7 +245,7 @@ class _WeatherPageState extends State<WeatherPage>
                   TextSpan(
                     text: weatherAirNow.aqi,
                     style: TextStyle(
-                      color: WeatherUtils.getAQIColor(weatherAirNow.level),
+                      color: WeatherUtils.getAQIColorByLevel(weatherAirNow.level),
                       fontSize: 16.0,
                     ),
                   ),
