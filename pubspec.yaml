@@ -1,6 +1,6 @@
 name: weather
 description: An weather flutter project .
-version: 1.0.0+2
+version: 1.0.0+4
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 

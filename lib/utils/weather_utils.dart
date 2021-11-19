@@ -44,4 +44,27 @@ class WeatherUtils {
     }
     return Colors.white;
   }
+
+  ///获取空气质量对应颜色
+  static String getAQILevelDesc(String? aqi) {
+    if (aqi == null || aqi.isEmpty) {
+      return "";
+    }
+
+    final aqiValue = int.parse(aqi);
+    if (aqiValue >= 0 && aqiValue <= 50) {
+      return "空气 优";
+    } else if (aqiValue >= 51 && aqiValue <= 100) {
+      return "空气 良";
+    } else if (aqiValue >= 101 && aqiValue <= 150) {
+      return "轻度污染";
+    } else if (aqiValue >= 151 && aqiValue <= 200) {
+      return "重度污染";
+    } else if (aqiValue >= 201 && aqiValue <= 300) {
+      return "重度污染";
+    } else if (aqiValue > 300) {
+      return "严重污染";
+    }
+    return "";
+  }
 }

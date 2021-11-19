@@ -18,6 +18,7 @@ import 'data/repo/local/sp_manager.dart';
 
 void main() {
   Bloc.observer = WeatherObserver();
+
   runApp(WeatherApp());
 }
 

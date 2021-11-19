@@ -43,6 +43,16 @@ double getScreenHeight(BuildContext context) {
 
 double _statusHeight = 0;
 
+///获取屏幕像素密度
+double getScreenPixelRatio(BuildContext context) {
+  if (_devicePixelRatio == 0) {
+    _devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+  }
+  return _devicePixelRatio;
+}
+
+double _devicePixelRatio = 0;
+
 /// 获取系统状态栏高度
 double getStatusHeight(BuildContext context) {
   if (_statusHeight != 0) {
@@ -118,7 +128,7 @@ Future push<T extends StatefulWidget>(BuildContext context,
 void exitApp() => SystemNavigator.pop();
 
 /// 打开浏览器
-Future<void> openBrowser(String url)  async {
+Future<void> openBrowser(String url) async {
   if (await canLaunch(url)) {
     await launch(url);
   } else {

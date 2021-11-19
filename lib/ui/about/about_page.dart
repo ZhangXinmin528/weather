@@ -172,7 +172,7 @@ class AboutPageState extends State<AboutPage> {
       alignment: Alignment.centerLeft,
       child: Text(
         title,
-        style: TextStyle(fontSize: 18, color: AppColor.text1),
+        style: TextStyle(fontSize: 18, color: AppColor.textBlack),
       ),
     );
   }
@@ -190,7 +190,7 @@ class AboutPageState extends State<AboutPage> {
                 AppLocalizations.of(context)!.app_name, link.url);
           }));
         },
-        style: TextStyle(fontSize: 16, color: AppColor.text2, height: 1.2),
+        style: TextStyle(fontSize: 16, color: AppColor.textGreyDark, height: 1.2),
         linkStyle: TextStyle(fontSize: 16, color: Colors.black87),
       ),
     );
@@ -215,13 +215,13 @@ class AboutPageState extends State<AboutPage> {
               Icon(
                 icon,
                 size: 24,
-                color: AppColor.text3,
+                color: AppColor.textGreyLight,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: Text(
                   text,
-                  style: TextStyle(fontSize: 14, color: AppColor.text2),
+                  style: TextStyle(fontSize: 14, color: AppColor.textGreyDark),
                 ),
               ),
             ],

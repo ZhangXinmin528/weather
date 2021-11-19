@@ -297,7 +297,8 @@ class _CityManangePageState extends State<CityManagementPage> {
     return Card(
         key: key,
         margin: EdgeInsets.only(top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
-        color: Color.fromARGB(255, 99, 153, 237),
+        color:
+            now == null ? Colors.white : _getWeatherThemeColor(type: now.text),
         elevation: 4.0,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12.0))),
@@ -358,5 +359,34 @@ class _CityManangePageState extends State<CityManagementPage> {
             ),
           ),
         ));
+  }
+
+  ///天气主题色
+  Color _getWeatherThemeColor({required String type}) {
+    final isDay = DateTime.now().hour >= 6 && DateTime.now().hour < 18;
+
+    if (type.contains("晴") || type.contains("多云")) {
+      return isDay ? const Color(0xFF51C0F8) : const Color(0xFF7F9EE9);
+    } else if (type.contains("雨")) {
+      if (type.contains("雪")) {
+        return const Color(0XFF5697D8);
+      } else {
+        return const Color(0xFF7187DB);
+      }
+    } else if (type.contains("雪")) {
+      return const Color(0xFF62B1FF);
+    } else if (type.contains("冰雹")) {
+      return const Color(0xFF0CB399);
+    } else if (type.contains("霾")) {
+      return const Color(0xFF7F8195);
+    } else if (type.contains("沙") || type.contains("尘")) {
+      return const Color(0xFFE99E3C);
+    } else if (type.contains("雾")) {
+      return const Color(0xFF8CADD3);
+    } else if (type.contains("阴")) {
+      return const Color(0xFF6D8DB1);
+    } else {
+      return isDay ? const Color(0xFF51C0F8) : const Color(0xFF7F9EE9);
+    }
   }
 }

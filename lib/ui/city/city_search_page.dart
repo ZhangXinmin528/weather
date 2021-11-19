@@ -73,7 +73,7 @@ class CitySearchPageState extends State<CitySearchPage> {
                 color: Colors.grey,
               ),
               border: InputBorder.none,
-              contentPadding: EdgeInsets.all(0),
+              contentPadding: EdgeInsets.only(top: 4.0),
               hintText: "搜索城市",
               hintStyle: TextStyle(color: Colors.grey.shade400),
               suffixIcon: Visibility(

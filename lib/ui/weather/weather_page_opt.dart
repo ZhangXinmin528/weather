@@ -8,11 +8,11 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/remote/weather_provider.dart';
 import 'package:weather/resources/config/colors.dart';
-import 'package:weather/ui/webview/webview_page.dart';
 import 'package:weather/ui/widget/weather/weather_view.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
 import 'package:weather/utils/log_utils.dart';
+import 'package:weather/utils/system_util.dart';
 import 'package:weather/utils/weather_utils.dart';
 
 class WeatherPageOpt extends StatefulWidget {
@@ -28,16 +28,28 @@ class WeatherPageOpt extends StatefulWidget {
 
 class _WeatherPageOptState extends State<WeatherPageOpt>
     with AutomaticKeepAliveClientMixin {
+
   final WeatherProvider _weatherProvider = WeatherProvider();
   final CityElement _cityElement;
+
+  Color? weatherColor;
+
+  double _devicePixelRatio = 0;
 
   _WeatherPageOptState(this._cityElement);
 
   @override
   void initState() {
     super.initState();
+    weatherColor = Colors.white38;
     LogUtil.d("WeatherPageOpt..initState");
     _weatherProvider.initState(_cityElement);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _devicePixelRatio = getScreenPixelRatio(context);
   }
 
   @override
@@ -65,8 +77,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     final WeatherHour weatherHour = weatherMap['weatherHour'];
 
     final weatherNow = weatherRT.now;
-
-    final temp = weatherNow.temp + "°";
+    weatherColor = _getWeatherThemeColor(type: weatherNow.text);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -79,32 +90,31 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
           child: ConstrainedBox(
             constraints:
                 BoxConstraints(minHeight: viewportConstrants.maxHeight),
-            child: Stack(
+            child: Column(
               children: [
-                // _buildLightBackground(viewportConstrants.maxHeight),
-
                 WeatherView(
                   type: weatherNow.text,
-                  child: SizedBox(),
-                  color: _getAppBarColor(type: weatherNow.text),
-                ),
-                Column(
-                  children: [
-                    const SizedBox(
-                      height: 120.0,
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    child: Column(
+                      children: [
+                        _buildUpdateTimeWidget(weatherRT),
+                        SizedBox(
+                          height: _devicePixelRatio == 0
+                              ? 50
+                              : 18.2 * _devicePixelRatio,
+                        ),
+                        _buildWeatherDesc(weatherRT, weatherAir),
+                      ],
                     ),
-                    _buildTempWidget(temp),
-                    _buildWeatherDescAndIcon(weatherRT),
-                    _buildWeatherAir(weatherAir),
-                    _buildUpdateTimeWidget(),
-                    _buildOtherWeatherWidget(weatherRT),
-                    _buildWeatherHour(weatherHour),
-                    _buildWeather7Day(weatherDaily),
-                    _buildWindDesc(weatherRT),
-                    _buildIndicesWidget(weatherIndices),
-                    _buildWeatherFooter(),
-                  ],
+                  ),
+                  color: weatherColor!,
                 ),
+                _buildWeatherHour(weatherHour),
+                _buildWeather7Day(weatherDaily),
+                _buildWindDesc(weatherRT),
+                _buildIndicesWidget(weatherIndices),
+                _buildWeatherFooter(),
               ],
             ),
           ),
@@ -113,8 +123,8 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     );
   }
 
-  /// 获取Appbar的颜色
-  Color _getAppBarColor({required String type}) {
+  ///天气主题色
+  Color _getWeatherThemeColor({required String type}) {
     final isDay = DateTime.now().hour >= 6 && DateTime.now().hour < 18;
 
     if (type.contains("晴") || type.contains("多云")) {
@@ -142,206 +152,124 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     }
   }
 
-  ///Time
-  Widget _buildUpdateTimeWidget() {
+  ///Time_buildUpdateTimeWidget
+  Widget _buildUpdateTimeWidget(WeatherRT weatherRT) {
+    final top = _devicePixelRatio == 0
+        ? 40 + getAppBarHeight()
+        : 14.6 * _devicePixelRatio + getAppBarHeight();
     return Container(
       alignment: Alignment.topRight,
-      margin: EdgeInsets.only(right: 16.0, top: 50.0),
+      margin: EdgeInsets.only(right: 16.0, top: top),
       child: Text(
-        DateTimeUtils.formatNowTime() + "更新",
+        "更新于：${DateTimeUtils.formatUTCDateTimeString(weatherRT.updateTime, DateTimeUtils.weatherHourFormat)}",
         key: const Key("main_screen_update_time"),
-        style: TextStyle(fontSize: 16.0, color: Colors.grey.shade200),
+        style: TextStyle(fontSize: 14.0, color: AppColor.textWhite60),
       ),
     );
   }
 
-  ///temp
-  Widget _buildTempWidget(String temp) {
-    return Container(
-      alignment: Alignment.topCenter,
-      margin: EdgeInsets.only(left: 16.0, top: 80.0),
-      child: Text(
-        temp,
-        key: const Key("main_screen_temp_now"),
-        style: TextStyle(fontSize: 100, fontWeight: FontWeight.normal),
-      ),
-    );
-  }
-
-  ///weather icon and desc
-  Widget _buildWeatherDescAndIcon(WeatherRT weather) {
+  ///weather now desc
+  Widget _buildWeatherDesc(WeatherRT weather, WeatherAir weatherAir) {
     final weatherNow = weather.now;
+    final temp = weatherNow.temp + "°";
+    final airNow = weatherAir.now;
+
     return Container(
       key: const Key("main_screen_desc_and_icon"),
       margin: EdgeInsets.only(
-        left: 16.0,
         top: 20,
       ),
-      height: 40,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          IconUtils.getWeatherNowIcon(weatherNow.icon),
-          Padding(
-            padding: EdgeInsets.only(left: 6.0),
-            child: Text(
-              weatherNow.text,
-              key: const Key("main_screen_weathernow_text"),
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// weather air
-  Widget _buildWeatherAir(WeatherAir weatherAir) {
-    final weatherAirNow = weatherAir.now;
-
-    final ButtonStyle buttonStyle =
-        ElevatedButton.styleFrom(primary: Colors.white30);
-
-    return Container(
       alignment: Alignment.center,
-      key: const Key("main_screen_aqi_now"),
-      margin: EdgeInsets.only(top: 20.0, left: 16.0),
-      child: TextButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return WebviewPage("和风天气", weatherAir.fxLink);
-          }));
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RichText(
-              text: TextSpan(
-                text: weatherAirNow.category,
-                style: TextStyle(
-                  color: WeatherUtils.getAQIColorByAqi(weatherAirNow.aqi),
-                  fontSize: 20.0,
-                ),
-                children: <TextSpan>[
-                  TextSpan(text: "\u3000"),
-                  TextSpan(
-                    text: weatherAirNow.aqi,
-                    style: TextStyle(
-                      color: WeatherUtils.getAQIColorByAqi(weatherAirNow.aqi),
-                      fontSize: 20.0,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                temp,
+                key: const Key("main_screen_temp_now"),
+                style: TextStyle(fontSize: 100, fontWeight: FontWeight.normal),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 10.0),
+                    child: Text(
+                      weatherNow.text,
+                      key: const Key("main_screen_weathernow_text"),
+                      style: TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 10.0, top: 10.0),
+                    child: Text(
+                      WeatherUtils.getAQILevelDesc(airNow.aqi),
+                      key: const Key("main_screen_weathernow_text"),
+                      style: TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.normal),
                     ),
                   ),
                 ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: Colors.white,
-            )
-          ],
-        ),
-        style: buttonStyle,
-      ),
-    );
-  }
-
-  ///other weather
-  Widget _buildOtherWeatherWidget(WeatherRT weather) {
-    final weatherNow = weather.now;
-    return Container(
-      key: const Key("main_screen_other_weather"),
-      margin: EdgeInsets.only(top: 40.0, left: 16.0, right: 16.0),
-      color: Colors.white38,
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 16.0,
-                  bottom: 8.0,
-                  left: 16.0,
-                ),
-                child: Text(
-                  "降水",
-                  style: TextStyle(fontSize: 16.0, color: Colors.black54),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 8.0, bottom: 16.0, left: 12.0),
-                child: Text(
-                  weatherNow.precip + "mm",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
-                ),
               )
             ],
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
-                child: Text(
-                  "湿度",
-                  style: TextStyle(fontSize: 16.0, color: Colors.black54),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
-                child: Text(
-                  weatherNow.humidity + "%",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
-                ),
-              )
-            ],
+          const SizedBox(
+            height: 12.0,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+          Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
-                child: Text(
-                  weatherNow.windDir,
-                  style: TextStyle(fontSize: 16.0, color: Colors.black54),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 8.0, right: 4.0),
+                    child: Text(
+                      "湿度",
+                      style:
+                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 4.0, top: 2.0, right: 8.0),
+                    child: Text(
+                      weatherNow.humidity + "%",
+                      style:
+                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                    ),
+                  )
+                ],
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 8.0, bottom: 16.0),
-                child: Text(
-                  weatherNow.windScale + "级",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
-                ),
-              )
-            ],
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 16.0, bottom: 8.0, right: 12.0),
-                child: Text(
-                  "气压",
-                  style: TextStyle(fontSize: 16.0, color: Colors.black54),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 8.0, right: 4.0),
+                    child: Text(
+                      weatherNow.windDir,
+                      style:
+                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 4.0, top: 2.0, right: 8.0),
+                    child: Text(
+                      weatherNow.windScale + "级",
+                      style:
+                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                    ),
+                  )
+                ],
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 8.0, bottom: 16.0, right: 12.0),
-                child: Text(
-                  weatherNow.pressure + "hpa",
-                  style: TextStyle(fontSize: 14.0, color: Colors.black),
-                ),
-              )
             ],
-          ),
+          )
         ],
       ),
     );
@@ -350,59 +278,47 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   ///24Hour weather
   Widget _buildWeatherHour(WeatherHour weatherHour) {
     return Container(
-      child: Column(
-        children: [
-          Divider(
-            color: AppColor.line,
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
-            child: const Text(
-              "24小时预报",
-              style: TextStyle(fontSize: 18.0, color: Colors.grey),
-            ),
-          ),
-          Divider(
-            color: AppColor.line,
-          ),
-          Container(
-            height: 120,
-            padding: EdgeInsets.only(left: 16.0, right: 16.0),
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: weatherHour.hourly.length,
-                shrinkWrap: true,
-                // physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  final hour = weatherHour.hourly[index];
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(left: 8, right: 8.0),
-                        child: Text(
-                          DateTimeUtils.formatUTCDateTimeString(
-                              hour.fxTime, DateTimeUtils.weatherHourFormat),
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                      Text(
-                        hour.temp + "°",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                      ),
-                      IconUtils.getWeatherNowIcon(hour.icon, size: 25),
-                      Text(
-                        hour.windScale + "级",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  );
-                }),
-          ),
-        ],
-      ),
+      height: 120,
+      color: AppColor.ground,
+      padding: EdgeInsets.only(left: 8.0, right: 8.0),
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: weatherHour.hourly.length,
+          shrinkWrap: true,
+          // physics: NeverScrollableScrollPhysics(),
+          itemBuilder: (BuildContext context, int index) {
+            final hour = weatherHour.hourly[index];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 16, top: 12.0, right: 16),
+                  child: Text(
+                    hour.temp + "°",
+                    style: TextStyle(
+                        color: index == 0
+                            ? AppColor.textGreyLight
+                            : AppColor.textBlack,
+                        fontSize: 16),
+                  ),
+                ),
+                IconUtils.getWeatherNowIcon(hour.icon, size: 30),
+                Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 12.0),
+                  child: Text(
+                    DateTimeUtils.formatUTCDateTimeString(
+                        hour.fxTime, DateTimeUtils.weatherHourFormat),
+                    style: TextStyle(
+                      color: index == 0
+                          ? AppColor.textGreyLight
+                          : AppColor.textBlack,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
     );
   }
 
@@ -411,11 +327,11 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     final indicesDaily = weatherIndices.daily;
 
     return Container(
-      color: Colors.white,
+      color: AppColor.ground,
       child: Column(
         children: [
           Divider(
-            color: AppColor.line,
+            color: AppColor.line3,
           ),
           Container(
             alignment: Alignment.centerLeft,
@@ -426,13 +342,13 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
             ),
           ),
           Divider(
-            color: AppColor.line,
+            color: AppColor.line3,
           ),
           Container(
             key: const Key("main_screen_indicies_container"),
             alignment: Alignment.topCenter,
             margin: EdgeInsets.only(left: 10, right: 10),
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.only(left: 10, right: 10, top: 10),
             child: GridView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.all(4),
@@ -454,13 +370,13 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                             title: Text(
                               daily.name,
                             ),
-                            titleTextStyle:
-                                TextStyle(fontSize: 18.0, color: Colors.black),
+                            titleTextStyle: TextStyle(
+                                fontSize: 18.0, color: AppColor.textBlack),
                             content: Text(
                               daily.text,
                             ),
-                            contentTextStyle:
-                                TextStyle(fontSize: 14.0, color: Colors.grey),
+                            contentTextStyle: TextStyle(
+                                fontSize: 14.0, color: AppColor.textGreyLight),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () => Navigator.pop(context, 'OK'),
@@ -473,29 +389,24 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                   child: Container(
                     decoration: BoxDecoration(
                       // color: Colors.black12,
-                      border: Border.all(color: Colors.grey, width: 0.5),
+                      border: Border.all(color: AppColor.line3, width: 0.5),
                       borderRadius: BorderRadius.all(Radius.circular(6)),
-                      // boxShadow: [
-                      //   BoxShadow(
-                      //       color: Colors.grey,
-                      //       spreadRadius: 1,
-                      //       blurRadius: 1.0,
-                      //       offset: Offset(1.0, 1.0))
-                      // ],
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           daily.name,
-                          style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                          style: TextStyle(
+                              fontSize: 14.0, color: AppColor.textGreyLight),
                         ),
                         const SizedBox(
                           height: 10.0,
                         ),
                         Text(
                           daily.category,
-                          style: TextStyle(fontSize: 16.0, color: Colors.black),
+                          style: TextStyle(
+                              fontSize: 16.0, color: AppColor.textBlack),
                         ),
                       ],
                     ),
@@ -513,11 +424,11 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   ///weather 7Day
   Widget _buildWeather7Day(WeatherDaily weatherDaily) {
     return Container(
-      color: Colors.white,
+      color: AppColor.ground,
       child: Column(
         children: [
           Divider(
-            color: AppColor.line,
+            color: AppColor.line3,
           ),
           Container(
             alignment: Alignment.centerLeft,
@@ -528,7 +439,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
             ),
           ),
           Divider(
-            color: AppColor.line,
+            color: AppColor.line3,
           ),
           ListView.separated(
               shrinkWrap: true,
@@ -551,7 +462,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                     children: [
                       Text(
                         date,
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: AppColor.textGreyLight),
                       ),
                       Padding(
                         key: const Key("main_screen_7d_daily_icon"),
@@ -564,7 +475,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
                           daily.tempMax,
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: AppColor.textBlack),
                         ),
                       ),
                       Container(
@@ -572,9 +483,9 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                         height: 4,
                         decoration: BoxDecoration(
                             gradient: LinearGradient(colors: [
-                              Colors.purpleAccent,
-                              Colors.purple,
-                              Colors.deepPurple,
+                              Colors.redAccent,
+                              Colors.orange,
+                              Colors.lightBlueAccent,
                             ]),
                             borderRadius: BorderRadius.all(Radius.circular(4))),
                       ),
@@ -583,7 +494,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                         padding: EdgeInsets.only(left: 10),
                         child: Text(
                           daily.tempMin,
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: AppColor.textBlack),
                         ),
                       ),
                       Padding(
@@ -600,6 +511,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                 return Divider(
                   indent: 16,
                   endIndent: 16,
+                  color: AppColor.line3,
                 );
               },
               itemCount: weatherDaily.daily.length),
@@ -613,11 +525,11 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     final now = weatherRT.now;
     return Container(
       key: const Key("main_screen_wind_desc"),
-      color: Colors.white,
+      color: AppColor.ground,
       child: Column(
         children: [
           Divider(
-            color: AppColor.line,
+            color: AppColor.line3,
           ),
           Container(
             alignment: Alignment.centerLeft,
@@ -628,7 +540,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
             ),
           ),
           Divider(
-            color: AppColor.line,
+            color: AppColor.line3,
           ),
           Row(
             mainAxisSize: MainAxisSize.max,
@@ -644,27 +556,31 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                 children: [
                   const Text(
                     '风力',
-                    style: TextStyle(color: Colors.grey, fontSize: 16.0),
+                    style: TextStyle(
+                        color: AppColor.textGreyLight, fontSize: 16.0),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 4.0),
                     child: Text(
                       '${now.windScale}级',
-                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+                      style:
+                          TextStyle(color: AppColor.textBlack, fontSize: 14.0),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 8.0),
                     child: const Text(
                       '风向',
-                      style: TextStyle(color: Colors.grey, fontSize: 16.0),
+                      style: TextStyle(
+                          color: AppColor.textGreyLight, fontSize: 16.0),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 4.0),
                     child: Text(
                       '${now.windDir}',
-                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+                      style:
+                          TextStyle(color: AppColor.textBlack, fontSize: 14.0),
                     ),
                   ),
                   Padding(
@@ -673,14 +589,16 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                     ),
                     child: const Text(
                       '风速',
-                      style: TextStyle(color: Colors.grey, fontSize: 16.0),
+                      style: TextStyle(
+                          color: AppColor.textGreyLight, fontSize: 16.0),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 4.0),
                     child: Text(
                       '${now.windSpeed}公里/小时',
-                      style: TextStyle(color: Colors.black, fontSize: 14.0),
+                      style:
+                          TextStyle(color: AppColor.textBlack, fontSize: 14.0),
                     ),
                   ),
                 ],
@@ -695,28 +613,12 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   Widget _buildWeatherFooter() {
     return Container(
       alignment: Alignment.center,
-      margin: EdgeInsets.only(top: 12.0, bottom: 12.0),
+      padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
+      color: AppColor.ground,
       child: Text(
         "天气数据由和风天气提供",
-        style: TextStyle(color: Colors.grey),
+        style: TextStyle(color: AppColor.textGreyLight),
       ),
-    );
-  }
-
-  ///创建浅色背景
-  Widget _buildLightBackground([double? maxHeight]) {
-    return Container(
-      key: const Key("main_screen_light_background"),
-      child: Image.network(
-        "https://cdn.qweather.com/img/plugin/190516/bg/h5/lightd.png",
-        errorBuilder:
-            (BuildContext context, Object exceptio, StackTrace? stackTrace) {
-          LogUtil.e("An error occured when loading lightBackground image~");
-          return Image.asset("images/lightd.webp");
-        },
-      ),
-      alignment: Alignment.topCenter,
-      height: maxHeight,
     );
   }
 
@@ -727,6 +629,5 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

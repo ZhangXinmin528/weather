@@ -44,7 +44,7 @@ android {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
     signingConfigs {
-        def filePath = '../android/sign/keystore.jks'
+        def filePath = '../sign/keystore.jks'
         def pwd = properties.getProperty("sign.pwd")
         def alias = properties.getProperty("sign.alias")
 
@@ -59,10 +59,16 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
         debug {
             signingConfig signingConfigs.debug
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "weather_${variant.versionName}_${variant.buildType.name}.apk"
         }
     }
 }

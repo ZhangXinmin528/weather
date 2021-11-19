@@ -12,7 +12,8 @@ class DateTimeUtils {
   static const String dailyFormat = 'MM/dd';
   static const String weatherTimeFormat = 'HH:mm';
 
-  static const String weatherHourFormat = 'dd/MM HH:mm';
+  static const String weatherHourFormat = 'HH:mm';
+
 
   ///=============================格式化时间戳===============================///
   ///格式化日期，格式:dd/MM/yyyy

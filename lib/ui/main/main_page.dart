@@ -102,7 +102,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            _buildLightBackground(),
+            // _buildLightBackground(),
             // _buildLoadingWidget(),
             _buildWeatherTabWidget(),
             _buildToolbar()
@@ -138,9 +138,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           controller: _pageController,
         ),
         Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
+          top: 65,
           child: Container(
             padding: EdgeInsets.all(16),
             child: Row(
@@ -149,13 +147,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 tabList.length,
                 (index) {
                   return Container(
-                    width: 10.0,
-                    height: 10.0,
+                    width: 7.0,
+                    height: 7.0,
                     margin: const EdgeInsets.all(4.0),
                     decoration: BoxDecoration(
                       color: index == selectedIndex
-                          ? Color.fromARGB(255, 149, 182, 226)
-                          : Colors.black38,
+                          ? Colors.white
+                          : Colors.white38,
                       shape: BoxShape.circle,
                     ),
                   );
@@ -163,7 +161,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -217,15 +215,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     );
   }
 
-  ///创建深色背景
-  Widget _buildDarkBackground() {
-    return Container(
-      key: const Key("main_screen_dark_background"),
-      child: Image.network(
-          "https://cdn.qweather.com/img/plugin/190516/bg/h5/darkd.png"),
-    );
-  }
-
   ///异常情况
   Widget _buildErrorWidget(
     String errorMessage,
@@ -270,7 +259,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Widget _buildToolbar() {
     return Container(
       key: const Key("main_screen_toolbar"),
-      color: Color.fromARGB(255, 149, 182, 226),
+      // color: Color.fromARGB(255, 149, 182, 226),
       padding: EdgeInsets.only(top: 40.0),
       child: Stack(
         alignment: Alignment.center,
