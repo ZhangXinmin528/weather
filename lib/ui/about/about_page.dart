@@ -126,7 +126,7 @@ class AboutPageState extends State<AboutPage> {
             height: 80,
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 10.0,bottom: 18),
+            padding: const EdgeInsets.only(top: 10.0, bottom: 18),
             child: Text(
               AppLocalizations.of(context)!.app_name,
               style: TextStyle(
@@ -190,7 +190,8 @@ class AboutPageState extends State<AboutPage> {
                 AppLocalizations.of(context)!.app_name, link.url);
           }));
         },
-        style: TextStyle(fontSize: 16, color: AppColor.textGreyDark, height: 1.2),
+        style:
+            TextStyle(fontSize: 16, color: AppColor.textGreyDark, height: 1.2),
         linkStyle: TextStyle(fontSize: 16, color: Colors.black87),
       ),
     );
@@ -215,13 +216,13 @@ class AboutPageState extends State<AboutPage> {
               Icon(
                 icon,
                 size: 24,
-                color: AppColor.textGreyLight,
+                color: AppColor.textGreyDark,
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 16),
                 child: Text(
                   text,
-                  style: TextStyle(fontSize: 14, color: AppColor.textGreyDark),
+                  style: TextStyle(fontSize: 16, color: AppColor.textGreyDark),
                 ),
               ),
             ],

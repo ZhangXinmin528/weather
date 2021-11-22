@@ -8,6 +8,7 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/remote/weather_provider.dart';
 import 'package:weather/resources/config/colors.dart';
+import 'package:weather/ui/widget/loading_widget_line_text.dart';
 import 'package:weather/ui/widget/weather/weather_view.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
@@ -17,26 +18,27 @@ import 'package:weather/utils/weather_utils.dart';
 
 class WeatherPageOpt extends StatefulWidget {
   final CityElement _cityElement;
+  final int _position;
 
-  WeatherPageOpt(this._cityElement);
+  WeatherPageOpt(this._cityElement, this._position);
 
   @override
   State<StatefulWidget> createState() {
-    return _WeatherPageOptState(_cityElement);
+    return _WeatherPageOptState(_cityElement, _position);
   }
 }
 
 class _WeatherPageOptState extends State<WeatherPageOpt>
     with AutomaticKeepAliveClientMixin {
-
   final WeatherProvider _weatherProvider = WeatherProvider();
   final CityElement _cityElement;
+  final int _position;
 
   Color? weatherColor;
 
   double _devicePixelRatio = 0;
 
-  _WeatherPageOptState(this._cityElement);
+  _WeatherPageOptState(this._cityElement, this._position);
 
   @override
   void initState() {
@@ -98,7 +100,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                     alignment: Alignment.bottomCenter,
                     child: Column(
                       children: [
-                        _buildUpdateTimeWidget(weatherRT),
+                        _buildStatusOrTimeWidget(weatherRT),
                         SizedBox(
                           height: _devicePixelRatio == 0
                               ? 50
@@ -120,6 +122,48 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
           ),
         );
       }),
+    );
+  }
+
+  ///天气数据状态
+  StreamBuilder _buildWeatherDataStatus() {
+    return StreamBuilder(
+      stream: _weatherProvider.weatherStatusController.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final WeatherStatus status = snapshot.data;
+          return Visibility(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (status == WeatherStatus.STATUS_REFRESHING) ...[
+                  LoadingLineWidget("正在刷新数据..."),
+                ] else if (status == WeatherStatus.STATUS_CACHED_INVALID) ...[
+                  Text(
+                    "天气数据已过期",
+                    style: TextStyle(
+                        color: AppColor.textGreyLight, fontSize: 12.0),
+                  )
+                ] else if (status == WeatherStatus.STATUS_FINISHED) ...[
+                  Text(
+                    "数据加载完成",
+                    style: TextStyle(color: AppColor.textWhite, fontSize: 12.0),
+                  )
+                ] else ...[
+                  SizedBox(
+                    height: 0.1,
+                  ),
+                ]
+              ],
+            ),
+            visible: true,
+          );
+        } else {
+          return SizedBox(
+            height: 0.1,
+          );
+        }
+      },
     );
   }
 
@@ -153,17 +197,53 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   }
 
   ///Time_buildUpdateTimeWidget
-  Widget _buildUpdateTimeWidget(WeatherRT weatherRT) {
+  Widget _buildStatusOrTimeWidget(WeatherRT weatherRT) {
     final top = _devicePixelRatio == 0
         ? 40 + getAppBarHeight()
         : 14.6 * _devicePixelRatio + getAppBarHeight();
     return Container(
-      alignment: Alignment.topRight,
-      margin: EdgeInsets.only(right: 16.0, top: top),
-      child: Text(
-        "更新于：${DateTimeUtils.formatUTCDateTimeString(weatherRT.updateTime, DateTimeUtils.weatherHourFormat)}",
-        key: const Key("main_screen_update_time"),
-        style: TextStyle(fontSize: 14.0, color: AppColor.textWhite60),
+      margin: EdgeInsets.only(top: top),
+      child: StreamBuilder(
+        stream: _weatherProvider.weatherStatusController.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final WeatherStatus status = snapshot.data as WeatherStatus;
+
+            if (status == WeatherStatus.STATUS_REFRESHING) {
+              return LoadingLineWidget("正在刷新数据...");
+            } else if (status == WeatherStatus.STATUS_CACHED_INVALID) {
+              return Text(
+                "天气数据已过期",
+                style: TextStyle(color: AppColor.textWhite, fontSize: 12.0),
+              );
+            } else if (status == WeatherStatus.STATUS_FINISHED) {
+              return Text(
+                "数据加载完成",
+                style: TextStyle(color: AppColor.textWhite, fontSize: 12.0),
+              );
+            } else {
+              return Container(
+                alignment: Alignment.topRight,
+                margin: EdgeInsets.only(right: 16.0),
+                child: Text(
+                  "更新于：${DateTimeUtils.formatUTCDateTimeString(weatherRT.updateTime, DateTimeUtils.weatherTimeFormat)}",
+                  key: const Key("main_screen_update_time"),
+                  style: TextStyle(fontSize: 14.0, color: AppColor.textWhite60),
+                ),
+              );
+            }
+          } else {
+            return Container(
+              alignment: Alignment.topRight,
+              margin: EdgeInsets.only(right: 16.0),
+              child: Text(
+                "更新于：${DateTimeUtils.formatUTCDateTimeString(weatherRT.updateTime, DateTimeUtils.weatherTimeFormat)}",
+                key: const Key("main_screen_update_time"),
+                style: TextStyle(fontSize: 14.0, color: AppColor.textWhite60),
+              ),
+            );
+          }
+        },
       ),
     );
   }
@@ -232,16 +312,16 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                     padding: EdgeInsets.only(left: 8.0, right: 4.0),
                     child: Text(
                       "湿度",
-                      style:
-                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                      style: TextStyle(
+                          fontSize: 16.0, color: AppColor.textWhite60),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 4.0, top: 2.0, right: 8.0),
                     child: Text(
                       weatherNow.humidity + "%",
-                      style:
-                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                      style: TextStyle(
+                          fontSize: 16.0, color: AppColor.textWhite60),
                     ),
                   )
                 ],
@@ -254,16 +334,16 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                     padding: EdgeInsets.only(left: 8.0, right: 4.0),
                     child: Text(
                       weatherNow.windDir,
-                      style:
-                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                      style: TextStyle(
+                          fontSize: 16.0, color: AppColor.textWhite60),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: 4.0, top: 2.0, right: 8.0),
                     child: Text(
                       weatherNow.windScale + "级",
-                      style:
-                          TextStyle(fontSize: 16.0, color: AppColor.textWhite),
+                      style: TextStyle(
+                          fontSize: 16.0, color: AppColor.textWhite60),
                     ),
                   )
                 ],

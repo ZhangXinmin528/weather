@@ -1,4 +1,7 @@
-class Dimensions{
-  static const int chartPadding = 15;
-  static const double weatherMainWidgetSwiperHeight = 450;
+class Dimensions {
+  static const int textSize_12 = 12;
+  static const int textSize_14 = 12;
+  static const int textSize_16 = 12;
+  static const int textSize_18 = 12;
+  static const int textSize_20 = 12;
 }

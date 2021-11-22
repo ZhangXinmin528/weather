@@ -10,9 +10,11 @@ class DateTimeUtils {
   static const String defaultFormat = 'yyyyMMdd HH:mm:ss';
   static const String dateFormat = 'dd/MM/yyyy';
   static const String dailyFormat = 'MM/dd';
-  static const String weatherTimeFormat = 'HH:mm';
+  static const String timeFormat = 'HH:mm';
 
   static const String weatherHourFormat = 'HH:mm';
+
+  static const String weatherTimeFormat = 'MM.dd HH:mm';
 
 
   ///=============================格式化时间戳===============================///
@@ -45,7 +47,7 @@ class DateTimeUtils {
   ///获取当前时间戳
   ///格式：HH:mm:ss
   static String formatNowTime() {
-    return formatDateTime(DateTime.now(), weatherTimeFormat);
+    return formatDateTime(DateTime.now(), timeFormat);
   }
 
   ///获取当前时间

@@ -12,6 +12,7 @@ import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/local/sqlite_manager.dart';
+import 'package:weather/resources/config/colors.dart';
 import 'package:weather/utils/log_utils.dart';
 
 ///城市管理
@@ -214,13 +215,13 @@ class _CityManangePageState extends State<CityManagementPage> {
                 key: Key(
                     'city_manage_page_listview_item_dismiss:${tab.cityElement.longitude}&${tab.cityElement.latitude}'),
                 secondaryBackground: Container(
-                  color: Colors.red,
+                  color: AppColor.shadow,
                   margin: EdgeInsets.all(16.0),
                   padding: EdgeInsets.only(right: 16.0),
                   alignment: Alignment.centerRight,
                   child: Text(
                     "删除",
-                    style: TextStyle(color: Colors.black, fontSize: 18.0),
+                    style: TextStyle(color: AppColor.textRed, fontSize: 18.0),
                   ),
                 ),
                 background: Container(

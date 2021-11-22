@@ -14,6 +14,8 @@ abstract class AppColor {
   static const textWhite60 = Colors.white60;
   static const textGreyDark = Color(0xFF666666);
   static const textGreyLight = Color(0xFF888888);
+  static const textRed = Colors.redAccent;
+  static const textLightBlue = Colors.lightBlue;
 
   /// 分割线
   static const line = Color(0xFFBBBBBB);

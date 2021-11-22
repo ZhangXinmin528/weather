@@ -18,6 +18,9 @@ class WeatherProvider {
   final StreamController<Map<String, dynamic>> weatherController =
       StreamController();
 
+  final StreamController<WeatherStatus> weatherStatusController =
+      StreamController();
+
   CityElement? _cityElement;
   bool _hasCached = false;
 
@@ -28,6 +31,7 @@ class WeatherProvider {
 
   void loadCacheWeather() async {
     if (_cityElement != null) {
+      weatherStatusController.add(WeatherStatus.STATUS_INIT);
       final String key = _cityElement!.key;
       LogUtil.d("WeatherProvider..loadCacheWeather:${_cityElement?.city}");
       //加载缓存的天气数据
@@ -56,20 +60,32 @@ class WeatherProvider {
 
         if (span > 5) {
           ///缓存过时了，请求网络
-          requestWeatherData();
+          Future.delayed(Duration(milliseconds: 2000), () {
+            weatherStatusController.add(WeatherStatus.STATUS_CACHED_INVALID);
+          })
+            ..timeout(Duration(milliseconds: 500), onTimeout: () {
+              weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
+            })
+            ..timeout(Duration(milliseconds: 1000), onTimeout: () {
+              requestWeatherData();
+            });
         }
 
         if (weatherNow != null && weatherNow.code == "200") {
+          weatherStatusController.add(WeatherStatus.STATUS_FINISHED);
           updateWeather(
               weatherRT: weatherNow,
               weatherAir: weatherAir,
               weatherHour: weatherHour,
               weatherDaily: weatherDaily,
               weatherIndices: weatherIndices);
+          Future.delayed(Duration(milliseconds: 800), () {
+            weatherStatusController.add(WeatherStatus.STATUS_INIT);
+          });
         }
       } else {
         _hasCached = false;
-        requestWeatherData();
+        onRefresh();
       }
     }
   }
@@ -112,18 +128,24 @@ class WeatherProvider {
             weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
         LogUtil.d("天气tab页面..插入数据库:$index");
       }
-
+      weatherStatusController.add(WeatherStatus.STATUS_FINISHED);
       updateWeather(
           weatherRT: weatherNow,
           weatherAir: weatherAir,
           weatherHour: weatherHour,
           weatherDaily: weatherDaily,
           weatherIndices: weatherIndices);
+      Future.delayed(Duration(milliseconds: 800), () {
+        weatherStatusController.add(WeatherStatus.STATUS_INIT);
+      });
     }
   }
 
   void onRefresh() {
-    requestWeatherData();
+    weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
+    Future.delayed(Duration(milliseconds: 1500), () {
+      requestWeatherData();
+    });
   }
 
   void updateWeather(
@@ -146,5 +168,13 @@ class WeatherProvider {
 
   void dispose() {
     weatherController.close();
+    weatherStatusController.close();
   }
+}
+
+enum WeatherStatus {
+  STATUS_INIT,
+  STATUS_REFRESHING,
+  STATUS_CACHED_INVALID,
+  STATUS_FINISHED,
 }

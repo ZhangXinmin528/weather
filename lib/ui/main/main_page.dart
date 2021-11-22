@@ -12,7 +12,7 @@ import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/ui/weather/weather_page_opt.dart';
-import 'package:weather/ui/widget/loading_widget.dart';
+import 'package:weather/ui/widget/loading_widget_dialog.dart';
 import 'package:weather/utils/log_utils.dart';
 
 ///天气主页
@@ -122,7 +122,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       children: [
         PageView.builder(
           itemBuilder: (context, index) {
-            return WeatherPageOpt(tabList[index].cityElement);
+            return WeatherPageOpt(tabList[index].cityElement, index);
           },
           onPageChanged: (index) {
             setState(() {
