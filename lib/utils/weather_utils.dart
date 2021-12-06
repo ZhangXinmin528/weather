@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/resources/config/colors.dart';
 
 class WeatherUtils {
@@ -46,25 +47,36 @@ class WeatherUtils {
   }
 
   ///获取空气质量对应颜色
-  static String getAQILevelDesc(String? aqi) {
-    if (aqi == null || aqi.isEmpty) {
-      return "";
+  static String getAQIDesc(Now? now) {
+    final aqi = now?.aqi;
+    final category = now?.category;
+
+    //空气质量级别
+    if (category != null && category.isNotEmpty) {
+      if (category.length < 3) {
+        return "空气 $category";
+      } else {
+        return category;
+      }
     }
 
-    final aqiValue = int.parse(aqi);
-    if (aqiValue >= 0 && aqiValue <= 50) {
-      return "空气 优";
-    } else if (aqiValue >= 51 && aqiValue <= 100) {
-      return "空气 良";
-    } else if (aqiValue >= 101 && aqiValue <= 150) {
-      return "轻度污染";
-    } else if (aqiValue >= 151 && aqiValue <= 200) {
-      return "重度污染";
-    } else if (aqiValue >= 201 && aqiValue <= 300) {
-      return "重度污染";
-    } else if (aqiValue > 300) {
-      return "严重污染";
+    if (aqi != null && aqi.isNotEmpty) {
+      final aqiValue = int.parse(aqi);
+      if (aqiValue >= 0 && aqiValue <= 50) {
+        return "空气 优";
+      } else if (aqiValue >= 51 && aqiValue <= 100) {
+        return "空气 良";
+      } else if (aqiValue >= 101 && aqiValue <= 150) {
+        return "轻度污染";
+      } else if (aqiValue >= 151 && aqiValue <= 200) {
+        return "重度污染";
+      } else if (aqiValue >= 201 && aqiValue <= 300) {
+        return "重度污染";
+      } else if (aqiValue > 300) {
+        return "严重污染";
+      }
     }
+
     return "";
   }
 }

@@ -73,31 +73,40 @@ class _CityManangePageState extends State<CityManagementPage> {
               backgroundColor: Colors.white,
               forceElevated: innerBoxIsScrolled,
               actions: [
-                IconButton(
-                  onPressed: () {
-                    if (_menuIcon == Icons.reorder) {
-                      //进入编辑模式
-                      _isEditedMode = true;
-                      setState(() {
-                        _menuIcon = Icons.save;
-                        _title = "编辑模式";
-                      });
-                    } else {
-                      //保存配置
-                      _isEditedMode = false;
-                      setState(() {
-                        _menuIcon = Icons.reorder;
-                        _title = "城市管理";
-                      });
-                      if (_changed) {
-                        _cityManageBloc.add(SaveChangedEvent());
-                        _cityManageBloc.emit(SaveCityChangedState(_tabList));
-                      }
-                    }
+                AnimatedSwitcher(
+                  duration: Duration(milliseconds: 500),
+                  transitionBuilder: (child, anim) {
+                    return ScaleTransition(
+                      child: child,
+                      scale: anim,
+                    );
                   },
-                  icon: Icon(_menuIcon),
-                  color: Colors.black,
-                )
+                  child: IconButton(
+                    onPressed: () {
+                      if (_menuIcon == Icons.reorder) {
+                        //进入编辑模式
+                        _isEditedMode = true;
+                        setState(() {
+                          _menuIcon = Icons.save;
+                          _title = "编辑模式";
+                        });
+                      } else {
+                        //保存配置
+                        _isEditedMode = false;
+                        setState(() {
+                          _menuIcon = Icons.reorder;
+                          _title = "城市管理";
+                        });
+                        if (_changed) {
+                          _cityManageBloc.add(SaveChangedEvent());
+                          _cityManageBloc.emit(SaveCityChangedState(_tabList));
+                        }
+                      }
+                    },
+                    icon: Icon(_menuIcon),
+                    color: Colors.black,
+                  ),
+                ),
               ],
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(

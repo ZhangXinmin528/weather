@@ -203,6 +203,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
         : 14.6 * _devicePixelRatio + getAppBarHeight();
     return Container(
       margin: EdgeInsets.only(top: top),
+      height: 20,
       child: StreamBuilder(
         stream: _weatherProvider.weatherStatusController.stream,
         builder: (context, snapshot) {
@@ -287,7 +288,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                   Padding(
                     padding: EdgeInsets.only(left: 10.0, top: 10.0),
                     child: Text(
-                      WeatherUtils.getAQILevelDesc(airNow.aqi),
+                      WeatherUtils.getAQIDesc(airNow),
                       key: const Key("main_screen_weathernow_text"),
                       style: TextStyle(
                           fontSize: 15, fontWeight: FontWeight.normal),
