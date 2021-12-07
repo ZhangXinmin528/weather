@@ -20,3 +20,7 @@ flutter packages pub run build_runner watch
 
 天气地址
 https://widget-page.qweather.net/h5/index.html?md=0123456&bg=3&lc=accu&key=c4b6dbe7f0a945d390620707ad1d2768&v=_1630983214147
+
+已知问题：
+1.首次安装白屏
+2.定位更新问题

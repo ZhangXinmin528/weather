@@ -234,7 +234,7 @@ class _CityManangePageState extends State<CityManagementPage> {
                   ),
                 ),
                 background: Container(
-                  color: Colors.white,
+                  color: AppColor.shadow,
                 ),
                 direction: DismissDirection.endToStart,
                 onDismissed: (direction) {
