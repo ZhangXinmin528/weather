@@ -60,7 +60,7 @@ class WeatherProvider {
 
         if (span > 5) {
           ///缓存过时了，请求网络
-          Future.delayed(Duration(milliseconds: 2000), () {
+          Future.delayed(Duration(milliseconds: 500), () {
             weatherStatusController.add(WeatherStatus.STATUS_CACHED_INVALID);
           })
             ..timeout(Duration(milliseconds: 500), onTimeout: () {
@@ -143,7 +143,7 @@ class WeatherProvider {
 
   void onRefresh() {
     weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
-    Future.delayed(Duration(milliseconds: 1500), () {
+    Future.delayed(Duration(milliseconds: 1000), () {
       requestWeatherData();
     });
   }

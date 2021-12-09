@@ -125,48 +125,6 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     );
   }
 
-  ///天气数据状态
-  StreamBuilder _buildWeatherDataStatus() {
-    return StreamBuilder(
-      stream: _weatherProvider.weatherStatusController.stream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final WeatherStatus status = snapshot.data;
-          return Visibility(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (status == WeatherStatus.STATUS_REFRESHING) ...[
-                  LoadingLineWidget("正在刷新数据..."),
-                ] else if (status == WeatherStatus.STATUS_CACHED_INVALID) ...[
-                  Text(
-                    "天气数据已过期",
-                    style: TextStyle(
-                        color: AppColor.textGreyLight, fontSize: 12.0),
-                  )
-                ] else if (status == WeatherStatus.STATUS_FINISHED) ...[
-                  Text(
-                    "数据加载完成",
-                    style: TextStyle(color: AppColor.textWhite, fontSize: 12.0),
-                  )
-                ] else ...[
-                  SizedBox(
-                    height: 0.1,
-                  ),
-                ]
-              ],
-            ),
-            visible: true,
-          );
-        } else {
-          return SizedBox(
-            height: 0.1,
-          );
-        }
-      },
-    );
-  }
-
   ///天气主题色
   Color _getWeatherThemeColor({required String type}) {
     final isDay = DateTime.now().hour >= 6 && DateTime.now().hour < 18;
