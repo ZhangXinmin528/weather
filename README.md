@@ -23,4 +23,4 @@ https://widget-page.qweather.net/h5/index.html?md=0123456&bg=3&lc=accu&key=c4b6d
 
 已知问题：
 1.首次安装白屏
-2.定位更新问题
+2.定位更新问题：带有定位功能的tab 拆分出来 即可
