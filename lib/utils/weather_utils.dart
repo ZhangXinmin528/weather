@@ -54,26 +54,26 @@ class WeatherUtils {
     //空气质量级别
     if (category != null && category.isNotEmpty) {
       if (category.length < 3) {
-        return "空气 $category";
+        return "$aqi 空气 $category";
       } else {
-        return category;
+        return "$aqi $category";
       }
     }
 
     if (aqi != null && aqi.isNotEmpty) {
       final aqiValue = int.parse(aqi);
       if (aqiValue >= 0 && aqiValue <= 50) {
-        return "空气 优";
+        return "$aqi 空气 优";
       } else if (aqiValue >= 51 && aqiValue <= 100) {
-        return "空气 良";
+        return "$aqi 空气 良";
       } else if (aqiValue >= 101 && aqiValue <= 150) {
-        return "轻度污染";
+        return "$aqi 轻度污染";
       } else if (aqiValue >= 151 && aqiValue <= 200) {
-        return "重度污染";
+        return "$aqi 重度污染";
       } else if (aqiValue >= 201 && aqiValue <= 300) {
-        return "重度污染";
+        return "$aqi 重度污染";
       } else if (aqiValue > 300) {
-        return "严重污染";
+        return "$aqi 严重污染";
       }
     }
 

@@ -243,13 +243,22 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                           fontSize: 20, fontWeight: FontWeight.normal),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10.0, top: 10.0),
-                    child: Text(
-                      WeatherUtils.getAQIDesc(airNow),
-                      key: const Key("main_screen_weathernow_text"),
-                      style: TextStyle(
-                          fontSize: 15, fontWeight: FontWeight.normal),
+                  Container(
+                    margin: EdgeInsets.only(top: 6),
+                    decoration: BoxDecoration(
+                        color: WeatherUtils.getAQIColorByAqi(airNow.aqi)
+                            .withOpacity(0.6),
+                        borderRadius: BorderRadius.all(Radius.circular(2)),
+                        shape: BoxShape.rectangle),
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: 10, top: 4, right: 10, bottom: 4),
+                      child: Text(
+                        WeatherUtils.getAQIDesc(airNow),
+                        key: const Key("main_screen_weathernow_text"),
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.normal),
+                      ),
                     ),
                   ),
                 ],
@@ -342,7 +351,19 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                         fontSize: 16),
                   ),
                 ),
-                IconUtils.getWeatherNowIcon(hour.icon, size: 30),
+                IconUtils.getWeatherSVGIcon(hour.icon, size: 25),
+                Padding(
+                  padding:
+                      EdgeInsets.only(left: 16, top: 4.0, right: 16, bottom: 4),
+                  child: Text(
+                    hour.text,
+                    style: TextStyle(
+                        color: index == 0
+                            ? AppColor.textGreyLight
+                            : AppColor.textBlack,
+                        fontSize: 12),
+                  ),
+                ),
                 Padding(
                   padding: EdgeInsets.only(left: 16, right: 16, bottom: 12.0),
                   child: Text(
@@ -365,23 +386,24 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   Widget _buildIndicesWidget(WeatherIndices weatherIndices) {
     final indicesDaily = weatherIndices.daily;
 
-    return Container(
+    return Card(
+      key: const Key("main_screen_weather_indices"),
       color: AppColor.ground,
+      margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0, bottom: 12.0),
+      elevation: 1.0,
+      shadowColor: AppColor.shadow,
       child: Column(
         children: [
-          Divider(
-            color: AppColor.line3,
-          ),
           Container(
             alignment: Alignment.centerLeft,
-            margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
+            margin: EdgeInsets.only(left: 16.0, top: 10.0, bottom: 4.0),
             child: const Text(
               "生活指数",
-              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 16.0,
+                  color: AppColor.textBlack,
+                  fontWeight: FontWeight.bold),
             ),
-          ),
-          Divider(
-            color: AppColor.line3,
           ),
           Container(
             key: const Key("main_screen_indicies_container"),
@@ -462,23 +484,23 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
   ///weather 7Day
   Widget _buildWeather7Day(WeatherDaily weatherDaily) {
-    return Container(
+    return Card(
       color: AppColor.ground,
+      margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0),
+      elevation: 1.0,
+      shadowColor: AppColor.shadow,
       child: Column(
         children: [
-          Divider(
-            color: AppColor.line3,
-          ),
           Container(
             alignment: Alignment.centerLeft,
-            margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
+            margin: EdgeInsets.only(left: 16.0, top: 10.0, bottom: 4.0),
             child: const Text(
               "七天预报",
-              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 16.0,
+                  color: AppColor.textBlack,
+                  fontWeight: FontWeight.bold),
             ),
-          ),
-          Divider(
-            color: AppColor.line3,
           ),
           ListView.separated(
               shrinkWrap: true,
@@ -506,8 +528,16 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                       Padding(
                         key: const Key("main_screen_7d_daily_icon"),
                         padding: EdgeInsets.only(left: 10),
-                        child: IconUtils.getWeatherNowIcon(daily.iconDay,
+                        child: IconUtils.getWeatherSVGIcon(daily.iconDay,
                             size: 25),
+                      ),
+                      Padding(
+                        key: const Key("main_screen_7d_daily_text"),
+                        padding: EdgeInsets.only(left: 4),
+                        child: Text(
+                          daily.textDay,
+                          style: TextStyle(color: AppColor.textBlack),
+                        ),
                       ),
                       Padding(
                         key: const Key("main_screen_7d_daily_tempmax"),
@@ -518,7 +548,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                         ),
                       ),
                       Container(
-                        width: 100,
+                        width: 80,
                         height: 4,
                         decoration: BoxDecoration(
                             gradient: LinearGradient(colors: [
@@ -539,8 +569,16 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                       Padding(
                         key: const Key("main_screen_7d_night_icon"),
                         padding: EdgeInsets.only(left: 10),
-                        child: IconUtils.getWeatherNowIcon(daily.iconNight,
+                        child: IconUtils.getWeatherSVGIcon(daily.iconNight,
                             size: 25),
+                      ),
+                      Padding(
+                        key: const Key("main_screen_7d_night_text"),
+                        padding: EdgeInsets.only(left: 4),
+                        child: Text(
+                          daily.textNight,
+                          style: TextStyle(color: AppColor.textBlack),
+                        ),
                       ),
                     ],
                   ),
@@ -562,24 +600,24 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   ///wind
   Widget _buildWindDesc(WeatherRT weatherRT) {
     final now = weatherRT.now;
-    return Container(
+    return Card(
       key: const Key("main_screen_wind_desc"),
       color: AppColor.ground,
+      margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0),
+      elevation: 1.0,
+      shadowColor: AppColor.shadow,
       child: Column(
         children: [
-          Divider(
-            color: AppColor.line3,
-          ),
           Container(
             alignment: Alignment.centerLeft,
-            margin: EdgeInsets.only(left: 16.0, top: 4.0, bottom: 4.0),
+            margin: EdgeInsets.only(left: 16.0, top: 10.0, bottom: 4.0),
             child: const Text(
               "风力风向",
-              style: TextStyle(fontSize: 18.0, color: Colors.grey),
+              style: TextStyle(
+                  fontSize: 16.0,
+                  color: AppColor.textBlack,
+                  fontWeight: FontWeight.bold),
             ),
-          ),
-          Divider(
-            color: AppColor.line3,
           ),
           Row(
             mainAxisSize: MainAxisSize.max,

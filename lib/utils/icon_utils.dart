@@ -1,6 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class IconUtils {
+  ///获取对应的svg天气图标
+  static Widget getWeatherSVGIcon(String? code, {Color? color, double? size}) {
+    if (code == null) {
+      return SvgPicture.asset(
+        "icons/999-fill.svg",
+        color: color,
+        semanticsLabel: 'weather svg widget',
+        width: size,
+        height: size,
+      );
+    }
+
+    return SvgPicture.asset(
+      "icons/$code-fill.svg",
+      color: color,
+      semanticsLabel: 'weather svg $code',
+      width: size,
+      height: size,
+    );
+  }
+
+  ///获取天气对应icon
+  @deprecated
   static Widget getWeatherNowIcon(String? code, {double? size}) {
     switch (code) {
       case "100":

@@ -84,7 +84,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - icon/
     - icons/
     - images/
     - assets/lottiefiles/
