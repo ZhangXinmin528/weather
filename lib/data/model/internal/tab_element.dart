@@ -1,8 +1,10 @@
 ///用于构建tab
 class TabElement {
   final String title;
-  int? positon;
+
   final CityElement cityElement;
+
+  int? positon;
 
   //温度
   final String? temp;

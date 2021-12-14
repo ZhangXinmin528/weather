@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
@@ -7,6 +9,7 @@ import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/remote/weather_provider.dart';
+import 'package:weather/location/location_manager.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/widget/loading_widget_line_text.dart';
 import 'package:weather/ui/widget/weather/weather_view.dart';
@@ -30,9 +33,13 @@ class WeatherPageOpt extends StatefulWidget {
 
 class _WeatherPageOptState extends State<WeatherPageOpt>
     with AutomaticKeepAliveClientMixin {
+
+
   final WeatherProvider _weatherProvider = WeatherProvider();
+  late MainPageBloc _mainPageBloc;
   final CityElement _cityElement;
   final int _position;
+  late bool _location;
 
   Color? weatherColor;
 
@@ -44,8 +51,10 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   void initState() {
     super.initState();
     weatherColor = Colors.white38;
+    _location = _position == 0;
     LogUtil.d("WeatherPageOpt..initState");
-    _weatherProvider.initState(_cityElement);
+    _mainPageBloc = BlocProvider.of(context);
+    _weatherProvider.initState(_mainPageBloc, _cityElement);
   }
 
   @override
@@ -83,7 +92,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
     return RefreshIndicator(
       onRefresh: () async {
-        _weatherProvider.onRefresh();
+        _weatherProvider.onRefresh(_location);
       },
       displacement: 70,
       edgeOffset: 30,
@@ -706,5 +715,5 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
 }

@@ -17,24 +17,22 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   final AppLocalRepo _appLocalRepo;
 
-  late BaiduLocation? _baiduLocation;
+  late BaiduLocation? baiduLocation;
 
   final List<TabElement> tabList = [];
 
   MainPageBloc(this._appLocalRepo) : super(LoadCityListState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
-      _baiduLocation = value;
-      if (_baiduLocation != null && _baiduLocation!.city!.isNotEmpty) {
+      baiduLocation = value;
+      LogUtil.d("MainPageBloc..定位回调了..定位街道：：${baiduLocation?.district}");
+      if (baiduLocation != null && baiduLocation!.city!.isNotEmpty) {
         Future.delayed(Duration(seconds: 1), () {
           add(LocationChangedEvent());
         });
         _locationManager.stopLocation();
-        final String json = convert.jsonEncode(_baiduLocation!.getMap());
-        _appLocalRepo.saveLocation(json);
-        _appLocalRepo.saveLocationTime();
+        saveLocation();
       }
-      LogUtil.d("定位回调了..定位街道：：${_baiduLocation?.district}");
     });
   }
 
@@ -85,8 +83,8 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
         if (span > 5) {
           _locationManager.startLocation();
         } else {
-          _baiduLocation = await _appLocalRepo.getLocation();
-          if (_baiduLocation != null && _baiduLocation!.city != null) {
+          baiduLocation = await _appLocalRepo.getLocation();
+          if (baiduLocation != null && baiduLocation!.city != null) {
             Future.delayed(Duration(seconds: 1), () {
               add(LocationChangedEvent());
             });
@@ -102,8 +100,8 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   ///定位相关逻辑
   Stream<MainPageState> _mapLocationChangedToState(MainPageState state) async* {
-    LogUtil.e("_mapLocationChangedToState..定位数据：${_baiduLocation?.address}");
-    if (_baiduLocation != null && _baiduLocation!.city != null) {
+    LogUtil.e("_mapLocationChangedToState..定位数据：${baiduLocation?.address}");
+    if (baiduLocation != null && baiduLocation!.city != null) {
       yield LocationSuccessState();
       add(AddWeatherTabToMainEvent());
     } else {
@@ -115,19 +113,22 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   Stream<MainPageState> _mapAddWeatherTabToState(MainPageState state) async* {
     if (state is LocationSuccessState) {
-      if (_baiduLocation != null && _baiduLocation!.city != null) {
+      if (baiduLocation != null && baiduLocation!.city != null) {
         LogUtil.d("_mapAddWeatherTabToState()..定位成功~");
-        final String name = "${_baiduLocation?.district}";
+        final String name = "${baiduLocation?.district}";
         //定位成功
 
         final TabElement tabElement = generateTab(
-            name, _baiduLocation!.latitude!, _baiduLocation!.longitude!);
+            name, baiduLocation!.latitude!, baiduLocation!.longitude!);
         if (!containCity(tabElement.cityElement)) {
-          tabList.add(tabElement);
+          if (tabList.isNotEmpty) {
+            tabList.removeAt(0);
+          }
+          tabList.insert(0, tabElement);
           _appLocalRepo.saveCityList(tabList);
         }
 
-        yield AddWeatherTabState(false, tabList);
+        yield AddWeatherTabState(true, tabList);
       }
     } else if (state is AddSelectedCityToTabState) {
       LogUtil.d("_mapAddWeatherTabToState()..添加搜索城市~");
@@ -141,6 +142,12 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
       yield AddWeatherTabState(false, tabList);
     }
+  }
+
+  void saveLocation() {
+    final String json = convert.jsonEncode(baiduLocation!.getMap());
+    _appLocalRepo.saveLocation(json);
+    _appLocalRepo.saveLocationTime();
   }
 
   @override

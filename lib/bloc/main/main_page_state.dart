@@ -15,16 +15,6 @@ class LoadCityListState extends MainPageState {}
 ///定位信息获取
 class InitLocationState extends MainPageState {}
 
-///定位失败
-// class LocationFaliedState extends MainScreenState {
-//   final WeatherError error;
-//
-//   const LocationFaliedState(this.error);
-//
-//   @override
-//   List<Object?> get props => [unit, error];
-// }
-
 ///定位成功
 class LocationSuccessState extends MainPageState {}
 

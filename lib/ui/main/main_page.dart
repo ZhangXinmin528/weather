@@ -12,7 +12,6 @@ import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/ui/weather/weather_page_opt.dart';
-import 'package:weather/ui/widget/loading_widget_dialog.dart';
 import 'package:weather/utils/log_utils.dart';
 
 ///天气主页
@@ -117,6 +116,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   /// 展示天气实时数据
   Widget _buildWeatherTabWidget() {
+    LogUtil.d("_MainPageState.._buildWeatherTabWidget..构建首页");
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -163,13 +163,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildLoadingWidget() {
-    return Visibility(
-      child: LoadingWidget(),
-      visible: loadingVisiable,
     );
   }
 
