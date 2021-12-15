@@ -116,7 +116,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   /// 展示天气实时数据
   Widget _buildWeatherTabWidget() {
-    LogUtil.d("_MainPageState.._buildWeatherTabWidget..构建首页");
+    LogUtil.d("_MainPageState.._buildWeatherTabWidget~");
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -347,6 +347,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
     if (value.key == const Key("menu_overflow_about")) {
       _navigationBloc.add(AboutScreenNavigationEvent(startGradientColors));
+
     }
   }
 }

@@ -22,7 +22,7 @@ class WeatherProvider {
 
   //location
   final LocationManager _locationManager = LocationManager();
-  late BaiduLocation? _baiduLocation;
+  BaiduLocation? _baiduLocation;
 
   MainPageBloc? _mainPageBloc;
 
@@ -43,19 +43,29 @@ class WeatherProvider {
     _mainPageBloc = bloc;
     this._cityElement = cityElement;
     _initLocationCallback();
-    loadCacheWeather();
+    _loadCacheWeather();
   }
 
+  ///还需要处理
   void _initLocationCallback() {
     _locationManager.listenLocationCallback((value) {
       //定位变化
-      _baiduLocation = value;
-      LogUtil.d("WeatherProvider..定位回调了..定位街道：：${_baiduLocation?.district}");
-      if (_baiduLocation != null && _baiduLocation!.city!.isNotEmpty) {
+
+      LogUtil.d("WeatherProvider..定位回调了..city：${value?.city}");
+      if (value != null && value.city!.isNotEmpty) {
+        _baiduLocation = value;
         locationController.add(_baiduLocation!);
         Future.delayed(Duration(seconds: 1), () {
           _mainPageBloc?.add(LocationChangedEvent());
           _mainPageBloc?.baiduLocation = _baiduLocation;
+          //更新天气数据
+          final String key =
+              "${_baiduLocation?.latitude}&${_baiduLocation?.longitude}";
+
+          _cityElement?.key = key;
+          _cityElement?.longitude = _baiduLocation!.longitude!;
+          _cityElement?.latitude = _baiduLocation!.latitude!;
+          _requestWeatherData();
         });
         _locationManager.stopLocation();
         _mainPageBloc?.saveLocation();
@@ -63,7 +73,7 @@ class WeatherProvider {
     });
   }
 
-  void loadCacheWeather() async {
+  void _loadCacheWeather() async {
     if (_cityElement != null) {
       weatherStatusController.add(WeatherStatus.STATUS_INIT);
       final String key = _cityElement!.key;
@@ -75,7 +85,7 @@ class WeatherProvider {
         final span = DateTimeUtils.getTimeSpanByNow(timeStamp);
         _hasCached = true;
 
-        // LogUtil.d("WeatherProvider..loadCacheWeather()..缓存时间间隔:$span~");
+        LogUtil.d("WeatherProvider..loadCacheWeather()..缓存时间间隔:$span~");
 
         final WeatherRT weatherNow = WeatherRT.fromJson(
             result[SqliteManager.weatherRTKey] as Map<String, dynamic>);
@@ -94,14 +104,14 @@ class WeatherProvider {
 
         if (span > 5) {
           ///缓存过时了，请求网络
-          Future.delayed(Duration(milliseconds: 500), () {
+          Future.delayed(Duration(milliseconds: 1500), () {
             weatherStatusController.add(WeatherStatus.STATUS_CACHED_INVALID);
           })
             ..timeout(Duration(milliseconds: 500), onTimeout: () {
               weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
             })
             ..timeout(Duration(milliseconds: 1000), onTimeout: () {
-              requestWeatherData();
+              _requestWeatherData();
             });
         }
 
@@ -124,7 +134,7 @@ class WeatherProvider {
     }
   }
 
-  void requestWeatherData() async {
+  void _requestWeatherData() async {
     if (_cityElement == null) return;
 
     final String key = _cityElement!.key;
@@ -179,12 +189,9 @@ class WeatherProvider {
     weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
     if (location) {
       _locationManager.startLocation();
-      Future.delayed(Duration(milliseconds: 1000), () {
-        weatherStatusController.add(WeatherStatus.STATUS_INIT);
-      });
     } else {
       Future.delayed(Duration(milliseconds: 1000), () {
-        requestWeatherData();
+        _requestWeatherData();
       });
     }
   }

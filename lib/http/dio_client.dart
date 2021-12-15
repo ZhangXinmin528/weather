@@ -20,9 +20,9 @@ class DioClient {
     _baseOptions.receiveTimeout = 30 * 1000;
     _dio = Dio(_baseOptions);
     _dio.interceptors.add(HttpInterceptor());
-    if (!inProduct) {
-      _dio.interceptors.add(PrettyDioLogger());
-    }
+    // if (!inProduct) {
+    //   _dio.interceptors.add(PrettyDioLogger());
+    // }
   }
 
   static final DioClient instance = DioClient._internal();

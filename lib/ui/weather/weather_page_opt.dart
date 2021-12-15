@@ -9,8 +9,8 @@ import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/remote/weather_provider.dart';
-import 'package:weather/location/location_manager.dart';
 import 'package:weather/resources/config/colors.dart';
+import 'package:weather/ui/webview/webview_page_nobar.dart';
 import 'package:weather/ui/widget/loading_widget_line_text.dart';
 import 'package:weather/ui/widget/weather/weather_view.dart';
 import 'package:weather/utils/datetime_utils.dart';
@@ -33,8 +33,6 @@ class WeatherPageOpt extends StatefulWidget {
 
 class _WeatherPageOptState extends State<WeatherPageOpt>
     with AutomaticKeepAliveClientMixin {
-
-
   final WeatherProvider _weatherProvider = WeatherProvider();
   late MainPageBloc _mainPageBloc;
   final CityElement _cityElement;
@@ -103,23 +101,54 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                 BoxConstraints(minHeight: viewportConstrants.maxHeight),
             child: Column(
               children: [
-                WeatherView(
-                  type: weatherNow.text,
-                  child: Container(
-                    alignment: Alignment.bottomCenter,
-                    child: Column(
-                      children: [
-                        _buildStatusOrTimeWidget(weatherRT),
-                        SizedBox(
-                          height: _devicePixelRatio == 0
-                              ? 50
-                              : 18.2 * _devicePixelRatio,
+                Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    WeatherView(
+                      type: weatherNow.text,
+                      child: Container(
+                        alignment: Alignment.bottomCenter,
+                        child: Column(
+                          children: [
+                            _buildStatusOrTimeWidget(weatherRT),
+                            SizedBox(
+                              height: _devicePixelRatio == 0
+                                  ? 50
+                                  : 18.2 * _devicePixelRatio,
+                            ),
+                            _buildWeatherDesc(weatherRT, weatherAir),
+                          ],
                         ),
-                        _buildWeatherDesc(weatherRT, weatherAir),
-                      ],
+                      ),
+                      color: weatherColor!,
                     ),
-                  ),
-                  color: weatherColor!,
+                    Visibility(
+                      visible: _location,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return WeatherMapPage(
+                                "https://map.qweather.com/index.html");
+                          }));
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 60,
+                          margin: EdgeInsets.only(right: 16.0, bottom: 16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(2.0),
+                            border:
+                                Border.all(color: AppColor.ground, width: 4),
+                          ),
+                          child: Image.asset(
+                            "images/icon_map.jpg",
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 _buildWeatherHour(weatherHour),
                 _buildWeather7Day(weatherDaily),
@@ -715,5 +744,5 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   }
 
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 }
