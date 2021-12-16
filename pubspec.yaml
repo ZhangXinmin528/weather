@@ -1,6 +1,6 @@
 name: weather
 description: An weather flutter project .
-version: 1.0.0+6
+version: 1.0.0+7
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -39,7 +39,7 @@ dependencies:
   sqflite: ^2.0.0+4
 
   #百度定位
-  flutter_bmflocation: ^2.0.0-nullsafety.0
+  flutter_bmflocation: ^2.0.0-nullsafety.1
 
   #logger
   pretty_dio_logger: ^1.2.0-beta-1
@@ -56,7 +56,10 @@ dependencies:
   #launching a URL
   url_launcher: ^6.0.10
 
-  esys_flutter_share: 1.0.2
+  #文件路径
+  path_provider: ^2.0.8
+
+#  esys_flutter_share: 1.0.2
 
   flutter_linkify: ^5.0.2
 
@@ -66,6 +69,9 @@ dependencies:
   package_info_plus: ^1.3.0
 
   retry: 3.0.0+1
+
+  #permission
+  permission_handler: ^8.3.0
 
   cupertino_icons: ^1.0.2
 

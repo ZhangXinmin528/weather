@@ -428,7 +428,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
       key: const Key("main_screen_weather_indices"),
       color: AppColor.ground,
       margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0, bottom: 12.0),
-      elevation: 1.0,
+      elevation: 0.5,
       shadowColor: AppColor.shadow,
       child: Column(
         children: [
@@ -525,7 +525,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     return Card(
       color: AppColor.ground,
       margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0),
-      elevation: 1.0,
+      elevation: 0.5,
       shadowColor: AppColor.shadow,
       child: Column(
         children: [
@@ -642,7 +642,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
       key: const Key("main_screen_wind_desc"),
       color: AppColor.ground,
       margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0),
-      elevation: 1.0,
+      elevation: 0.5,
       shadowColor: AppColor.shadow,
       child: Column(
         children: [

@@ -57,7 +57,7 @@ class SPManager {
   ///定位信息
   Future<bool> saveLocation(String location) async {
     try {
-      LogUtil.d("Save location: $location");
+      // LogUtil.d("Save location: $location");
       final result = await _spUtils.setString(Ids.storageLocationKey, location);
       LogUtil.d("Saved location with result: $result");
       return result;

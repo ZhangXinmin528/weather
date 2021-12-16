@@ -22,39 +22,37 @@ class _WeatherMapPageState extends State<WeatherMapPage> {
       child: Scaffold(
         body: Stack(
           children: [
-            Expanded(
-              child: WebView(
-                initialUrl: widget._url,
-                javascriptMode: JavascriptMode.unrestricted,
-                javascriptChannels: <JavascriptChannel>[
-                  JavascriptChannel(
-                      name: 'jsbridge',
-                      onMessageReceived: (message) {
-                        debugPrint(message.message);
-                      })
-                ].toSet(),
-                onWebViewCreated: (controller) {
-                  controller.loadUrl(widget._url);
+            WebView(
+              initialUrl: widget._url,
+              javascriptMode: JavascriptMode.unrestricted,
+              javascriptChannels: <JavascriptChannel>[
+                JavascriptChannel(
+                    name: 'jsbridge',
+                    onMessageReceived: (message) {
+                      debugPrint(message.message);
+                    })
+              ].toSet(),
+              onWebViewCreated: (controller) {
+                controller.loadUrl(widget._url);
 
-                  controller
-                      .canGoBack()
-                      .then((value) => debugPrint(value.toString()));
+                controller
+                    .canGoBack()
+                    .then((value) => debugPrint(value.toString()));
 
-                  controller
-                      .canGoForward()
-                      .then((value) => debugPrint(value.toString()));
+                controller
+                    .canGoForward()
+                    .then((value) => debugPrint(value.toString()));
 
-                  controller
-                      .currentUrl()
-                      .then((value) => debugPrint(value.toString()));
-                },
-                onPageFinished: (url) {
-                  print("onPageFinished:$url");
-                },
-                onWebResourceError: (error) {
-                  LogUtil.e("onWebResourceError..error:$error");
-                },
-              ),
+                controller
+                    .currentUrl()
+                    .then((value) => debugPrint(value.toString()));
+              },
+              onPageFinished: (url) {
+                print("onPageFinished:$url");
+              },
+              onWebResourceError: (error) {
+                LogUtil.e("onWebResourceError..error:$error");
+              },
             ),
             Container(
               color: AppColor.ground,

@@ -3,6 +3,7 @@ import 'dart:convert' as convert;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
@@ -45,7 +46,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
       yield* _mapLoadCityListToState(state);
     } else if (event is RequestLocationEvent) {
       //定位相关
-      yield* _mapStartLocationToState(state);
+      yield* _mapRequestLocationToState(state);
     } else if (event is LocationChangedEvent) {
       //定位数据变化
       yield* _mapLocationChangedToState(state);
@@ -73,8 +74,31 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   }
 
   ///开始定位
-  Stream<MainPageState> _mapStartLocationToState(MainPageState state) async* {
-    LogUtil.d("_mapStartLocationToState()~");
+  Stream<MainPageState> _mapRequestLocationToState(MainPageState state) async* {
+    final permission = Permission.locationWhenInUse;
+    PermissionStatus permissionStatus = await permission.status;
+    LogUtil.d(
+        "_mapStartLocationToState()..permission status:${permissionStatus.name}");
+    if (permissionStatus.isGranted) {
+      _mapStartLocationToState(state);
+    } else if (permissionStatus.isPermanentlyDenied) {
+      //android
+      openAppSettings();
+    } else if (permissionStatus.isRestricted) {
+      //ios
+      openAppSettings();
+    } else {
+      permissionStatus = await permission.request();
+      LogUtil.d(
+          "_mapStartLocationToState()..permission retry:${permissionStatus.name}");
+      if (permissionStatus.isGranted) {
+        _mapStartLocationToState(state);
+      } else {}
+    }
+  }
+
+  void _mapStartLocationToState(MainPageState state) async {
+    LogUtil.d("_mapStartLocationToState~");
     if (state is InitLocationState) {
       final time = await _appLocalRepo.getLocationTime();
       if (time != null && time.isNotEmpty) {

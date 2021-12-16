@@ -5,6 +5,7 @@ import 'package:flutter_bmflocation/bdmap_location_flutter_plugin.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location_android_option.dart';
 import 'package:flutter_bmflocation/flutter_baidu_location_ios_option.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class LocationManager {
   late StreamSubscription<Map<String, Object>?>? _locationListener;
@@ -35,7 +36,6 @@ class LocationManager {
   void startLocation() {
     if (_locationPlugin != null) {
       _setLocOption(false);
-      _locationPlugin.requestPermission();
       _locationPlugin.startLocation();
     }
   }
@@ -44,11 +44,13 @@ class LocationManager {
     _locationListener = _locationPlugin
         .onResultCallback()
         .listen((Map<String, Object>? result) {
+      LogUtil.d("LocationManager..定位回调了..result：${result.toString()}");
       try {
         final BaiduLocation location = BaiduLocation.fromMap(result);
         valueChanged(location);
       } catch (exception) {
         valueChanged(null);
+        stopLocation();
         print(exception);
       }
     });
@@ -78,11 +80,7 @@ class LocationManager {
     androidOption.setIsNeedLocationDescribe(true); // 设置是否需要返回位置描述
     androidOption.setOpenGps(true); // 设置是否需要使用gps
     androidOption.setLocationMode(LocationMode.Hight_Accuracy); // 设置定位模式
-    if (isOnce) {
-      androidOption.setScanspan(0); // 设置发起定位请求时间间隔
-    } else {
-      androidOption.setScanspan(1000); // 设置发起定位请求时间间隔
-    }
+    androidOption.setScanspan(1000); // 设置发起定位请求时间间隔
 
     Map androidMap = androidOption.getMap();
 

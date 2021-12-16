@@ -51,8 +51,8 @@ class WeatherProvider {
     _locationManager.listenLocationCallback((value) {
       //定位变化
 
-      LogUtil.d("WeatherProvider..定位回调了..city：${value?.city}");
       if (value != null && value.city!.isNotEmpty) {
+        LogUtil.d("WeatherProvider..定位回调了..city：${value.city}");
         _baiduLocation = value;
         locationController.add(_baiduLocation!);
         Future.delayed(Duration(seconds: 1), () {
@@ -69,6 +69,8 @@ class WeatherProvider {
         });
         _locationManager.stopLocation();
         _mainPageBloc?.saveLocation();
+      } else {
+        LogUtil.d("WeatherProvider..定位回调了..error：${value?.errorInfo}");
       }
     });
   }
