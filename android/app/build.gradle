@@ -26,7 +26,8 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion build_versions.compile_sdk
+    buildToolsVersion build_versions.build_tools
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -34,8 +35,8 @@ android {
 
     defaultConfig {
         applicationId "com.zxm.coding.weather"
-        minSdkVersion 19
-        targetSdkVersion 31
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -78,5 +79,5 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation deps.kotlin.stdlib
 }

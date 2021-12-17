@@ -258,6 +258,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.0-nullsafety.1"
+  flutter_downloader:
+    dependency: "direct main"
+    description:
+      name: flutter_downloader
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.7.1"
   flutter_linkify:
     dependency: "direct main"
     description:

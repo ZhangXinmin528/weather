@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="知天气"
@@ -18,6 +21,8 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/LaunchTheme"
+            android:usesCleartextTraffic="true"
+            android:requestLegacyExternalStorage="true"
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -49,5 +54,6 @@
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="4DDClF1YPkyDPqvwFSmZc0ZjdrGwZztc" />
+
     </application>
 </manifest>

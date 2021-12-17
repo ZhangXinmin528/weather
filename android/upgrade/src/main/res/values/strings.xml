@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all_btn_upgrade">升级</string>
+
+    <string name="all_upgrade_tips_need_permissions">请授权应用访问空间存储权限，否则无法更新App.</string>
+    <string name="all_ignore_version">忽略此版本</string>
+</resources>

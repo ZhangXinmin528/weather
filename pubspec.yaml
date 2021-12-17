@@ -59,18 +59,21 @@ dependencies:
   #文件路径
   path_provider: ^2.0.8
 
-#  esys_flutter_share: 1.0.2
+  #  esys_flutter_share: 1.0.2
 
   flutter_linkify: ^5.0.2
 
   flutter_svg: ^1.0.0
+
+  #file download
+  flutter_downloader: ^1.7.1
 
   #querying information about an application package
   package_info_plus: ^1.3.0
 
   retry: 3.0.0+1
 
-  #permission
+  #permission:sdk version =31
   permission_handler: ^8.3.0
 
   cupertino_icons: ^1.0.2
