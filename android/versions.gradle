@@ -1,8 +1,8 @@
 ext.deps = [:]
 def versions = [:]
 //classpath
-versions.android_gradle_plugin = '4.2.1'
-versions.kotlin = "1.5.10"
+versions.android_gradle_plugin = '7.0.3'
+versions.kotlin = "1.5.20"
 versions.arouter_register = "1.0.2"
 versions.bugly_tinker_support = "1.1.5"
 
@@ -80,7 +80,7 @@ def build_versions = [:]
 build_versions.min_sdk = 19
 build_versions.compile_sdk = 31
 build_versions.target_sdk = 31
-build_versions.build_tools = "31.0.0"
+build_versions.build_tools = "30.0.0"
 ext.build_versions = build_versions
 
 //================================================================================================//
@@ -209,37 +209,37 @@ deps.navigation = navigation
 //TODO:CoreUtil
 deps.coreUtils = "io.github.zhangxinmin528.androidutils:coreutils:$versions.coreutils"
 //TODO:TBSSDK
-deps.tbssdk = "com.tencent.tbs.tbssdk:sdk:$versions.tbssdk"
-
-//TODO:Tinker&Bugly
-deps.tinker_android_lib = "com.tencent.tinker:tinker-android-lib:$versions.tinker_android_lib"
-deps.bugly_crashreport_upgrade = "com.tencent.bugly:crashreport_upgrade:$versions.bugly_crashreport_upgrade"
-
-deps.bugly_nativecrashreport = "com.tencent.bugly:nativecrashreport:$versions.bugly_nativecrashreport"
-deps.bugly_crashreport = "com.tencent.bugly:crashreport:$versions.bugly_crashreport"
+//deps.tbssdk = "com.tencent.tbs.tbssdk:sdk:$versions.tbssdk"
+//
+////TODO:Tinker&Bugly
+//deps.tinker_android_lib = "com.tencent.tinker:tinker-android-lib:$versions.tinker_android_lib"
+//deps.bugly_crashreport_upgrade = "com.tencent.bugly:crashreport_upgrade:$versions.bugly_crashreport_upgrade"
+//
+//deps.bugly_nativecrashreport = "com.tencent.bugly:nativecrashreport:$versions.bugly_nativecrashreport"
+//deps.bugly_crashreport = "com.tencent.bugly:crashreport:$versions.bugly_crashreport"
 
 //TODO:AMAP
-deps.amap_3dmap = "com.amap.api:3dmap:$versions.amap_3dmap"
-deps.amap_map2d = "com.amap.api:map2d:$versions.amap_map2d"
-deps.amap_search = "com.amap.api:search:$versions.amap_search"
-deps.amap_location = "com.amap.api:location:$versions.amap_location"
-
-def arch_core = [:]
-arch_core.runtime = "androidx.arch.core:core-runtime:$versions.arch_core"
-deps.arch_core = arch_core
-
-deps.paging_runtime = "androidx.paging:paging-runtime:$versions.paging"
-
-deps.transition = "androidx.transition:transition:$versions.transition"
-
-deps.truth = "com.google.truth:truth:$versions.truth"
-
-def work = [:]
-work.runtime = "androidx.work:work-runtime:$versions.work"
-work.testing = "androidx.work:work-testing:$versions.work"
-work.firebase = "androidx.work:work-firebase:$versions.work"
-work.runtime_ktx = "androidx.work:work-runtime-ktx:$versions.work"
-deps.work = work
+//deps.amap_3dmap = "com.amap.api:3dmap:$versions.amap_3dmap"
+//deps.amap_map2d = "com.amap.api:map2d:$versions.amap_map2d"
+//deps.amap_search = "com.amap.api:search:$versions.amap_search"
+//deps.amap_location = "com.amap.api:location:$versions.amap_location"
+//
+//def arch_core = [:]
+//arch_core.runtime = "androidx.arch.core:core-runtime:$versions.arch_core"
+//deps.arch_core = arch_core
+//
+//deps.paging_runtime = "androidx.paging:paging-runtime:$versions.paging"
+//
+//deps.transition = "androidx.transition:transition:$versions.transition"
+//
+//deps.truth = "com.google.truth:truth:$versions.truth"
+//
+//def work = [:]
+//work.runtime = "androidx.work:work-runtime:$versions.work"
+//work.testing = "androidx.work:work-testing:$versions.work"
+//work.firebase = "androidx.work:work-firebase:$versions.work"
+//work.runtime_ktx = "androidx.work:work-runtime-ktx:$versions.work"
+//deps.work = work
 
 ext.deps = deps
 
