@@ -58,23 +58,6 @@ versions.amap_location = "5.2.0"
 //util
 versions.coreutils = "1.0.6"
 versions.tbssdk = "43939"
-//umeng
-versions.umsdk_common = "9.1.0"
-versions.umsdk_asms = "1.1.3"
-versions.umsdk_crash = "0.0.4"
-
-versions.umsdk_share_core = "7.0.2"
-versions.umsdk_share_board = "7.0.2"
-
-versions.umsdk_share_qq = "7.0.2"
-versions.umsdk_share_wx = "7.0.2"
-versions.umsdk_share_sina = "7.0.2"
-versions.umsdk_share_dingding = "7.0.2"
-
-versions.umsdk_oaid_lenovo = "1.0.0"
-versions.umsdk_oaid_mi = "1.0.0"
-versions.umsdk_oaid_oppo = "1.0.4"
-versions.umsdk_oaid_vivo = "1.0.0.1"
 
 //Tinker & Bugly
 versions.tinker_android_lib = "1.9.14.3"
@@ -97,7 +80,7 @@ def build_versions = [:]
 build_versions.min_sdk = 19
 build_versions.compile_sdk = 31
 build_versions.target_sdk = 31
-build_versions.build_tools = "30.0.2"
+build_versions.build_tools = "31.0.0"
 ext.build_versions = build_versions
 
 //================================================================================================//
@@ -228,27 +211,6 @@ deps.coreUtils = "io.github.zhangxinmin528.androidutils:coreutils:$versions.core
 //TODO:TBSSDK
 deps.tbssdk = "com.tencent.tbs.tbssdk:sdk:$versions.tbssdk"
 
-//TODO:UMENG
-//所有友盟业务都需要
-deps.umsdk_common = "com.umeng.umsdk:common:$versions.umsdk_common"
-deps.umsdk_asms = "com.umeng.umsdk:asms:$versions.umsdk_asms"
-deps.umsdk_crash = "com.umeng.umsdk:crash:$versions.umsdk_crash"
-//分享核心库
-deps.umsdk_share_core = "com.umeng.umsdk:share-core:$versions.umsdk_share_core"
-deps.umsdk_share_board = "com.umeng.umsdk:share-board:$versions.umsdk_share_board"
-
-//分享模块
-deps.umsdk_share_qq = "com.umeng.umsdk:share-qq:$versions.umsdk_share_qq"
-deps.umsdk_share_wx = "com.umeng.umsdk:share-wx:$versions.umsdk_share_wx"
-deps.umsdk_share_sina = "com.umeng.umsdk:share-sina:$versions.umsdk_share_sina"
-deps.umsdk_share_dingding = "com.umeng.umsdk:share-dingding:$versions.umsdk_share_dingding"
-
-//oaid
-deps.umsdk_oaid_lenovo = "com.umeng.umsdk:oaid_lenovo:$versions.umsdk_oaid_lenovo"
-deps.umsdk_oaid_mi = "com.umeng.umsdk:oaid_mi:$versions.umsdk_oaid_mi"
-deps.umsdk_oaid_oppo = "com.umeng.umsdk:oaid_oppo:1.0.4:$versions.umsdk_oaid_oppo"
-deps.umsdk_oaid_vivo = "com.umeng.umsdk:oaid_vivo:$versions.umsdk_oaid_vivo"
-
 //TODO:Tinker&Bugly
 deps.tinker_android_lib = "com.tencent.tinker:tinker-android-lib:$versions.tinker_android_lib"
 deps.bugly_crashreport_upgrade = "com.tencent.bugly:crashreport_upgrade:$versions.bugly_crashreport_upgrade"
@@ -283,12 +245,10 @@ ext.deps = deps
 
 def addRepos(RepositoryHandler handler) {
     handler.google()
-    handler.jcenter()
+//    handler.jcenter()
     handler.mavenCentral()
     handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     handler.maven { url 'https://jitpack.io' }
-    //友盟
-    handler.maven { url 'https://dl.bintray.com/umsdk/release' }
     //maven
     handler.maven { url "https://repo1.maven.org/maven2" }
 }

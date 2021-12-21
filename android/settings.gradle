@@ -1,5 +1,5 @@
 include ':app'
-include ':upgrade'
+//include ':upgrade'
 
 
 def localPropertiesFile = new File(rootProject.projectDir, "local.properties")

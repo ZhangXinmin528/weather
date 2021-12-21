@@ -2,13 +2,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class UpgradeManager {
-   String? _apkPath;
+  String? _apkPath;
+
   factory UpgradeManager() {
     return _instance;
   }
 
-  UpgradeManager._internal(){
-  }
+  UpgradeManager._internal() {}
 
   static late final UpgradeManager _instance = UpgradeManager._internal();
 
