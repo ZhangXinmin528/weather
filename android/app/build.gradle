@@ -79,4 +79,8 @@ flutter {
 
 dependencies {
     implementation deps.kotlin.stdlib
+
+    implementation deps.app_compat
+
+    implementation project(path: ':upgrade')
 }
