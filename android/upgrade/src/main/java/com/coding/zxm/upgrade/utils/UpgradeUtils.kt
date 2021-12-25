@@ -53,6 +53,7 @@ class UpgradeUtils private constructor() {
          * 是否存在新版本
          */
         fun hasNewVersion(@NonNull context: Context, @NonNull entity: UpdateEntity?): Boolean {
+
             if (entity != null) {
                 val currVersion = getAppVersionCode(context)
                 val newVersion = entity.version

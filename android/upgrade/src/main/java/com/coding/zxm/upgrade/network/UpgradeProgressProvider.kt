@@ -249,8 +249,9 @@ class UpgradeProgressProvider(val activity: FragmentActivity) :
      * 展示弹窗
      */
     override fun showUpgradeDialog(entity: UpdateEntity?) {
+
         if (entity != null) {
-            val fragmentManager = activity.fragmentManager
+            val fragmentManager = activity.supportFragmentManager
             UpdateDialogFragment
                 .newInstance(entity)
                 .showUpgradeDialog(manager = fragmentManager, provider = this)

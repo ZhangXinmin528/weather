@@ -76,7 +76,9 @@ class AboutPageState extends State<AboutPage> {
             _buildOverviewItem(
                 icon: Icons.update,
                 text: AppLocalizations.of(context)!.checkUpdate,
-                onTap: () {}),
+                onTap: () {
+
+                }),
 
             // 分享
             // _buildOverviewItem(

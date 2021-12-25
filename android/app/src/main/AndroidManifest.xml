@@ -11,9 +11,12 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
+        android:name=".WeatherApp"
         android:icon="@mipmap/ic_launcher"
         android:label="知天气"
-        android:usesCleartextTraffic="true">
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
+        tools:ignore="UnusedAttribute">
 
         <activity
             android:name=".MainActivity"

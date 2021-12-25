@@ -56,9 +56,6 @@ dependencies:
   #launching a URL
   url_launcher: ^6.0.10
 
-  #文件路径
-  path_provider: ^2.0.8
-
   #  esys_flutter_share: 1.0.2
 
   flutter_linkify: ^5.0.2
@@ -75,6 +72,9 @@ dependencies:
 
   #permission:sdk version =31
   permission_handler: ^8.3.0
+
+  #markdown
+  flutter_markdown: ^0.6.9
 
   cupertino_icons: ^1.0.2
 

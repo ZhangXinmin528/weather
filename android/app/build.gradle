@@ -38,6 +38,8 @@ android {
         targetSdkVersion build_versions.target_sdk
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        multiDexEnabled true
     }
 
     Properties properties = new Properties()
@@ -81,6 +83,7 @@ dependencies {
     implementation deps.kotlin.stdlib
 
     implementation deps.app_compat
+    implementation deps.multidex
 
     implementation project(path: ':upgrade')
 }
