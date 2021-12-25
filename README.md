@@ -6,7 +6,7 @@
 知天气主要采用Flutter技术开发，采用现阶段非常流行的Bloc框架。
 
 <p align="center">
-  <img alt="logo" src="https://github.com/ZhangXinmin528/AndroidUtils/blob/master/app/src/main/assets/ic_launcher.png"/>
+  <img alt="logo" src="https://github.com/ZhangXinmin528/weather/blob/opt/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png"/>
 </p>
 
  功能介绍
