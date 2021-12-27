@@ -40,6 +40,9 @@ class Warning {
   @JsonKey(name: 'id')
   String id;
 
+  @JsonKey(name: 'sender')
+  String sender;
+
   @JsonKey(name: 'pubTime')
   String pubTime;
 
@@ -61,11 +64,15 @@ class Warning {
   @JsonKey(name: 'type')
   String type;
 
+  @JsonKey(name: 'typeName')
+  String typeName;
+
   @JsonKey(name: 'text')
   String text;
 
   Warning(
     this.id,
+    this.sender,
     this.pubTime,
     this.title,
     this.startTime,
@@ -73,6 +80,7 @@ class Warning {
     this.status,
     this.level,
     this.type,
+    this.typeName,
     this.text,
   );
 

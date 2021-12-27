@@ -67,7 +67,7 @@ class AboutPageState extends State<AboutPage> {
             // 意见反馈
             _buildOverviewItem(
               icon: Icons.feedback,
-              text: AppLocalizations.of(context)!.feedback,
+                  text: AppLocalizations.of(context)!.feedback,
               onTap: () => _launchInBrower(
                   "https://github.com/ZhangXinmin528/weather/issues/new"),
             ),

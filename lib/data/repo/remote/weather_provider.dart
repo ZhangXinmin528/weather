@@ -9,6 +9,7 @@ import 'package:weather/data/model/remote/weather/weather_daily.dart';
 import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
+import 'package:weather/data/model/remote/weather/weather_warning.dart';
 import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/location/location_manager.dart';
@@ -164,6 +165,10 @@ class WeatherProvider {
     final WeatherIndices? weatherIndices =
         await _weatherRemoteRepo.requestIndices1D(longitude, latitude);
 
+    //天气预警
+    final WeatherWarning? weatherWarning =
+        await _weatherRemoteRepo.requestWarningNow(longitude, latitude);
+
     if (weatherNow != null && weatherNow.code == "200") {
       if (_hasCached) {
         final index = await _sqliteManager.updateCityWeather(key, weatherNow,
@@ -180,7 +185,8 @@ class WeatherProvider {
           weatherAir: weatherAir,
           weatherHour: weatherHour,
           weatherDaily: weatherDaily,
-          weatherIndices: weatherIndices);
+          weatherIndices: weatherIndices,
+          weatherWarning: weatherWarning);
       Future.delayed(Duration(milliseconds: 800), () {
         weatherStatusController.add(WeatherStatus.STATUS_INIT);
       });
@@ -203,13 +209,15 @@ class WeatherProvider {
       required WeatherAir weatherAir,
       required WeatherHour weatherHour,
       required WeatherDaily weatherDaily,
-      required WeatherIndices weatherIndices}) {
+      required WeatherIndices weatherIndices,
+      WeatherWarning? weatherWarning}) {
     final Map<String, dynamic> weatherMap = Map();
     weatherMap['weatherRT'] = weatherRT;
     weatherMap['weatherAir'] = weatherAir;
     weatherMap['weatherHour'] = weatherHour;
     weatherMap['weatherDaily'] = weatherDaily;
     weatherMap['weatherIndices'] = weatherIndices;
+    weatherMap['weatherWarning'] = weatherWarning;
 
     if (!weatherController.isClosed) {
       weatherController.add(weatherMap);

@@ -8,6 +8,7 @@ import 'package:weather/data/model/remote/weather/weather_daily.dart';
 import 'package:weather/data/model/remote/weather/weather_hour.dart';
 import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
+import 'package:weather/data/model/remote/weather/weather_warning.dart';
 import 'package:weather/data/repo/remote/weather_provider.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview_page_nobar.dart';
@@ -84,6 +85,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     final WeatherIndices weatherIndices = weatherMap["weatherIndices"];
     final WeatherDaily weatherDaily = weatherMap['weatherDaily'];
     final WeatherHour weatherHour = weatherMap['weatherHour'];
+    final WeatherWarning? weatherWarning = weatherMap['weatherWarning'];
 
     final weatherNow = weatherRT.now;
     weatherColor = _getWeatherThemeColor(type: weatherNow.text);
@@ -117,6 +119,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                                   : 18.2 * _devicePixelRatio,
                             ),
                             _buildWeatherDesc(weatherRT, weatherAir),
+                            _buildWarningWidget(weatherWarning),
                           ],
                         ),
                       ),
@@ -133,16 +136,11 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                           }));
                         },
                         child: Container(
-                          width: 100,
+                          width: 60,
                           height: 60,
                           margin: EdgeInsets.only(right: 16.0, bottom: 16.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(2.0),
-                            border:
-                                Border.all(color: AppColor.ground, width: 4),
-                          ),
                           child: Image.asset(
-                            "images/icon_map.jpg",
+                            "images/icon_map.png",
                             fit: BoxFit.fill,
                           ),
                         ),
@@ -190,6 +188,58 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     } else {
       return isDay ? const Color(0xFF51C0F8) : const Color(0xFF7F9EE9);
     }
+  }
+
+  ///weather warning widget
+  Widget _buildWarningWidget([WeatherWarning? weatherWarning]) {
+    final warningList = weatherWarning?.warning;
+
+    if (warningList == null || warningList.isEmpty) {
+      return SizedBox(
+        height: 35,
+      );
+    }
+    return Container(
+      height: 35,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        color: AppColor.blackGround,
+      ),
+      margin: EdgeInsets.only(left: 90.0, right: 90.0, top: 16),
+      padding: EdgeInsets.only(left: 6.0, right: 6.0),
+      alignment: Alignment.centerLeft,
+      child: PageView.builder(
+        itemBuilder: (context, index) {
+          final Warning? warning = warningList[index];
+          return GestureDetector(
+            onTap: () {
+              LogUtil.d("点击了");
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconUtils.getWeatherWarningSVGIcon(warning?.type,
+                    color:
+                        IconUtils.getWeatherWarningLevelColor(warning?.level),
+                    size: 20),
+                Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    "${warning?.typeName}${warning?.level}预警",
+                    style: TextStyle(
+                      fontSize: 14.0,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          );
+        },
+        itemCount: warningList.length,
+        scrollDirection: Axis.vertical,
+      ),
+    );
   }
 
   ///Time_buildUpdateTimeWidget

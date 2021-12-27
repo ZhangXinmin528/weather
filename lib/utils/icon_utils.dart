@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:weather/resources/config/colors.dart';
 
 class IconUtils {
   ///获取对应的svg天气图标
@@ -21,6 +22,50 @@ class IconUtils {
       width: size,
       height: size,
     );
+  }
+
+  ///获取对应的svg天气图标
+  static Widget getWeatherWarningSVGIcon(String? code,
+      {Color? color, double? size}) {
+    if (code == null) {
+      return SvgPicture.asset(
+        "icons/9999.svg",
+        color: color,
+        semanticsLabel: 'weather svg widget',
+        width: size,
+        height: size,
+      );
+    }
+
+    return SvgPicture.asset(
+      "icons/$code.svg",
+      color: color,
+      semanticsLabel: 'weather svg $code',
+      width: size,
+      height: size,
+    );
+  }
+
+  ///获取天气预警登记对应色值
+  static Color getWeatherWarningLevelColor(String? level) {
+    switch (level) {
+      case "白色":
+        return AppColor.warningWhite;
+      case "蓝色":
+        return AppColor.warningBlue;
+      case "绿色":
+        return AppColor.warningGreen;
+      case "黄色":
+        return AppColor.warningYellow;
+      case "橙色":
+        return AppColor.warningOrange;
+      case "红色":
+        return AppColor.warningRed;
+      case "黑色":
+        return AppColor.warningBlack;
+      default:
+        return AppColor.white;
+    }
   }
 
   ///获取天气对应icon

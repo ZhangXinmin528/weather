@@ -30,6 +30,7 @@ Map<String, dynamic> _$WeatherWarningToJson(WeatherWarning instance) =>
 Warning _$WarningFromJson(Map<String, dynamic> json) {
   return Warning(
     json['id'] as String,
+    json['sender'] as String,
     json['pubTime'] as String,
     json['title'] as String,
     json['startTime'] as String,
@@ -37,12 +38,14 @@ Warning _$WarningFromJson(Map<String, dynamic> json) {
     json['status'] as String,
     json['level'] as String,
     json['type'] as String,
+    json['typeName'] as String,
     json['text'] as String,
   );
 }
 
 Map<String, dynamic> _$WarningToJson(Warning instance) => <String, dynamic>{
       'id': instance.id,
+      'sender': instance.sender,
       'pubTime': instance.pubTime,
       'title': instance.title,
       'startTime': instance.startTime,
@@ -50,6 +53,7 @@ Map<String, dynamic> _$WarningToJson(Warning instance) => <String, dynamic>{
       'status': instance.status,
       'level': instance.level,
       'type': instance.type,
+      'typeName': instance.typeName,
       'text': instance.text,
     };
 

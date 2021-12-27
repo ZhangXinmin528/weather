@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 abstract class AppColor {
+  ///标准颜色
+  static const white = Colors.white;
 
   /// app界面背景色
   static const ground = Colors.white;
+  static const blackGround = Colors.black12;
 
   /// 阴影
   static const shadow = Color(0xFFEDEEF0);
@@ -35,6 +38,15 @@ abstract class AppColor {
   static const kale = Color(0xFF4E673F);
   static const pinkYarrow = Color(0xFFC72B6C);
   static const niagara = Color(0xFF4C829E);
+
+  ///天气预警等级色值
+  static const warningWhite = Colors.white;
+  static const warningBlue = Colors.blue;
+  static const warningGreen = Colors.green;
+  static const warningYellow = Colors.yellow;
+  static const warningOrange = Colors.orange;
+  static const warningRed = Colors.red;
+  static const warningBlack = Colors.black;
 
   ///空气质量
   ///一级

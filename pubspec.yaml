@@ -76,6 +76,9 @@ dependencies:
   #markdown
   flutter_markdown: ^0.6.9
 
+  #marquee
+  marquee: ^2.2.0
+
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
