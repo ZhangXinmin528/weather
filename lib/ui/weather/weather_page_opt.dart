@@ -201,11 +201,12 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     }
     return Container(
       height: 35,
+      width: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
         color: AppColor.blackGround,
       ),
-      margin: EdgeInsets.only(left: 90.0, right: 90.0, top: 16),
+      margin: EdgeInsets.only(top: 16),
       padding: EdgeInsets.only(left: 6.0, right: 6.0),
       alignment: Alignment.centerLeft,
       child: PageView.builder(
