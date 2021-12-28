@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:weather/bloc/navigation/navigation_bloc.dart';
+import 'package:weather/bloc/navigation/navigation_event.dart';
+import 'package:weather/data/model/internal/markdown.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview_page.dart';
 
@@ -14,6 +19,14 @@ class AboutPage extends StatefulWidget {
 }
 
 class AboutPageState extends State<AboutPage> {
+  late NavigationBloc _navigationBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _navigationBloc = BlocProvider.of(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,16 +71,15 @@ class AboutPageState extends State<AboutPage> {
                 icon: Icons.home,
                 text: AppLocalizations.of(context)!.programHome,
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return WebviewPage(
-                        "项目主页", "https://github.com/ZhangXinmin528/weather");
-                  }));
+                  final file =
+                      MarkdownFile(title: '版本历史', path: 'doc/RELEASE.md');
+                  _navigationBloc.add(MarkdownPageNavigationEvent(file));
                 }),
 
             // 意见反馈
             _buildOverviewItem(
               icon: Icons.feedback,
-                  text: AppLocalizations.of(context)!.feedback,
+              text: AppLocalizations.of(context)!.feedback,
               onTap: () => _launchInBrower(
                   "https://github.com/ZhangXinmin528/weather/issues/new"),
             ),
@@ -76,9 +88,7 @@ class AboutPageState extends State<AboutPage> {
             _buildOverviewItem(
                 icon: Icons.update,
                 text: AppLocalizations.of(context)!.checkUpdate,
-                onTap: () {
-
-                }),
+                onTap: () {}),
 
             // 分享
             // _buildOverviewItem(
@@ -142,7 +152,7 @@ class AboutPageState extends State<AboutPage> {
               if (snapshot.hasData) {
                 final PackageInfo info = snapshot.requireData;
                 return Text(
-                  "v${info.version} build(${info.buildNumber})",
+                  "v${info.version} build version (${info.buildNumber})",
                   style: TextStyle(
                       fontSize: 14,
                       color: Colors.black87,

@@ -98,4 +98,5 @@ flutter:
   assets:
     - icons/
     - images/
+    - doc/
     - assets/lottiefiles/

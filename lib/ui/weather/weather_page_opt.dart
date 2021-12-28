@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
+import 'package:weather/bloc/navigation/navigation_bloc.dart';
+import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
@@ -36,6 +38,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     with AutomaticKeepAliveClientMixin {
   final WeatherProvider _weatherProvider = WeatherProvider();
   late MainPageBloc _mainPageBloc;
+  late NavigationBloc _navigationBloc;
   final CityElement _cityElement;
   final int _position;
   late bool _location;
@@ -53,6 +56,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     _location = _position == 0;
     LogUtil.d("WeatherPageOpt..initState");
     _mainPageBloc = BlocProvider.of(context);
+    _navigationBloc = BlocProvider.of(context);
     _weatherProvider.initState(_mainPageBloc, _cityElement);
   }
 
@@ -214,7 +218,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
           final Warning? warning = warningList[index];
           return GestureDetector(
             onTap: () {
-              LogUtil.d("点击了");
+              _navigationBloc.add(WarningNavigationEvent(warningList));
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,

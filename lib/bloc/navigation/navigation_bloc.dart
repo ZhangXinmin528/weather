@@ -28,6 +28,16 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
     } else if (event is CitySearchPageNavigationEvent) {
       _navigationTo(NavigationPath.citySearchPagePath);
       yield NavigationState(NavigationRoute.citySearchScreen);
+    } else if (event is WarningNavigationEvent) {
+      final RouteSettings warningSetting =
+          RouteSettings(name: 'warning', arguments: event.warningList);
+      _navigationTo(NavigationPath.warningPagePath,
+          routeSettings: warningSetting);
+    } else if (event is MarkdownPageNavigationEvent) {
+      final RouteSettings markdownSetting =
+          RouteSettings(name: "markdown", arguments: event.markdownFile);
+      _navigationTo(NavigationPath.markdownPagePath,
+          routeSettings: markdownSetting);
     }
 
     ///未完待续。。。

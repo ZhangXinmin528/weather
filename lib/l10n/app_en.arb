@@ -2,6 +2,7 @@
     "app_name":"Weather",
     "settings":"Settings",
     "about":"About",
+    "warning_detial":"Warning",
     "city_management":"CityManagement",
     "programHome":"",
     "feedback":"Feedback",
