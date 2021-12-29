@@ -96,9 +96,9 @@ class UpgradeProgressProvider(val activity: FragmentActivity) :
                     name + "_" + entity.versionShort + "_build${entity.build}" + ".apk"
 
                 showUpgradeDialog(entity)
-            } else {
+            }/* else {
                 Toast.makeText(activity, "已是最新版本", Toast.LENGTH_SHORT).show()
-            }
+            }*/
             return true
         }
 

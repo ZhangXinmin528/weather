@@ -48,6 +48,7 @@ class CityElement {
   double longitude;
   String? city;
   String? country;
+  String? locTime;
 
   CityElement(
       {required this.key,
@@ -55,7 +56,8 @@ class CityElement {
       required this.latitude,
       required this.longitude,
       this.city,
-      this.country});
+      this.country,
+      this.locTime});
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> jsonMap = Map();
@@ -65,6 +67,7 @@ class CityElement {
     jsonMap['longitude'] = this.longitude;
     jsonMap['city'] = this.city;
     jsonMap['country'] = this.country;
+    jsonMap['locTime'] = this.locTime;
     return jsonMap;
   }
 
@@ -74,6 +77,9 @@ class CityElement {
       name: json['name'] as String,
       latitude: json['latitude'],
       longitude: json['longitude'],
+      city: json['city'] ?? "",
+      country: json['country'] ?? "",
+      locTime: json['locTime'] ?? "",
     );
   }
 }

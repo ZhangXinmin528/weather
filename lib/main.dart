@@ -10,6 +10,7 @@ import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/weather/weather_page_bloc.dart';
 import 'package:weather/navigation/navigation_provider.dart';
+import 'package:weather/resources/config/colors.dart';
 import 'package:weather/utils/shared_preferences_utils.dart';
 import 'package:weather/weather_observer.dart';
 
@@ -116,11 +117,11 @@ class _WeatherAppState extends State<WeatherApp> {
   ThemeData _initThemeData() {
     return ThemeData(
       textTheme: const TextTheme(
-        headline5: TextStyle(fontSize: 60.0, color: Colors.white),
-        headline6: TextStyle(fontSize: 35, color: Colors.white),
-        subtitle2: TextStyle(fontSize: 20, color: Colors.white),
-        bodyText2: TextStyle(fontSize: 15, color: Colors.white),
-        bodyText1: TextStyle(fontSize: 12, color: Colors.white),
+        headline5: TextStyle(fontSize: 60.0, color: AppColor.textWhite),
+        headline6: TextStyle(fontSize: 35, color: AppColor.textWhite),
+        subtitle2: TextStyle(fontSize: 20, color: AppColor.textWhite),
+        bodyText2: TextStyle(fontSize: 15, color: AppColor.textWhite),
+        bodyText1: TextStyle(fontSize: 12, color: AppColor.textWhite),
       ),
     );
   }

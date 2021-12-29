@@ -47,7 +47,7 @@ class WeatherProvider {
     _loadCacheWeather();
   }
 
-  ///还需要处理
+  ///定位回调
   void _initLocationCallback() {
     _locationManager.listenLocationCallback((value) {
       //定位变化
@@ -66,6 +66,7 @@ class WeatherProvider {
           _cityElement?.key = key;
           _cityElement?.longitude = _baiduLocation!.longitude!;
           _cityElement?.latitude = _baiduLocation!.latitude!;
+          _cityElement?.locTime = _baiduLocation!.locTime;
           _requestWeatherData();
         });
         _locationManager.stopLocation();
@@ -143,7 +144,8 @@ class WeatherProvider {
     final String key = _cityElement!.key;
     final latitude = _cityElement!.latitude;
     final longitude = _cityElement!.longitude;
-    LogUtil.d("WeatherProvider..requestWeatherData:$key");
+    LogUtil.d(
+        "WeatherProvider..requestWeatherData:$key..locTime:${_cityElement?.locTime}");
     //获取天气信息
 
     final WeatherRT? weatherNow =

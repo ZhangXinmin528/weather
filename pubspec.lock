@@ -272,13 +272,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.7.1"
-  flutter_linkify:
-    dependency: "direct main"
-    description:
-      name: flutter_linkify
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.0.2"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -378,13 +371,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.1.4"
-  linkify:
-    dependency: transitive
-    description:
-      name: linkify
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "4.1.0"
   loading_indicator:
     dependency: "direct main"
     description:

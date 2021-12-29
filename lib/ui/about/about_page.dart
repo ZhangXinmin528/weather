@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
+import 'package:weather/channel/channel_helper.dart';
 import 'package:weather/data/model/internal/markdown.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview_page.dart';
@@ -20,11 +19,13 @@ class AboutPage extends StatefulWidget {
 
 class AboutPageState extends State<AboutPage> {
   late NavigationBloc _navigationBloc;
+  late ChannelHelper _channelHelper;
 
   @override
   void initState() {
     super.initState();
     _navigationBloc = BlocProvider.of(context);
+    _channelHelper = ChannelHelper();
   }
 
   @override
@@ -71,8 +72,30 @@ class AboutPageState extends State<AboutPage> {
                 icon: Icons.home,
                 text: AppLocalizations.of(context)!.programHome,
                 onTap: () {
-                  final file =
-                      MarkdownFile(title: '版本历史', path: 'doc/RELEASE.md');
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return WebviewPage(
+                        AppLocalizations.of(context)!.programHome,
+                        "https://github.com/ZhangXinmin528/weather");
+                  }));
+                }),
+
+            _buildOverviewItem(
+                icon: Icons.new_releases_outlined,
+                text: AppLocalizations.of(context)!.release,
+                onTap: () {
+                  final file = MarkdownFile(
+                      title: AppLocalizations.of(context)!.release,
+                      path: 'doc/release.md');
+                  _navigationBloc.add(MarkdownPageNavigationEvent(file));
+                }),
+
+            _buildOverviewItem(
+                icon: Icons.source,
+                text: AppLocalizations.of(context)!.data_source,
+                onTap: () {
+                  final file = MarkdownFile(
+                      title: AppLocalizations.of(context)!.data_source,
+                      path: 'doc/data_source.md');
                   _navigationBloc.add(MarkdownPageNavigationEvent(file));
                 }),
 
@@ -85,10 +108,7 @@ class AboutPageState extends State<AboutPage> {
             ),
 
             // 检查更新
-            _buildOverviewItem(
-                icon: Icons.update,
-                text: AppLocalizations.of(context)!.checkUpdate,
-                onTap: () {}),
+            _checkUpgrade(),
 
             // 分享
             // _buildOverviewItem(
@@ -99,16 +119,6 @@ class AboutPageState extends State<AboutPage> {
             //         "text/plain");
             //   },
             // ),
-
-            const SizedBox(
-              height: 4.0,
-            ),
-
-            // 感谢
-            _buildTitle(title: AppLocalizations.of(context)!.thanks),
-
-            // 感谢内容
-            _buildThanks(),
 
             const SizedBox(
               height: 4.0,
@@ -188,26 +198,6 @@ class AboutPageState extends State<AboutPage> {
     );
   }
 
-  /// 感谢内容
-  Widget _buildThanks() {
-    return Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
-      color: Colors.white,
-      child: Linkify(
-        text: AppLocalizations.of(context)!.thankItems,
-        onOpen: (link) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return WebviewPage(
-                AppLocalizations.of(context)!.app_name, link.url);
-          }));
-        },
-        style:
-            TextStyle(fontSize: 16, color: AppColor.textGreyDark, height: 1.2),
-        linkStyle: TextStyle(fontSize: 16, color: Colors.black87),
-      ),
-    );
-  }
-
   /// 概述的Item
   Widget _buildOverviewItem(
       {required IconData icon,
@@ -236,6 +226,69 @@ class AboutPageState extends State<AboutPage> {
                   style: TextStyle(fontSize: 16, color: AppColor.textGreyDark),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ///检查更新
+  Widget _checkUpgrade() {
+    return Material(
+      color: AppColor.ground,
+      child: InkWell(
+        onTap: () {
+          _channelHelper.checkUpgrade();
+        },
+        child: Container(
+          alignment: Alignment.centerLeft,
+          height: 48,
+          padding: const EdgeInsets.only(left: 16, right: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.update,
+                    size: 24,
+                    color: AppColor.textGreyDark,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Text(
+                      AppLocalizations.of(context)!.checkUpdate,
+                      style:
+                          TextStyle(fontSize: 16, color: AppColor.textGreyDark),
+                    ),
+                  ),
+                ],
+              ),
+              FutureBuilder(
+                  future: _channelHelper.hasNewVersion(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final state = snapshot.data as bool;
+                      if (state) {
+                        return Icon(
+                          Icons.fiber_new,
+                          color: AppColor.textRed,
+                        );
+                      } else {
+                        //final snackBar = SnackBar(
+                        //     content: Text(
+                        //   "已是最新版本",
+                        //   style: TextStyle(color: AppColor.textWhite),
+                        // ));
+                        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        return SizedBox();
+                      }
+                    } else {
+                      return SizedBox();
+                    }
+                  }),
             ],
           ),
         ),

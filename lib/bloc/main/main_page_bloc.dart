@@ -64,7 +64,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
           tabList.clear();
         }
         tabList.addAll(tabs);
-        LogUtil.d("MainPageBloc..city list size:${tabs.length}");
+        LogUtil.d("MainPageBloc..city list:${tabs[0].cityElement.locTime}");
         yield AddWeatherTabState(true, tabList);
       } else {
         yield InitLocationState();
@@ -138,19 +138,21 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   Stream<MainPageState> _mapAddWeatherTabToState(MainPageState state) async* {
     if (state is LocationSuccessState) {
       if (baiduLocation != null && baiduLocation!.city != null) {
-        LogUtil.d("_mapAddWeatherTabToState()..定位成功~");
+        LogUtil.d(
+            "_mapAddWeatherTabToState()..定位成功..locTime:${baiduLocation?.locTime}");
         final String name = "${baiduLocation?.district}";
         //定位成功
 
         final TabElement tabElement = generateTab(
-            name, baiduLocation!.latitude!, baiduLocation!.longitude!);
-        if (!containCity(tabElement.cityElement)) {
-          if (tabList.isNotEmpty) {
-            tabList.removeAt(0);
-          }
-          tabList.insert(0, tabElement);
-          _appLocalRepo.saveCityList(tabList);
+            name, baiduLocation!.latitude!, baiduLocation!.longitude!,
+            locTime: baiduLocation?.locTime);
+        // if (containCity(tabElement.cityElement)) {
+        if (tabList.isNotEmpty) {
+          tabList.removeAt(0);
         }
+        tabList.insert(0, tabElement);
+        _appLocalRepo.saveCityList(tabList);
+        // }
 
         yield AddWeatherTabState(true, tabList);
       }
@@ -177,13 +179,18 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   @override
   void onTransition(Transition<MainPageEvent, MainPageState> transition) {
     super.onTransition(transition);
-    LogUtil.d("MainPageBloc..onTransition:$transition");
+    // LogUtil.d("MainPageBloc..onTransition:$transition");
   }
 
-  TabElement generateTab(String name, double latitude, double longitude) {
+  TabElement generateTab(String name, double latitude, double longitude,
+      {String? locTime}) {
     final String key = "$latitude&$longitude";
     final CityElement cityElement = CityElement(
-        key: key, name: name, latitude: latitude, longitude: longitude);
+        key: key,
+        name: name,
+        latitude: latitude,
+        longitude: longitude,
+        locTime: locTime);
     final TabElement tab = TabElement(name, cityElement);
     return tab;
   }

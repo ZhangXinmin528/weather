@@ -68,6 +68,15 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     applicationVariants.all { variant ->
         variant.outputs.all {
             outputFileName = "weather_${variant.versionName}_${variant.buildType.name}.apk"
