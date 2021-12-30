@@ -9,6 +9,7 @@ import 'package:weather/channel/channel_helper.dart';
 import 'package:weather/data/model/internal/markdown.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview_page.dart';
+import 'package:weather/utils/log_utils.dart';
 
 class AboutPage extends StatefulWidget {
   @override
@@ -240,6 +241,7 @@ class AboutPageState extends State<AboutPage> {
       child: InkWell(
         onTap: () {
           _channelHelper.checkUpgrade();
+          LogUtil.d("tap");
         },
         child: Container(
           alignment: Alignment.centerLeft,
@@ -283,6 +285,7 @@ class AboutPageState extends State<AboutPage> {
                         //   style: TextStyle(color: AppColor.textWhite),
                         // ));
                         // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        LogUtil.d("已是最新版本");
                         return SizedBox();
                       }
                     } else {

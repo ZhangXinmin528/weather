@@ -118,9 +118,11 @@ class UpgradeService : Service() {
                                     if (mBuilder != null) {
                                         val rate = (progress * 100).roundToInt()
                                         mBuilder?.setContentTitle(
-                                            "正在下载：${UpgradeUtils.getAppName(
-                                                context
-                                            )}"
+                                            "正在下载：${
+                                                UpgradeUtils.getAppName(
+                                                    context
+                                                )
+                                            }"
                                         )
                                             ?.setContentText("$rate%")
                                             ?.setProgress(100, rate, false)

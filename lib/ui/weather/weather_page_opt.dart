@@ -1,9 +1,12 @@
+import 'dart:convert' as convert;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_event.dart';
+import 'package:weather/channel/channel_helper.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/remote/weather/weather_air.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
@@ -39,9 +42,12 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   final WeatherProvider _weatherProvider = WeatherProvider();
   late MainPageBloc _mainPageBloc;
   late NavigationBloc _navigationBloc;
+  late ChannelHelper _channelHelper;
+
   final CityElement _cityElement;
   final int _position;
   late bool _location;
+  late bool _hasNotifi;
 
   Color? weatherColor;
 
@@ -52,12 +58,14 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   @override
   void initState() {
     super.initState();
+    LogUtil.d("WeatherPageOpt..initState");
     weatherColor = Colors.white38;
     _location = _position == 0;
-    LogUtil.d("WeatherPageOpt..initState");
+    _hasNotifi = false;
     _mainPageBloc = BlocProvider.of(context);
     _navigationBloc = BlocProvider.of(context);
     _weatherProvider.initState(_mainPageBloc, _cityElement);
+    _channelHelper = ChannelHelper();
   }
 
   @override
@@ -94,8 +102,15 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     final weatherNow = weatherRT.now;
     weatherColor = _getWeatherThemeColor(type: weatherNow.text);
 
+    if (_location && weatherWarning != null && !_hasNotifi) {
+      final args = convert.jsonEncode(weatherWarning.toJson());
+      LogUtil.d("_WeatherPageOptState..send warnings message");
+      _channelHelper.notifiWeatherWarnings(args);
+      _hasNotifi = true;
+    }
     return RefreshIndicator(
       onRefresh: () async {
+        _hasNotifi = false;
         _weatherProvider.onRefresh(_location);
       },
       displacement: 70,

@@ -92,6 +92,7 @@ dependencies {
     implementation deps.kotlin.stdlib
 
     implementation deps.app_compat
+    implementation deps.fastjson
     implementation deps.multidex
 
     implementation project(path: ':upgrade')
