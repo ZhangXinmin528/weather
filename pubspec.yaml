@@ -78,7 +78,7 @@ dependencies:
   #marquee
   marquee: ^2.2.0
 
-  cupertino_icons: ^1.0.2
+#  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:

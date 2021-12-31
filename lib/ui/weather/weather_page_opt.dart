@@ -105,7 +105,8 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     if (_location && weatherWarning != null && !_hasNotifi) {
       final args = convert.jsonEncode(weatherWarning.toJson());
       LogUtil.d("_WeatherPageOptState..send warnings message");
-      _channelHelper.notifiWeatherWarnings(args);
+      final result = _channelHelper.notifiWeatherWarnings(args);
+      LogUtil.d("channel..result:$result");
       _hasNotifi = true;
     }
     return RefreshIndicator(
