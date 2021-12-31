@@ -36,6 +36,7 @@ class _WeatherAppState extends State<WeatherApp> {
   ///路由表
   final NavigationProvider _navigationProvider = NavigationProvider();
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
+  final RouteObserver<PageRoute> _routeObserver = RouteObserver();
 
   ///sp
   final SPManager _storageManager = SPManager(SharedPreferencesUtils());
@@ -111,6 +112,7 @@ class _WeatherAppState extends State<WeatherApp> {
             Locale('zh'),
           ],
           onGenerateRoute: _navigationProvider.router.generator,
+          navigatorObservers: [_routeObserver],
         ));
   }
 

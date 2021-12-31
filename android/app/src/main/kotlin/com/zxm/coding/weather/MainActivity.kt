@@ -96,33 +96,33 @@ class MainActivity : FlutterFragmentActivity() {
                                     JSON.parseObject(json, WeatherWarning::class.java)
                                 val warningList = weatherWarning.warning
 //                                if (warningList != null && warningList.isNotEmpty()) {
-                                    val iconDrawable = UpgradeUtils.getAppIcon(this)
+                                val iconDrawable = UpgradeUtils.getAppIcon(this)
 //                                    warningList?.forEach {
-                                        val intent = FlutterFragmentActivity.withNewEngine()
-                                            .initialRoute("/aboutPage")
-                                            .build(mContext)
+                                val intent = withNewEngine()
+                                    .initialRoute("/aboutPage")
+                                    .build(mContext)
 
-                                        val pendingIntent =
-                                            PendingIntent.getActivity(
-                                                mContext,
-                                                1000,
-                                                intent,
-                                                PendingIntent.FLAG_UPDATE_CURRENT
-                                            )
-                                        mWarningBuilder?.setContentTitle("ceshi")
-                                            ?.setContentText("hahah")
-                                            ?.setSmallIcon(R.mipmap.ic_launcher)
-                                            ?.setLargeIcon(iconDrawable?.let { drawable ->
-                                                UpgradeUtils.drawableToBitmap(
-                                                    drawable
-                                                )
-                                            })
-                                            ?.setContentIntent(pendingIntent)
-                                            ?.setWhen(System.currentTimeMillis())
-                                        mNotificationManager?.notify(
-                                            ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID,
-                                            mWarningBuilder!!.build()
+                                val pendingIntent =
+                                    PendingIntent.getActivity(
+                                        mContext,
+                                        1000,
+                                        intent,
+                                        PendingIntent.FLAG_UPDATE_CURRENT
+                                    )
+                                mWarningBuilder?.setContentTitle("ceshi")
+                                    ?.setContentText("hahah")
+                                    ?.setSmallIcon(R.mipmap.ic_launcher)
+                                    ?.setLargeIcon(iconDrawable?.let { drawable ->
+                                        UpgradeUtils.drawableToBitmap(
+                                            drawable
                                         )
+                                    })
+                                    ?.setContentIntent(pendingIntent)
+                                    ?.setWhen(System.currentTimeMillis())
+                                mNotificationManager?.notify(
+                                    ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID,
+                                    mWarningBuilder!!.build()
+                                )
 //                                    }
 
 //                                }
