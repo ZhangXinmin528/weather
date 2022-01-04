@@ -28,6 +28,8 @@ class MainActivity : FlutterFragmentActivity() {
     //天气预警
     private var mWarningBuilder: NotificationCompat.Builder? = null
 
+    private var mWarningChannel: MethodChannel? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mContext = this
@@ -78,6 +80,12 @@ class MainActivity : FlutterFragmentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        val args = intent.getStringExtra(ChannelConstants.WEATHER_WARNING_ARGS)
+        Log.d("zxm==", "onNewIntent..args:$args")
+        if (!TextUtils.isEmpty(args)) {
+            mWarningChannel?.invokeMethod("notificationSelected", args)
+            mNotificationManager?.cancel(ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID)
+        }
 
     }
 
@@ -85,63 +93,64 @@ class MainActivity : FlutterFragmentActivity() {
      * 天气通知
      */
     private fun initWeatherNotification(flutterEngine: FlutterEngine) {
-        MethodChannel(
+        mWarningChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             ChannelConstants.NOTIFICATION_WEATHER
         )
-            .setMethodCallHandler { call, result ->
-                when {
-                    call.method.equals(ChannelConstants.NOTIFI_WEATHER_WARNING) -> {
-                        initWeatherNotifiChannel()
+        mWarningChannel?.setMethodCallHandler { call, result ->
+            when {
+                call.method.equals(ChannelConstants.NOTIFI_WEATHER_WARNING) -> {
+                    initWeatherNotifiChannel()
 
-                        if (call.hasArgument(ChannelConstants.WEATHER_WARNING_ARGS)) {
-                            val json = call.argument<String>(ChannelConstants.WEATHER_WARNING_ARGS)
-                            Log.d("zxm==", "warning:$json")
-                            if (!TextUtils.isEmpty(json)) {
-                                val weatherWarning =
-                                    JSON.parseObject(json, WeatherWarning::class.java)
-                                val warningList = weatherWarning.warning
-                                if (warningList != null && warningList.isNotEmpty()) {
-                                    val iconDrawable = UpgradeUtils.getAppIcon(this)
-                                    warningList.forEach {
-                                        val intent = getLaunchIntent(mContext)
+                    if (call.hasArgument(ChannelConstants.WEATHER_WARNING_ARGS)) {
+                        val json = call.argument<String>(ChannelConstants.WEATHER_WARNING_ARGS)
+                        Log.d("zxm==", "warning:$json")
+                        if (!TextUtils.isEmpty(json)) {
+                            val weatherWarning =
+                                JSON.parseObject(json, WeatherWarning::class.java)
+                            val warningList = weatherWarning.warning
+                            if (warningList != null && warningList.isNotEmpty()) {
+                                val iconDrawable = UpgradeUtils.getAppIcon(this)
+                                warningList.forEach {
+                                    val intent = getLaunchIntent(mContext)
+                                    intent?.putExtra(ChannelConstants.WEATHER_WARNING_ARGS, json)
 
-                                        var flags = PendingIntent.FLAG_UPDATE_CURRENT
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                            flags = flags or PendingIntent.FLAG_IMMUTABLE
-                                        }
-
-                                        val pendingIntent =
-                                            PendingIntent.getActivity(
-                                                mContext,
-                                                ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID,
-                                                intent,
-                                                flags
-                                            )
-                                        mWarningBuilder?.setContentTitle("ceshi")
-                                            ?.setContentText("hahah")
-                                            ?.setSmallIcon(R.mipmap.ic_launcher)
-                                            ?.setLargeIcon(iconDrawable?.let { drawable ->
-                                                UpgradeUtils.drawableToBitmap(
-                                                    drawable
-                                                )
-                                            })
-                                            ?.setContentIntent(pendingIntent)
-                                            ?.setWhen(System.currentTimeMillis())
-                                        mNotificationManager?.notify(
-                                            ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID,
-                                            mWarningBuilder!!.build()
-                                        )
+                                    var flags = PendingIntent.FLAG_UPDATE_CURRENT
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        flags = flags or PendingIntent.FLAG_IMMUTABLE
                                     }
+
+                                    val pendingIntent =
+                                        PendingIntent.getActivity(
+                                            mContext,
+                                            ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID,
+                                            intent,
+                                            flags
+                                        )
+                                    mWarningBuilder?.setContentTitle(it.title)
+                                        ?.setContentText(it.text)
+                                        ?.setSmallIcon(R.mipmap.ic_launcher)
+                                        ?.setLargeIcon(iconDrawable?.let { drawable ->
+                                            UpgradeUtils.drawableToBitmap(
+                                                drawable
+                                            )
+                                        })
+                                        ?.setContentIntent(pendingIntent)
+                                        ?.setWhen(System.currentTimeMillis())
+                                    mNotificationManager?.notify(
+                                        ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID,
+                                        mWarningBuilder!!.build()
+                                    )
                                 }
-
                             }
-                            result.success("success")
-                        }
 
+                        }
+                        result.success("success")
                     }
+
                 }
             }
+        }
     }
 
     private fun getLaunchIntent(context: Context): Intent? {

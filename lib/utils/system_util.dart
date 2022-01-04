@@ -53,6 +53,13 @@ double getScreenPixelRatio(BuildContext context) {
 
 double _devicePixelRatio = 0;
 
+int dpToPx(BuildContext context, double dp) {
+  if (_devicePixelRatio == 0) {
+    getScreenPixelRatio(context);
+  }
+  return (dp * _devicePixelRatio + 0.5).toInt();
+}
+
 /// 获取系统状态栏高度
 double getStatusHeight(BuildContext context) {
   if (_statusHeight != 0) {

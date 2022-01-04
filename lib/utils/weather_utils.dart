@@ -63,9 +63,9 @@ class WeatherUtils {
     if (aqi != null && aqi.isNotEmpty) {
       final aqiValue = int.parse(aqi);
       if (aqiValue >= 0 && aqiValue <= 50) {
-        return "$aqi 空气 优";
+        return "$aqi 空气优";
       } else if (aqiValue >= 51 && aqiValue <= 100) {
-        return "$aqi 空气 良";
+        return "$aqi 空气良";
       } else if (aqiValue >= 101 && aqiValue <= 150) {
         return "$aqi 轻度污染";
       } else if (aqiValue >= 151 && aqiValue <= 200) {

@@ -19,6 +19,7 @@ import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/webview/webview_page_nobar.dart';
 import 'package:weather/ui/widget/loading_widget_line_text.dart';
 import 'package:weather/ui/widget/weather/weather_view.dart';
+import 'package:weather/ui/widget/weather_daily_widget.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/icon_utils.dart';
 import 'package:weather/utils/log_utils.dart';
@@ -104,9 +105,12 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
     if (_location && weatherWarning != null && !_hasNotifi) {
       final args = convert.jsonEncode(weatherWarning.toJson());
-      LogUtil.d("_WeatherPageOptState..send warnings message");
-      final result = _channelHelper.notifiWeatherWarnings(args);
-      LogUtil.d("channel..result:$result");
+      _channelHelper.notifiWeatherWarnings(args, (value) {
+        if (value != null) {
+          _navigationBloc.add(WarningNavigationEvent(value));
+        }
+      });
+
       _hasNotifi = true;
     }
     return RefreshIndicator(
@@ -122,6 +126,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
             constraints:
                 BoxConstraints(minHeight: viewportConstrants.maxHeight),
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Stack(
                   alignment: Alignment.bottomRight,
@@ -172,12 +177,23 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                 _buildWeather7Day(weatherDaily),
                 _buildWindDesc(weatherRT),
                 _buildIndicesWidget(weatherIndices),
+                _buildWeatherDailyWidget(
+                  weatherDaily,
+                ),
                 _buildWeatherFooter(),
               ],
             ),
           ),
         );
       }),
+    );
+  }
+
+  _buildWeatherDailyWidget(WeatherDaily weatherDaily) {
+    return Container(
+      margin: EdgeInsets.only(left: 16.0, right: 16.0),
+      color: AppColor.ground,
+      child: WeatherDailyWidget(dailyList: weatherDaily.daily),
     );
   }
 
@@ -336,7 +352,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
               Text(
                 temp,
                 key: const Key("main_screen_temp_now"),
-                style: TextStyle(fontSize: 100, fontWeight: FontWeight.normal),
+                style: TextStyle(fontSize: 90, fontWeight: FontWeight.normal),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
