@@ -191,7 +191,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
   _buildWeatherDailyWidget(WeatherDaily weatherDaily) {
     return Container(
-      margin: EdgeInsets.only(left: 16.0, right: 16.0),
+      margin: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 12.0),
       color: AppColor.ground,
       child: WeatherDailyWidget(dailyList: weatherDaily.daily),
     );
