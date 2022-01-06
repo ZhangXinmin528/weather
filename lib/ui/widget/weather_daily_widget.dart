@@ -21,12 +21,16 @@ class WeatherDailyWidget extends StatefulWidget {
 
 class _WeatherDailyState extends State<WeatherDailyWidget> {
   final List<Daily> dailyList;
+  final List<ui.Image> dayIconList = [];
+  final List<ui.Image> nightIconList = [];
 
   _WeatherDailyState(this.dailyList);
 
   @override
   void initState() {
     super.initState();
+    obtainWeatherIcons();
+    setState(() {});
   }
 
   @override
@@ -34,37 +38,57 @@ class _WeatherDailyState extends State<WeatherDailyWidget> {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         color: AppColor.ground,
-        height: 280,
+        height: 300,
         width: constraints.maxWidth,
         child: CustomPaint(
-          painter: DailyChart(context, dailyList),
+          painter: DailyChart(context, dailyList, dayIconList, nightIconList),
         ),
       );
     });
+  }
+
+  void obtainWeatherIcons() async {
+    for (int i = 0; i < dailyList.length; i++) {
+      final Daily daily = dailyList[i];
+      final dayIcon = await loadSVGFromAsset(code: daily.iconDay, size: 25);
+      dayIconList.insert(i, dayIcon);
+      final nightIcon = await loadSVGFromAsset(code: daily.iconNight, size: 25);
+      nightIconList.insert(i, nightIcon);
+    }
+  }
+
+  Future<ui.Image> loadSVGFromAsset(
+      {required String code, required int size}) async {
+    final rawSvg = await rootBundle.loadString("icons/$code-fill.svg");
+
+    final DrawableRoot svgRoot = await svg.fromSvgString(rawSvg, rawSvg);
+    final ui.Picture picture = svgRoot.toPicture(
+        size: Size(size.toDouble(), size.toDouble()), clipToViewBox: false);
+    return picture.toImage(size, size);
   }
 }
 
 class DailyChart extends CustomPainter {
   final BuildContext _context;
   final List<Daily> dailyList;
+  final List<ui.Image> dayIconList;
+  final List<ui.Image> nightIconList;
 
   int _paddingLeft = 0;
   int _paddingTop = 0;
-  int _paddingText = 0;
 
   double _textHeight = 0;
 
   double _maxTemp = 0;
   double _minTemp = 0;
 
-  Paint? _textPaint;
   Paint? _linePaint;
   Paint? _iconPaint;
 
-  DailyChart(this._context, this.dailyList) {
+  DailyChart(
+      this._context, this.dailyList, this.dayIconList, this.nightIconList) {
     _paddingLeft = dpToPx(_context, 4);
     _paddingTop = dpToPx(_context, 4);
-    _paddingText = dpToPx(_context, 4);
 
     final TextPainter textPainter = TextPainter(
       text: TextSpan(
@@ -80,11 +104,6 @@ class DailyChart extends CustomPainter {
     final Size size = textPainter.size;
     _textHeight = size.height;
 
-    _textPaint = Paint()
-      ..isAntiAlias = true
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
     _linePaint = Paint()
       ..isAntiAlias = true
       ..style = PaintingStyle.stroke
@@ -93,7 +112,7 @@ class DailyChart extends CustomPainter {
     _iconPaint = Paint()
       ..isAntiAlias = true
       ..style = PaintingStyle.fill
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 0.5;
 
     final today = dailyList[0];
     _maxTemp = double.parse(today.tempMax);
@@ -104,8 +123,6 @@ class DailyChart extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // canvas.translate(_paddingLeft.toDouble(), _paddingTop.toDouble());
-
     final width = size.width - _paddingLeft * 2;
     final height = size.height - _paddingTop * 2;
 
@@ -137,7 +154,7 @@ class DailyChart extends CustomPainter {
             itemX, _paddingTop + (height / 3.0) + (_maxTemp - min) / ratioY);
         //weather day date
         drawText(canvas,
-            content: "今天", x: itemX, y: _paddingTop.toDouble(), step: step);
+            content: "今天", x: itemX, y: _paddingTop.toDouble() - 2, step: step);
       } else {
         itemX = _paddingLeft + step * (i + 0.5);
         dayPath.lineTo(
@@ -164,10 +181,16 @@ class DailyChart extends CustomPainter {
           y: _paddingTop + _textHeight * 2,
           step: step);
 
-      //weather icon
-      loadSVGFromAsset(code: item.iconDay, size: 25).then((image) =>
-          canvas.drawImage(image, Offset(itemX, _paddingTop + _textHeight * 3),
-              _iconPaint!));
+      //weather day icon
+      if (dayIconList != null &&
+          dayIconList.isNotEmpty &&
+          dayIconList.length > i) {
+        final dayIcon = dayIconList[i];
+        canvas.drawImage(
+            dayIcon,
+            Offset(itemX - dayIcon.width / 2.0, _paddingTop + _textHeight * 3),
+            _iconPaint!..isAntiAlias = true);
+      }
 
       canvas.drawPath(
           dayPath,
@@ -200,6 +223,17 @@ class DailyChart extends CustomPainter {
           x: itemX,
           y: height - _textHeight * 3 / 2.0,
           step: step);
+
+      //weather day icon
+      if (nightIconList != null &&
+          nightIconList.isNotEmpty &&
+          nightIconList.length > i) {
+        final nightIcon = nightIconList[i];
+        canvas.drawImage(
+            nightIcon,
+            Offset(itemX - nightIcon.width / 2.0, height - _textHeight * 3),
+            _iconPaint!);
+      }
 
       canvas.drawPath(
           nightPath,
@@ -245,16 +279,6 @@ class DailyChart extends CustomPainter {
 
     final double dx = x - size.width / 2.0;
     textPainter.paint(canvas, Offset(dx, y));
-  }
-
-  Future<ui.Image> loadSVGFromAsset(
-      {required String code, required int size}) async {
-    final rawSvg = await rootBundle.loadString("icons/$code.svg");
-
-    final DrawableRoot svgRoot = await svg.fromSvgString(rawSvg, rawSvg);
-    final ui.Picture picture = svgRoot.toPicture(size: Size(25.0, 25.0));
-
-    return picture.toImage(size, size);
   }
 
   void caculateTempRange() {

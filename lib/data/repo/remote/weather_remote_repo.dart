@@ -176,7 +176,8 @@ class WeatherRemoteRepo {
     final Map<String, dynamic> params = {
       'key': AppConfig.weather_key,
       'location': "$longitude,$latitude",
-      'type': "1,2,3,5,6,7,8,9", //运动指数，洗车指数，穿衣指数，紫外线指数，旅游指数，花粉过敏指数，舒适度指数，感冒指数；
+      'type': "1,2,3,5,6,7,8,9,14",
+      //运动指数，洗车指数，穿衣指数，紫外线指数，旅游指数，花粉过敏指数，舒适度指数，感冒指数，晾晒指数；
     };
     final response = await _dioClient.get(
       path,
@@ -348,7 +349,7 @@ class WeatherRemoteRepo {
       'location': "$city",
       'range': "cn",
     };
-    final response =await _dioClient.get(
+    final response = await _dioClient.get(
       path,
       queryParameters: params,
       onStart: onStart,

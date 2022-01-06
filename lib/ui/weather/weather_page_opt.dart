@@ -174,26 +174,15 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                   ],
                 ),
                 _buildWeatherHour(weatherHour),
-                _buildWeather7Day(weatherDaily),
+                _buildWeather7DayLines(weatherDaily),
                 _buildWindDesc(weatherRT),
                 _buildIndicesWidget(weatherIndices),
-                _buildWeatherDailyWidget(
-                  weatherDaily,
-                ),
                 _buildWeatherFooter(),
               ],
             ),
           ),
         );
       }),
-    );
-  }
-
-  _buildWeatherDailyWidget(WeatherDaily weatherDaily) {
-    return Container(
-      margin: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 12.0),
-      color: AppColor.ground,
-      child: WeatherDailyWidget(dailyList: weatherDaily.daily),
     );
   }
 
@@ -514,7 +503,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     return Card(
       key: const Key("main_screen_weather_indices"),
       color: AppColor.ground,
-      margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0, bottom: 12.0),
+      margin: EdgeInsets.only(top: 12.0, bottom: 12.0),
       elevation: 0.5,
       shadowColor: AppColor.shadow,
       child: Column(
@@ -534,7 +523,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
             key: const Key("main_screen_indicies_container"),
             alignment: Alignment.topCenter,
             margin: EdgeInsets.only(left: 10, right: 10),
-            padding: EdgeInsets.only(left: 10, right: 10, top: 10),
+            padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
             child: GridView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.all(4),
@@ -608,6 +597,34 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   }
 
   ///weather 7Day
+  Widget _buildWeather7DayLines(WeatherDaily weatherDaily) {
+    return Card(
+      color: AppColor.ground,
+      margin: EdgeInsets.only(
+        top: 12.0,
+      ),
+      elevation: 0.5,
+      shadowColor: AppColor.shadow,
+      child: Column(
+        children: [
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: EdgeInsets.only(left: 16.0, top: 10.0, bottom: 4.0),
+            child: const Text(
+              "七天预报",
+              style: TextStyle(
+                  fontSize: 16.0,
+                  color: AppColor.textBlack,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          WeatherDailyWidget(dailyList: weatherDaily.daily),
+        ],
+      ),
+    );
+  }
+
+  ///weather 7Day:暂不使用
   Widget _buildWeather7Day(WeatherDaily weatherDaily) {
     return Card(
       color: AppColor.ground,
@@ -728,7 +745,9 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     return Card(
       key: const Key("main_screen_wind_desc"),
       color: AppColor.ground,
-      margin: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0),
+      margin: EdgeInsets.only(
+        top: 12.0,
+      ),
       elevation: 0.5,
       shadowColor: AppColor.shadow,
       child: Column(

@@ -111,6 +111,16 @@ class AboutPageState extends State<AboutPage> {
             // 检查更新
             _checkUpgrade(),
 
+            //联系我
+            _buildOverviewItem(
+                icon: Icons.contact_page,
+                text: AppLocalizations.of(context)!.connectMe,
+                onTap: () {
+                  final file = MarkdownFile(
+                      title: AppLocalizations.of(context)!.connectMe,
+                      path: 'doc/contact.md');
+                  _navigationBloc.add(MarkdownPageNavigationEvent(file));
+                }),
             // 分享
             // _buildOverviewItem(
             //   icon: Icons.share,
@@ -121,12 +131,8 @@ class AboutPageState extends State<AboutPage> {
             //   },
             // ),
 
-            const SizedBox(
-              height: 4.0,
-            ),
-
-            // 联系我
-            // _buildTitle(title: S.of(context).connectMe),
+            // copyright
+            _buildTitle(title: AppLocalizations.of(context)!.copyright),
           ],
         ),
       ),
@@ -188,13 +194,11 @@ class AboutPageState extends State<AboutPage> {
   /// 标题
   Widget _buildTitle({required String title}) {
     return Container(
-      height: 60,
-      padding: const EdgeInsets.only(left: 16),
-      color: Colors.white,
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.center,
+      padding: EdgeInsets.only(left: 10, right: 10, top: 8, bottom: 8),
       child: Text(
         title,
-        style: TextStyle(fontSize: 18, color: AppColor.textBlack),
+        style: TextStyle(fontSize: 12, color: AppColor.textGreyDark),
       ),
     );
   }
