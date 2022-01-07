@@ -154,8 +154,6 @@ class UpdateDialogFragment : DialogFragment(), View.OnClickListener {
             }
 
             //更新内容
-
-            //更新内容
             mContentTextView!!.text = msg
             //标题
             //标题

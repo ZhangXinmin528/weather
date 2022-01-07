@@ -7,7 +7,30 @@ import java.io.Serializable
  * Copyright (c) 5/14/21 . All rights reserved.
  * 检查更新
  */
+
+class UpdateResult {
+    //检查更新状态：-1-未检查；0-检查更新失败；1-检查更新成功
+    var code: Int = -1
+
+    var msg: String? = ""
+
+    var updateEntity: UpdateEntity? = null
+
+    constructor(code: Int, msg: String?, updateEntity: UpdateEntity? = null) {
+        this.code = code
+        this.msg = msg
+        this.updateEntity = updateEntity
+    }
+
+    override fun toString(): String {
+        return "UpdateResult(code=$code, msg=$msg, updateEntity=$updateEntity)"
+    }
+
+
+}
+
 class UpdateEntity : Serializable {
+
     //应用名称
     var name: String? = ""
 
@@ -41,6 +64,12 @@ class UpdateEntity : Serializable {
 
     //强制更新
     var isForce: Boolean = false
+
+
+    override fun toString(): String {
+        return "UpdateEntity(name=$name, version=$version, changelog=$changelog, updated_at=$updated_at, versionShort=$versionShort, build=$build, installUrl=$installUrl, install_url=$install_url, direct_install_url=$direct_install_url, update_url=$update_url, binary=$binary, isForce=$isForce)"
+    }
+
 }
 
 class Binary : Serializable {

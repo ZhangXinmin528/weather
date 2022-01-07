@@ -11,7 +11,9 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.annotation.NonNull
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.MutableLiveData
 import com.coding.zxm.upgrade.callback.FileDownloadCallback
+import com.coding.zxm.upgrade.entity.UpdateResult
 import com.coding.zxm.upgrade.network.IUpgradeProvider
 import com.coding.zxm.upgrade.utils.UpgradeUtils
 import java.io.File
@@ -79,17 +81,16 @@ class UpgradeService : Service() {
             @NonNull provider: IUpgradeProvider?,
             token: String?,
             apkName: String?
-        ) {
+        ): MutableLiveData<UpdateResult> {
+            val upgradeLivedata: MutableLiveData<UpdateResult> = MutableLiveData()
             if (!TextUtils.isEmpty(token) && !TextUtils.isEmpty(apkName)) {
-                provider?.checkUpgrade(token!!, apkName!!)
+                provider?.checkUpgrade(token!!, apkName!!)?.observeForever {
+                    upgradeLivedata.postValue(it)
+                }
+            } else {
+                upgradeLivedata.postValue(UpdateResult(-1, "关键参数token或者appName缺失"))
             }
-        }
-
-        /**
-         * 是否有新版本
-         */
-        fun hasNewVersion(@NonNull provider: IUpgradeProvider): Boolean {
-            return provider.hasNewVersion()
+            return upgradeLivedata
         }
 
         fun downloadApk(

@@ -7,7 +7,9 @@ import android.os.IBinder
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.coding.zxm.upgrade.entity.UpdateResult
 import com.coding.zxm.upgrade.network.IUpgradeProvider
+import com.coding.zxm.upgrade.utils.UpgradeUtils
 
 
 /**
@@ -21,6 +23,9 @@ class UpgradeManager private constructor() {
         private const val TAG = "UpgradeManager"
         private var sInstance: UpgradeManager? = null
         private var config: UpgradeConfig? = null
+
+        private var hasNewVersion: Boolean = false
+        private var upgradeLivedata: MutableLiveData<UpdateResult> = MutableLiveData()
 
         @Synchronized
         fun getInstance(): UpgradeManager {
@@ -50,48 +55,42 @@ class UpgradeManager private constructor() {
      * 检测版本更新
      */
     fun checkUpgrade(provider: IUpgradeProvider?) {
-        if (config == null) {
-            Log.e(TAG, "配置参数为空")
+        if (config == null || provider == null) {
+            Log.e(TAG, "配置参数为空或未提供合适的下载器")
             return
         }
-        provider?.let {
-            UpgradeService.bindService(config?.context!!, object : ServiceConnection {
-                override fun onServiceDisconnected(name: ComponentName?) {
 
-                }
+        UpgradeService.bindService(config?.context!!, object : ServiceConnection {
+            override fun onServiceDisconnected(name: ComponentName?) {
 
-                override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    (service as UpgradeService.UpgradeBinder).checkUpgrade(
-                        it,
-                        config?.upgradeToken,
-                        config?.apkName
-                    )
+            }
+
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                (service as UpgradeService.UpgradeBinder).checkUpgrade(
+                    provider,
+                    config?.upgradeToken,
+                    config?.apkName
+                ).observeForever {
+                    upgradeLivedata.postValue(it)
                 }
-            })
-        }
+            }
+        })
     }
 
     /**
      * 是否存在新版本
      */
-    fun hasNewVersion(provider: IUpgradeProvider): MutableLiveData<Boolean> {
-        val livedata = MutableLiveData<Boolean>()
+    fun hasNewVersion(provider: IUpgradeProvider): Boolean {
         if (config != null) {
-            UpgradeService.bindService(config?.context!!, object : ServiceConnection {
-                override fun onServiceDisconnected(name: ComponentName?) {
-
-                }
-
-                override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                    val state =
-                        (service as UpgradeService.UpgradeBinder).hasNewVersion(provider)
-                    livedata.postValue(state)
-                }
-
-            })
+            val updateResult = upgradeLivedata.value
+            val entity = updateResult?.updateEntity
+            if (entity != null) {
+                hasNewVersion = UpgradeUtils.hasNewVersion(provider.activity, entity)
+                return hasNewVersion
+            }
         }
 
-        return livedata
+        return false
     }
 
     /**

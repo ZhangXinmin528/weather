@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.Observer
 import com.alibaba.fastjson.JSON
 import com.coding.zxm.upgrade.UpgradeManager
 import com.coding.zxm.upgrade.network.UpgradeProgressProvider
@@ -59,17 +58,15 @@ class MainActivity : FlutterFragmentActivity() {
                 when {
                     call.method.equals(ChannelConstants.UPGRADE_CHECK) -> {
                         checkUpgrade()
-                        result.success("success")
+                        result.success(true)
+
                     }
                     call.method.equals(ChannelConstants.UPGRADE_NEWVERSION) -> {
-                        UpgradeManager.getInstance().hasNewVersion(UpgradeProgressProvider(this))
-                            .observe(this, Observer {
-                                if (it != null) {
-                                    result.success(it)
-                                } else {
-                                    result.error("-1", "网络异常", "版本信息比对失败")
-                                }
-                            })
+                        val state = UpgradeManager.getInstance()
+                            .hasNewVersion(UpgradeProgressProvider(this))
+
+                        result.success(state)
+
                     }
                     else -> {
                         result.notImplemented()

@@ -29,6 +29,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   late MainPageBloc _mainPageBloc;
   late NavigationBloc _navigationBloc;
 
+  // late ChannelHelper _channelHelper;
+
   late bool loadingVisiable = true;
 
   //tab
@@ -53,6 +55,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       initialPage: 0,
       keepPage: true,
     );
+
+    // _channelHelper = ChannelHelper();
+    // _channelHelper.checkUpgrade();
   }
 
   @override

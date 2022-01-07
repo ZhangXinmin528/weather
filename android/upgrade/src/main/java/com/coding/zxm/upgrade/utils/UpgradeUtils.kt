@@ -57,6 +57,8 @@ class UpgradeUtils private constructor() {
             if (entity != null) {
                 val currVersion = getAppVersionCode(context)
                 val newVersion = entity.version
+
+                println("check version..current:$currVersion..new version:$newVersion")
                 if (!TextUtils.isEmpty(newVersion) && currVersion != -1) {
                     return newVersion!!.toInt() > currVersion
                 }

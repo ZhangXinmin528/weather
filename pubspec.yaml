@@ -1,6 +1,6 @@
 name: weather
 description: An weather flutter project .
-version: 1.0.1+9
+version: 1.0.1+10
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -57,7 +57,6 @@ dependencies:
   url_launcher: ^6.0.10
 
   #  esys_flutter_share: 1.0.2
-
 
   flutter_svg: ^1.0.0
 

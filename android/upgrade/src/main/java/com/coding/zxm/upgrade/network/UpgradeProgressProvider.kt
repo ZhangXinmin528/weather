@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import com.coding.zxm.upgrade.UpdateDialogFragment
 import com.coding.zxm.upgrade.callback.FileDownloadCallback
 import com.coding.zxm.upgrade.entity.UpdateEntity
+import com.coding.zxm.upgrade.entity.UpdateResult
 import com.coding.zxm.upgrade.utils.SSLSocketFactoryCompat
 import com.coding.zxm.upgrade.utils.UpgradeUtils
 import okhttp3.OkHttpClient
@@ -30,16 +31,14 @@ import javax.net.ssl.X509TrustManager
  * Created by ZhangXinmin on 2021/05/20.
  * Copyright (c) 5/20/21 . All rights reserved.
  */
-class UpgradeProgressProvider(val activity: FragmentActivity) :
-    IUpgradeProvider {
+class UpgradeProgressProvider(val fragmentActivity: FragmentActivity) :
+    IUpgradeProvider(fragmentActivity) {
 
     companion object {
         private const val TAG = "DownloadProvider"
         private var okHttpClient: OkHttpClient? = null
         private lateinit var sslSocketFactory: SSLSocketFactoryCompat
         private lateinit var loggingInterceptor: HttpLoggingInterceptor
-
-        private var upgradeLivedata: MutableLiveData<UpdateEntity> = MutableLiveData()
 
         private var apkName: String = ""
         private var apkFile: File? = null
@@ -80,26 +79,14 @@ class UpgradeProgressProvider(val activity: FragmentActivity) :
             .build()
     }
 
-    override fun checkUpgrade(@NonNull token: String, name: String): Boolean {
+    override fun checkUpgrade(@NonNull token: String, name: String): MutableLiveData<UpdateResult> {
+
+        val upgradeLivedata: MutableLiveData<UpdateResult> = MutableLiveData()
 
         if (okHttpClient == null) {
             Log.e(TAG, "OkHttpClient初始化失败")
-            return false
-        }
-
-        //已经请求过数据
-        val entity = upgradeLivedata.value
-        if (entity != null) {
-            hasNewVersion = UpgradeUtils.hasNewVersion(activity, entity)
-            if (hasNewVersion) {
-                apkName =
-                    name + "_" + entity.versionShort + "_build${entity.build}" + ".apk"
-
-                showUpgradeDialog(entity)
-            } else {
-                Toast.makeText(activity, "已是最新版本", Toast.LENGTH_SHORT).show()
-            }
-            return true
+            upgradeLivedata.postValue(UpdateResult(-1, "OkHttpClient初始化失败"))
+            return upgradeLivedata
         }
 
         val retrofit = Retrofit.Builder()
@@ -112,7 +99,7 @@ class UpgradeProgressProvider(val activity: FragmentActivity) :
             .enqueue(object : Callback<UpdateEntity> {
                 override fun onFailure(call: Call<UpdateEntity>, t: Throwable) {
                     //TODO:检查更新失败
-                    upgradeLivedata.postValue(null)
+                    upgradeLivedata.postValue(UpdateResult(0, "onFailure:${t.message}"))
                 }
 
                 override fun onResponse(
@@ -121,33 +108,38 @@ class UpgradeProgressProvider(val activity: FragmentActivity) :
                 ) {
                     if (response.isSuccessful) {
                         val entity = response.body()
-                        upgradeLivedata.postValue(entity)
-                        hasNewVersion = UpgradeUtils.hasNewVersion(activity, entity)
+
+                        hasNewVersion = UpgradeUtils.hasNewVersion(fragmentActivity, entity)
+                        upgradeLivedata.postValue(
+                            UpdateResult(
+                                1,
+                                "check new version success,hasNewVersion：$hasNewVersion",
+                                entity
+                            )
+                        )
                         if (hasNewVersion) {
                             apkName =
                                 name + "_" + entity?.versionShort + "_build${entity?.build}" + ".apk"
 
                             showUpgradeDialog(entity)
                         } else {
-                            Toast.makeText(activity, "已是最新版本", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(fragmentActivity, "已是最新版本", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         //TODO:检查更新失败
-                        upgradeLivedata.postValue(null)
+                        upgradeLivedata.postValue(
+                            UpdateResult(
+                                0,
+                                "check new version failure,message：${response.message()}",
+                            )
+                        )
                     }
                 }
 
             })
-        return true
+        return upgradeLivedata
     }
 
-    override fun hasNewVersion(): Boolean {
-        val entity = upgradeLivedata.value
-        if (entity != null) {
-            hasNewVersion = UpgradeUtils.hasNewVersion(activity, entity)
-        }
-        return hasNewVersion
-    }
 
     override fun downloadApk(downloadUrl: String?, callback: FileDownloadCallback?): Boolean {
         if (!TextUtils.isDigitsOnly(downloadUrl)) {
@@ -180,7 +172,7 @@ class UpgradeProgressProvider(val activity: FragmentActivity) :
                                             Environment.DIRECTORY_DOWNLOADS
                                         ).absolutePath
                                     } else {
-                                        activity.filesDir.absolutePath
+                                        fragmentActivity.filesDir.absolutePath
                                     }
 
                                     apkFile = File(
@@ -251,7 +243,7 @@ class UpgradeProgressProvider(val activity: FragmentActivity) :
     override fun showUpgradeDialog(entity: UpdateEntity?) {
 
         if (entity != null) {
-            val fragmentManager = activity.supportFragmentManager
+            val fragmentManager = fragmentActivity.supportFragmentManager
             UpdateDialogFragment
                 .newInstance(entity)
                 .showUpgradeDialog(manager = fragmentManager, provider = this)
