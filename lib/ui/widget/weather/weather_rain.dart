@@ -32,7 +32,7 @@ class WeatherRain extends StatefulWidget {
 class WeatherRainState extends WeatherBase<WeatherRain> {
   /// 山的移动动画
   late AnimationController _mountainController;
-   Animation<double>? _mountainAnim;
+  Animation<double>? _mountainAnim;
 
   @override
   void initState() {
@@ -76,7 +76,7 @@ class WeatherRainState extends WeatherBase<WeatherRain> {
             builder: (context, child) {
               return Positioned(
                 child: Image.asset(
-                  "images/${widget.snow ? "ic_snow_ground.png" : widget.fog ? "ic_fog_ground.png" : widget.hail ? "ic_hail_ground.png" : "ic_rain_ground.png"}",
+                  "images/${widget.snow ? "ic_snow_ground.webp" : widget.fog ? "ic_fog_ground.webp" : widget.hail ? "ic_hail_ground.webp" : "ic_rain_ground.webp"}",
                   width: 210,
                 ),
                 bottom: widget.snow

@@ -13,10 +13,10 @@ abstract class WeatherBase<T extends StatefulWidget> extends State<T>
   }
 
   double get fullHeight =>
-      getScreenHeight(context) -
-      getStatusHeight(context) -
-      getAppBarHeight() -
-      110;
+      (getScreenHeight(context) -
+          getStatusHeight(context) -
+          getAppBarHeight()) *
+      0.95;
 
   @protected
   Widget buildView();

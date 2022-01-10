@@ -195,7 +195,7 @@ class WeatherOvercastState extends WeatherBase<WeatherOvercast> {
                         child: Opacity(
                           opacity: 0.08,
                           child: Image.asset(
-                            "images/ic_cloud.png",
+                            "images/ic_cloud.webp",
                             width: 100,
                             height: 100,
                           ),

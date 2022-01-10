@@ -71,7 +71,7 @@ class WeatherSandstormState extends WeatherBase<WeatherSandstorm> {
                     ..setEntry(3, 2, 0.003)
                     ..rotateX(_anim.value),
                   child: Image.asset(
-                    "images/ic_${widget.isSmog ? "haze" : "sanstorm"}_ground.png",
+                    "images/ic_${widget.isSmog ? "haze" : "sanstorm"}_ground.webp",
                     width: 150,
                   ),
                 );

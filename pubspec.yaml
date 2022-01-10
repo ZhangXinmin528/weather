@@ -1,6 +1,6 @@
 name: weather
 description: An weather flutter project .
-version: 1.0.1+10
+version: 1.0.1+11
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -22,9 +22,6 @@ dependencies:
   #bloc
   flutter_bloc: ^7.0.0
 
-  #数据相关
-  equatable: ^2.0.0
-
   #路由管理
   fluro: ^2.0.3
 
@@ -32,6 +29,9 @@ dependencies:
   dio: ^4.0.0
   #网络状态
   #  connectivity_plus: ^2.0.2
+
+  #数据相关
+  equatable: ^2.0.0
 
   #数据存储
   #sp
@@ -56,8 +56,10 @@ dependencies:
   #launching a URL
   url_launcher: ^6.0.10
 
-  #  esys_flutter_share: 1.0.2
+  #FONT
+  google_fonts: ^2.2.0
 
+  #svg
   flutter_svg: ^1.0.0
 
   #file download
@@ -75,7 +77,7 @@ dependencies:
   flutter_markdown: ^0.6.9
 
   #marquee
-  marquee: ^2.2.0
+#  marquee: ^2.2.0
 
 #  cupertino_icons: ^1.0.2
 
@@ -97,4 +99,5 @@ flutter:
     - icons/
     - images/
     - doc/
+    - fonts/
     - assets/lottiefiles/

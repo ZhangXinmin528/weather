@@ -2,6 +2,7 @@ import 'dart:convert' as convert;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
@@ -164,9 +165,10 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                           width: 60,
                           height: 60,
                           margin: EdgeInsets.only(right: 16.0, bottom: 16.0),
-                          child: Image.asset(
-                            "images/icon_map.png",
-                            fit: BoxFit.fill,
+                          child: LottieBuilder.asset(
+                            'assets/lottiefiles/weather_map.json',
+                            width: 150.0,
+                            height: 200.0,
                           ),
                         ),
                       ),
@@ -229,7 +231,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
       width: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(4.0)),
-        color: AppColor.blackGround,
+        color: AppColor.whiteGround,
       ),
       margin: EdgeInsets.only(top: 16),
       padding: EdgeInsets.only(left: 6.0, right: 6.0),
@@ -338,11 +340,10 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                temp,
-                key: const Key("main_screen_temp_now"),
-                style: TextStyle(fontSize: 90, fontWeight: FontWeight.normal),
-              ),
+              Text(temp,
+                  key: const Key("main_screen_temp_now"),
+                  style: GoogleFonts.roboto(
+                      fontSize: 90, fontWeight: FontWeight.normal)),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -362,11 +363,11 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                     decoration: BoxDecoration(
                         color: WeatherUtils.getAQIColorByAqi(airNow.aqi)
                             .withOpacity(0.6),
-                        borderRadius: BorderRadius.all(Radius.circular(2)),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
                         shape: BoxShape.rectangle),
                     child: Padding(
                       padding: EdgeInsets.only(
-                          left: 10, top: 4, right: 10, bottom: 4),
+                          left: 16, top: 4, right: 16, bottom: 4),
                       child: Text(
                         WeatherUtils.getAQIDesc(airNow),
                         key: const Key("main_screen_weathernow_text"),
@@ -500,12 +501,10 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   Widget _buildIndicesWidget(WeatherIndices weatherIndices) {
     final indicesDaily = weatherIndices.daily;
 
-    return Card(
+    return Container(
       key: const Key("main_screen_weather_indices"),
       color: AppColor.ground,
       margin: EdgeInsets.only(top: 12.0, bottom: 12.0),
-      elevation: 0.5,
-      shadowColor: AppColor.shadow,
       child: Column(
         children: [
           Container(
@@ -598,13 +597,10 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
   ///weather 7Day
   Widget _buildWeather7DayLines(WeatherDaily weatherDaily) {
-    return Card(
-      color: AppColor.ground,
+    return Container(
       margin: EdgeInsets.only(
         top: 12.0,
       ),
-      elevation: 0.5,
-      shadowColor: AppColor.shadow,
       child: Column(
         children: [
           Container(
@@ -742,14 +738,12 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   ///wind
   Widget _buildWindDesc(WeatherRT weatherRT) {
     final now = weatherRT.now;
-    return Card(
+    return Container(
       key: const Key("main_screen_wind_desc"),
       color: AppColor.ground,
       margin: EdgeInsets.only(
         top: 12.0,
       ),
-      elevation: 0.5,
-      shadowColor: AppColor.shadow,
       child: Column(
         children: [
           Container(

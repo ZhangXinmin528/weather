@@ -100,7 +100,7 @@ class WeatherSunnyState extends WeatherBase<WeatherSunny> {
                 waveNum: 2,
                 height: 120,
                 imgRight: 100 * _boatAnim.value,
-                imgUrl: "images/ic_boat_${isDay ? "day" : "night"}.png",
+                imgUrl: "images/ic_boat_${isDay ? "day" : "night"}.webp",
                 imgSize: const Size(60, 18),
               );
             },

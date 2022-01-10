@@ -7,6 +7,7 @@ abstract class AppColor {
   /// app界面背景色
   static const ground = Colors.white;
   static const blackGround = Colors.black12;
+  static const whiteGround = Colors.white24;
 
   /// 阴影
   static const shadow = Color(0xFFEDEEF0);

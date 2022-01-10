@@ -104,8 +104,8 @@ class _SnowState extends State<SnowView> with TickerProviderStateMixin {
   }
 
   double get _fullHeight =>
-      getScreenHeight(context) -
-      getStatusHeight(context) -
-      getAppBarHeight() -
-      110;
+      (getScreenHeight(context) -
+          getStatusHeight(context) -
+          getAppBarHeight()) *
+      0.95;
 }

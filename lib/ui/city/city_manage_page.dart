@@ -99,6 +99,10 @@ class _CityManangePageState extends State<CityManagementPage> {
                         if (_changed) {
                           _cityManageBloc.add(SaveChangedEvent());
                           _cityManageBloc.emit(SaveCityChangedState(_tabList));
+                          Future.delayed(Duration(seconds: 1), () {
+                            _mainPageBloc.add(LoadCityListEvent());
+                            _mainPageBloc.emit(LoadCityListState());
+                          });
                         }
                       }
                     },

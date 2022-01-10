@@ -75,9 +75,9 @@ class WeatherCloudState extends State<WeatherCloud>
                 return Positioned(
                   child: RepaintBoundary(
                     child: Opacity(
-                      opacity: isDay ? 0.9 : 0.7,
+                      opacity: isDay ? 0.8 : 0.6,
                       child: Image.asset(
-                        "images/ic_cloud.png",
+                        "images/ic_cloud.webp",
                         width: 80,
                         height: 80,
                       ),
