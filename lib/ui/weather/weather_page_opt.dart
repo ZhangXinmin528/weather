@@ -179,7 +179,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                 _buildWeather7DayLines(weatherDaily),
                 _buildWindDesc(weatherRT),
                 _buildIndicesWidget(weatherIndices),
-                _buildWeatherFooter(),
+                // _buildWeatherFooter(),
               ],
             ),
           ),
@@ -230,7 +230,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
       height: 35,
       width: 200,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        borderRadius: BorderRadius.all(Radius.circular(14.0)),
         color: AppColor.whiteGround,
       ),
       margin: EdgeInsets.only(top: 16),
@@ -343,7 +343,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
               Text(temp,
                   key: const Key("main_screen_temp_now"),
                   style: GoogleFonts.roboto(
-                      fontSize: 90, fontWeight: FontWeight.normal)),
+                      fontSize: 90, fontWeight: FontWeight.w300)),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
