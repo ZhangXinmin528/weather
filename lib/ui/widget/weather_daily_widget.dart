@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:weather/data/model/remote/weather/weather_daily.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/utils/datetime_utils.dart';
+import 'package:weather/utils/log_utils.dart';
 import 'package:weather/utils/system_util.dart';
 
 class WeatherDailyWidget extends StatefulWidget {
@@ -20,9 +21,9 @@ class WeatherDailyWidget extends StatefulWidget {
 }
 
 class _WeatherDailyState extends State<WeatherDailyWidget> {
-  final List<Daily> dailyList;
-  final List<ui.Image> dayIconList = [];
-  final List<ui.Image> nightIconList = [];
+  List<Daily> dailyList;
+  List<ui.Image> dayIconList = [];
+  List<ui.Image> nightIconList = [];
 
   _WeatherDailyState(this.dailyList);
 
@@ -123,6 +124,7 @@ class DailyChart extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // LogUtil.d("paint()..data:${dailyList.hashCode}");
     final width = size.width - _paddingLeft * 2;
     final height = size.height - _paddingTop * 2;
 
@@ -155,6 +157,7 @@ class DailyChart extends CustomPainter {
         //weather day date
         drawText(canvas,
             content: "今天", x: itemX, y: _paddingTop.toDouble() - 2, step: step);
+        // LogUtil.d("paint()..date:${date}");
       } else {
         itemX = _paddingLeft + step * (i + 0.5);
         dayPath.lineTo(
@@ -297,6 +300,6 @@ class DailyChart extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return false;
   }
 }

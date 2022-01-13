@@ -21,7 +21,7 @@ class DioClient {
     _dio = Dio(_baseOptions);
     _dio.interceptors.add(HttpInterceptor());
     if (!inProduct) {
-      _dio.interceptors.add(PrettyDioLogger());
+      // _dio.interceptors.add(PrettyDioLogger());
     }
   }
 

@@ -362,7 +362,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                     margin: EdgeInsets.only(top: 6),
                     decoration: BoxDecoration(
                         color: WeatherUtils.getAQIColorByAqi(airNow.aqi)
-                            .withOpacity(0.6),
+                            .withOpacity(0.4),
                         borderRadius: BorderRadius.all(Radius.circular(16)),
                         shape: BoxShape.rectangle),
                     child: Padding(
@@ -597,6 +597,8 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
   ///weather 7Day
   Widget _buildWeather7DayLines(WeatherDaily weatherDaily) {
+    LogUtil.d(
+        "_buildWeather7DayLines..position:${_position}..data:${weatherDaily.daily.hashCode}");
     return Container(
       margin: EdgeInsets.only(
         top: 12.0,
