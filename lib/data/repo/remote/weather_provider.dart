@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
@@ -23,7 +22,6 @@ class WeatherProvider {
 
   //location
   final LocationManager _locationManager = LocationManager();
-  BaiduLocation? _baiduLocation;
 
   MainPageBloc? _mainPageBloc;
 
@@ -35,16 +33,17 @@ class WeatherProvider {
   final StreamController<WeatherStatus> weatherStatusController =
       StreamController();
 
-  final StreamController<BaiduLocation> locationController = StreamController();
+  // final StreamController<BaiduLocation> locationController = StreamController();
 
-  CityElement? _cityElement;
   bool _hasCached = false;
 
   void initState(MainPageBloc bloc, CityElement cityElement) {
     _mainPageBloc = bloc;
-    this._cityElement = cityElement;
     _initLocationCallback();
-    _loadCacheWeather();
+    _loadCacheWeather(
+        key: cityElement.key,
+        latitude: cityElement.latitude,
+        longitude: cityElement.longitude);
   }
 
   ///定位回调
@@ -53,21 +52,18 @@ class WeatherProvider {
       //定位变化
 
       if (value != null && value.city!.isNotEmpty) {
-        LogUtil.d("WeatherProvider..定位回调了..city：${value.city}");
-        _baiduLocation = value;
-        locationController.add(_baiduLocation!);
         Future.delayed(Duration(seconds: 1), () {
+          LogUtil.d("WeatherProvider..定位回调了..city:${value.city}");
+          _mainPageBloc?.baiduLocation = value;
           _mainPageBloc?.add(LocationChangedEvent());
-          _mainPageBloc?.baiduLocation = _baiduLocation;
           //更新天气数据
-          final String key =
-              "${_baiduLocation?.latitude}&${_baiduLocation?.longitude}";
+          final String key = "${value.latitude}&${value.longitude}";
 
-          _cityElement?.key = key;
-          _cityElement?.longitude = _baiduLocation!.longitude!;
-          _cityElement?.latitude = _baiduLocation!.latitude!;
-          _cityElement?.locTime = _baiduLocation!.locTime;
-          _requestWeatherData();
+          final longitude = value.longitude!;
+          final latitude = value.latitude!;
+
+          _requestWeatherData(
+              key: key, latitude: latitude, longitude: longitude);
         });
         _locationManager.stopLocation();
         _mainPageBloc?.saveLocation();
@@ -77,11 +73,13 @@ class WeatherProvider {
     });
   }
 
-  void _loadCacheWeather() async {
-    if (_cityElement != null) {
+  void _loadCacheWeather(
+      {required String key,
+      required double latitude,
+      required double longitude}) async {
+    if (key != null && key.isNotEmpty && latitude != 0 && longitude != 0) {
       weatherStatusController.add(WeatherStatus.STATUS_INIT);
-      final String key = _cityElement!.key;
-      LogUtil.d("WeatherProvider..loadCacheWeather:${_cityElement?.name}");
+      LogUtil.d("WeatherProvider..loadCacheWeather..key:$key");
       //加载缓存的天气数据
       final Map? result = await _sqliteManager.queryCityWeather(key);
       if (result != null) {
@@ -115,7 +113,8 @@ class WeatherProvider {
               weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
             })
             ..timeout(Duration(milliseconds: 1000), onTimeout: () {
-              _requestWeatherData();
+              _requestWeatherData(
+                  key: key, latitude: latitude, longitude: longitude);
             });
         }
 
@@ -133,19 +132,16 @@ class WeatherProvider {
         }
       } else {
         _hasCached = false;
-        onRefresh(false);
+        onRefresh(false, key: key, latitude: latitude, longitude: longitude);
       }
     }
   }
 
-  void _requestWeatherData() async {
-    if (_cityElement == null) return;
-
-    final String key = _cityElement!.key;
-    final latitude = _cityElement!.latitude;
-    final longitude = _cityElement!.longitude;
-    LogUtil.d(
-        "WeatherProvider..requestWeatherData:$key..locTime:${_cityElement?.locTime}");
+  void _requestWeatherData(
+      {required String key,
+      required double latitude,
+      required double longitude}) async {
+    LogUtil.d("WeatherProvider..requestWeatherData:$key..key:$key");
     //获取天气信息
 
     final WeatherRT? weatherNow =
@@ -175,12 +171,13 @@ class WeatherProvider {
       if (_hasCached) {
         final index = await _sqliteManager.updateCityWeather(key, weatherNow,
             weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
-        LogUtil.d("天气tab页面..更新数据库:$index");
+        LogUtil.d("天气tab页面..更新数据库:$index..key:$key");
       } else {
         final index = await _sqliteManager.insertCityWeather(key, weatherNow,
             weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
-        LogUtil.d("天气tab页面..插入数据库:$index");
+        LogUtil.d("天气tab页面..插入数据库:$index..key:$key");
       }
+      _hasCached = true;
       weatherStatusController.add(WeatherStatus.STATUS_FINISHED);
       updateWeather(
           weatherRT: weatherNow,
@@ -189,19 +186,22 @@ class WeatherProvider {
           weatherDaily: weatherDaily,
           weatherIndices: weatherIndices,
           weatherWarning: weatherWarning);
-      Future.delayed(Duration(milliseconds: 800), () {
+      Future.delayed(Duration(milliseconds: 1800), () {
         weatherStatusController.add(WeatherStatus.STATUS_INIT);
       });
     }
   }
 
-  void onRefresh(bool location) {
+  void onRefresh(bool location,
+      {required String key,
+      required double latitude,
+      required double longitude}) {
     weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
     if (location) {
       _locationManager.startLocation();
     } else {
       Future.delayed(Duration(milliseconds: 1000), () {
-        _requestWeatherData();
+        _requestWeatherData(key: key, latitude: latitude, longitude: longitude);
       });
     }
   }

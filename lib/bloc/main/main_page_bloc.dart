@@ -39,7 +39,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   @override
   Stream<MainPageState> mapEventToState(MainPageEvent event) async* {
-    LogUtil.d("mapEventToState..$event");
+    LogUtil.d("MainPageBloc..mapEventToState..$event");
 
     if (event is LoadCityListEvent) {
       //加载城市列表
@@ -64,7 +64,10 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
           tabList.clear();
         }
         tabList.addAll(tabs);
-        LogUtil.d("MainPageBloc..city list:${tabs[0].cityElement.locTime}");
+        tabs.forEach((element) {
+          LogUtil.d("MainPageBloc..city item:${element.toJson()}");
+        });
+
         yield AddWeatherTabState(true, tabList);
       } else {
         yield InitLocationState();
@@ -78,7 +81,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     final permission = Permission.locationWhenInUse;
     PermissionStatus permissionStatus = await permission.status;
     LogUtil.d(
-        "_mapStartLocationToState()..permission status:${permissionStatus.name}");
+        "MainPageBloc.._mapStartLocationToState()..permission status:${permissionStatus.name}");
     if (permissionStatus.isGranted) {
       _mapStartLocationToState(state);
     } else if (permissionStatus.isPermanentlyDenied) {
@@ -90,7 +93,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     } else {
       permissionStatus = await permission.request();
       LogUtil.d(
-          "_mapStartLocationToState()..permission retry:${permissionStatus.name}");
+          "MainPageBloc.._mapStartLocationToState()..permission retry:${permissionStatus.name}");
       if (permissionStatus.isGranted) {
         _mapStartLocationToState(state);
       } else {}
@@ -98,7 +101,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   }
 
   void _mapStartLocationToState(MainPageState state) async {
-    LogUtil.d("_mapStartLocationToState~");
+    LogUtil.d("MainPageBloc.._mapStartLocationToState~");
     if (state is InitLocationState) {
       final time = await _appLocalRepo.getLocationTime();
       if (time != null && time.isNotEmpty) {
@@ -124,7 +127,12 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   ///定位相关逻辑
   Stream<MainPageState> _mapLocationChangedToState(MainPageState state) async* {
-    LogUtil.e("_mapLocationChangedToState..定位数据：${baiduLocation?.address}");
+    LogUtil.e(
+        "MainPageBloc.._mapLocationChangedToState..定位数据：${baiduLocation?.address}");
+    tabList.forEach((element) {
+      LogUtil.d(
+          "MainPageBloc.._mapLocationChangedToState..tab..item:${element.toJson()}");
+    });
     if (baiduLocation != null && baiduLocation!.city != null) {
       yield LocationSuccessState();
       add(AddWeatherTabToMainEvent());
@@ -139,25 +147,22 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     if (state is LocationSuccessState) {
       if (baiduLocation != null && baiduLocation!.city != null) {
         LogUtil.d(
-            "_mapAddWeatherTabToState()..定位成功..locTime:${baiduLocation?.locTime}");
+            "MainPageBloc.._mapAddWeatherTabToState()..定位成功..locTime:${baiduLocation?.getMap().toString()}");
         final String name = "${baiduLocation?.district}";
         //定位成功
 
         final TabElement tabElement = generateTab(
             name, baiduLocation!.latitude!, baiduLocation!.longitude!,
             locTime: baiduLocation?.locTime);
-        // if (containCity(tabElement.cityElement)) {
-        if (tabList.isNotEmpty) {
-          tabList.removeAt(0);
-        }
-        tabList.insert(0, tabElement);
+
+        tabList.replaceRange(0, 1, [tabElement]);
+
         _appLocalRepo.saveCityList(tabList);
-        // }
 
         yield AddWeatherTabState(true, tabList);
       }
     } else if (state is AddSelectedCityToTabState) {
-      LogUtil.d("_mapAddWeatherTabToState()..添加搜索城市~");
+      LogUtil.d("MainPageBloc.._mapAddWeatherTabToState()..添加搜索城市~");
 
       final TabElement tabElement = generateTab(
           state.city, double.parse(state.lat), double.parse(state.lon));
@@ -174,6 +179,10 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     final String json = convert.jsonEncode(baiduLocation!.getMap());
     _appLocalRepo.saveLocation(json);
     _appLocalRepo.saveLocationTime();
+    tabList.forEach((element) {
+      LogUtil.d(
+          "MainPageBloc..saveLocation..tab..item:${element.toJson()}");
+    });
   }
 
   @override

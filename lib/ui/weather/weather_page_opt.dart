@@ -60,7 +60,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   @override
   void initState() {
     super.initState();
-    LogUtil.d("WeatherPageOpt..initState");
+    LogUtil.d("WeatherPageOpt..initState..city:${_cityElement.toJson()}");
     weatherColor = Colors.white38;
     _location = _position == 0;
     _hasNotifi = false;
@@ -111,13 +111,15 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
           _navigationBloc.add(WarningNavigationEvent(value));
         }
       });
-
       _hasNotifi = true;
     }
     return RefreshIndicator(
       onRefresh: () async {
         _hasNotifi = false;
-        _weatherProvider.onRefresh(_location);
+        _weatherProvider.onRefresh(_location,
+            key: _cityElement.key,
+            longitude: _cityElement.longitude,
+            latitude: _cityElement.latitude);
       },
       displacement: 70,
       edgeOffset: 30,
@@ -597,8 +599,8 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
   ///weather 7Day
   Widget _buildWeather7DayLines(WeatherDaily weatherDaily) {
-    LogUtil.d(
-        "_buildWeather7DayLines..position:${_position}..data:${weatherDaily.daily.hashCode}");
+    // LogUtil.d(
+    //     "_buildWeather7DayLines..city:${weatherDaily.toJson()}..data:${weatherDaily.daily.hashCode}");
     return Container(
       margin: EdgeInsets.only(
         top: 12.0,
@@ -616,7 +618,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                   fontWeight: FontWeight.bold),
             ),
           ),
-          WeatherDailyWidget(dailyList: weatherDaily.daily),
+          WeatherDailyWidget(weatherDaily: weatherDaily),
         ],
       ),
     );

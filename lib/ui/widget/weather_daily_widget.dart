@@ -10,22 +10,22 @@ import 'package:weather/utils/log_utils.dart';
 import 'package:weather/utils/system_util.dart';
 
 class WeatherDailyWidget extends StatefulWidget {
-  final List<Daily> dailyList;
+  final WeatherDaily weatherDaily;
 
-  WeatherDailyWidget({Key? key, required this.dailyList}) : super(key: key);
+  WeatherDailyWidget({Key? key, required this.weatherDaily}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _WeatherDailyState(dailyList);
+    return _WeatherDailyState(weatherDaily);
   }
 }
 
 class _WeatherDailyState extends State<WeatherDailyWidget> {
-  List<Daily> dailyList;
+  final WeatherDaily weatherDaily;
   List<ui.Image> dayIconList = [];
   List<ui.Image> nightIconList = [];
 
-  _WeatherDailyState(this.dailyList);
+  _WeatherDailyState(this.weatherDaily);
 
   @override
   void initState() {
@@ -37,6 +37,8 @@ class _WeatherDailyState extends State<WeatherDailyWidget> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      final dailyList = weatherDaily.daily;
+      // LogUtil.d("_WeatherDailyState()..data:${weatherDaily.toJson()}");
       return Container(
         color: AppColor.ground,
         height: 300,
@@ -49,8 +51,8 @@ class _WeatherDailyState extends State<WeatherDailyWidget> {
   }
 
   void obtainWeatherIcons() async {
-    for (int i = 0; i < dailyList.length; i++) {
-      final Daily daily = dailyList[i];
+    for (int i = 0; i < weatherDaily.daily.length; i++) {
+      final Daily daily = weatherDaily.daily[i];
       final dayIcon = await loadSVGFromAsset(code: daily.iconDay, size: 25);
       dayIconList.insert(i, dayIcon);
       final nightIcon = await loadSVGFromAsset(code: daily.iconNight, size: 25);
@@ -300,6 +302,6 @@ class DailyChart extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }

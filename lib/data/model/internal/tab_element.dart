@@ -25,7 +25,7 @@ class TabElement {
     jsonMap['temp'] = this.temp ?? "";
     jsonMap['text'] = this.text ?? "";
     jsonMap['icon'] = this.icon ?? "";
-    jsonMap['cityElement'] = this.cityElement;
+    jsonMap['cityElement'] = this.cityElement.toJson();
     return jsonMap;
   }
 

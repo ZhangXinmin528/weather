@@ -281,6 +281,7 @@ class _CityManangePageState extends State<CityManagementPage> {
     return FutureBuilder(
         future: _sqliteManager.queryCityWeatherNow(tab.cityElement.key),
         builder: (context, snapshot) {
+
           if (snapshot.hasData) {
             final Map<String, dynamic>? map =
                 snapshot.data as Map<String, dynamic>?;
@@ -311,7 +312,7 @@ class _CityManangePageState extends State<CityManagementPage> {
         key: key,
         margin: EdgeInsets.only(top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
         color:
-            now == null ? Colors.white : _getWeatherThemeColor(type: now.text),
+            now == null ? AppColor.blackGround : _getWeatherThemeColor(type: now.text),
         elevation: 4.0,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12.0))),
