@@ -116,7 +116,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     return RefreshIndicator(
       onRefresh: () async {
         _hasNotifi = false;
-        _weatherProvider.onRefresh(false,
+        _weatherProvider.onRefresh(
             key: _cityElement.key,
             longitude: _cityElement.longitude,
             latitude: _cityElement.latitude);
@@ -846,8 +846,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   void dispose() {
     _weatherProvider.dispose();
     super.dispose();
-    LogUtil.d(
-        "WeatherPageOpt..dispose");
+    LogUtil.d("WeatherPageOpt..dispose");
   }
 
   @override

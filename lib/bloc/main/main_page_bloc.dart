@@ -22,7 +22,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   final List<TabElement> tabList = [];
 
-  MainPageBloc(this._appLocalRepo) : super(LoadCityListState()) {
+  MainPageBloc(this._appLocalRepo) : super(InitLocationState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
       baiduLocation = value;
@@ -77,6 +77,15 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   Stream<MainPageState> _mapRequestLocationToState(MainPageState state) async* {
     final permission = Permission.locationWhenInUse;
     PermissionStatus permissionStatus = await permission.status;
+
+    final List<TabElement>? tabs = await _appLocalRepo.getCityList();
+    if (tabs != null && tabs.isNotEmpty) {
+      if (tabList.isNotEmpty) {
+        tabList.clear();
+      }
+      tabList.addAll(tabs);
+    }
+
     LogUtil.d(
         "MainPageBloc.._mapStartLocationToState()..permission status:${permissionStatus.name}");
     if (permissionStatus.isGranted) {
@@ -148,12 +157,11 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
             name, baiduLocation!.latitude!, baiduLocation!.longitude!,
             locTime: baiduLocation?.locTime);
 
-        if(tabList.isNotEmpty){
+        if (tabList.isNotEmpty) {
           tabList.replaceRange(0, 1, [tabElement]);
-        }else{
+        } else {
           tabList.add(tabElement);
         }
-       
 
         _appLocalRepo.saveCityList(tabList);
 

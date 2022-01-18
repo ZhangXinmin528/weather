@@ -47,7 +47,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     _appBloc.add(LoadSettingsAppEvent());
 
     _mainPageBloc = BlocProvider.of(context);
-    _mainPageBloc.add(LoadCityListEvent());
+    _mainPageBloc.add(RequestLocationEvent());
 
     _navigationBloc = BlocProvider.of(context);
 
