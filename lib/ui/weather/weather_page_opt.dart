@@ -116,7 +116,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
     return RefreshIndicator(
       onRefresh: () async {
         _hasNotifi = false;
-        _weatherProvider.onRefresh(_location,
+        _weatherProvider.onRefresh(false,
             key: _cityElement.key,
             longitude: _cityElement.longitude,
             latitude: _cityElement.latitude);
