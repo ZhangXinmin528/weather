@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_bmflocation/flutter_baidu_location.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
@@ -15,6 +16,7 @@ import 'package:weather/location/location_manager.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
+///TODO:ValueChanged中调用StreamController添加事件，会接收不到？？？
 class WeatherProvider {
   //接口数据
   final WeatherRemoteRepo _weatherRemoteRepo = WeatherRemoteRepo();
@@ -31,9 +33,7 @@ class WeatherProvider {
 
   //页面状态
   final StreamController<WeatherStatus> weatherStatusController =
-      StreamController();
-
-  // final StreamController<BaiduLocation> locationController = StreamController();
+      StreamController(sync: true);
 
   bool _hasCached = false;
 
@@ -52,7 +52,7 @@ class WeatherProvider {
       //定位变化
 
       if (value != null && value.city!.isNotEmpty) {
-        Future.delayed(Duration(seconds: 1), () {
+        Future.delayed(Duration(milliseconds: 1000), () {
           LogUtil.d("WeatherProvider..定位回调了..city:${value.city}");
           _mainPageBloc?.baiduLocation = value;
           _mainPageBloc?.add(LocationChangedEvent());
@@ -61,9 +61,7 @@ class WeatherProvider {
 
           final longitude = value.longitude!;
           final latitude = value.latitude!;
-
-          _requestWeatherData(
-              key: key, latitude: latitude, longitude: longitude);
+          _requestWeatherData(key: key, latitude: latitude, longitude: longitude);
         });
         _locationManager.stopLocation();
         _mainPageBloc?.saveLocation();
@@ -172,13 +170,17 @@ class WeatherProvider {
         final index = await _sqliteManager.updateCityWeather(key, weatherNow,
             weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
         LogUtil.d("天气tab页面..更新数据库:$index..key:$key");
+        if (index == 0) {
+          final index = await _sqliteManager.insertCityWeather(key, weatherNow,
+              weatherAir, weatherHour, weatherDaily, weatherIndices);
+          LogUtil.d("天气tab页面..插入数据库:$index..key:$key");
+        }
       } else {
         final index = await _sqliteManager.insertCityWeather(key, weatherNow,
             weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
         LogUtil.d("天气tab页面..插入数据库:$index..key:$key");
       }
       _hasCached = true;
-      weatherStatusController.add(WeatherStatus.STATUS_FINISHED);
       updateWeather(
           weatherRT: weatherNow,
           weatherAir: weatherAir,
@@ -186,7 +188,10 @@ class WeatherProvider {
           weatherDaily: weatherDaily,
           weatherIndices: weatherIndices,
           weatherWarning: weatherWarning);
-      Future.delayed(Duration(milliseconds: 1800), () {
+
+      weatherStatusController.add(WeatherStatus.STATUS_FINISHED);
+
+      Future.delayed(Duration(milliseconds: 1200), () {
         weatherStatusController.add(WeatherStatus.STATUS_INIT);
       });
     }

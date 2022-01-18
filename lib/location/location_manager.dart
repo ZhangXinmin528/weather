@@ -22,20 +22,10 @@ class LocationManager {
     _locationPlugin = new LocationFlutterPlugin();
   }
 
-  void startLocationOnce() {
-    if (_locationPlugin != null) {
-      _setLocOption(true);
-
-      _locationPlugin.requestPermission();
-
-      _locationPlugin.startLocation();
-    }
-  }
-
   ///开始定位
   void startLocation() {
     if (_locationPlugin != null) {
-      _setLocOption(false);
+      _setLocOption();
       _locationPlugin.startLocation();
     }
   }
@@ -69,7 +59,7 @@ class LocationManager {
   }
 
   ///移动端设置定位参数，包括
-  void _setLocOption(bool isOnce) {
+  void _setLocOption() {
     /// android 端设置定位参数
     BaiduLocationAndroidOption androidOption = new BaiduLocationAndroidOption();
     androidOption.setCoorType("bd09ll"); // 设置返回的位置坐标系类型

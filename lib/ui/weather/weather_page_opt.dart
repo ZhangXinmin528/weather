@@ -285,6 +285,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final WeatherStatus status = snapshot.data as WeatherStatus;
+            // LogUtil.d("_buildStatusOrTimeWidget..status:$status");
 
             if (status == WeatherStatus.STATUS_REFRESHING) {
               return LoadingLineWidget("正在刷新数据...");
@@ -845,6 +846,8 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
   void dispose() {
     _weatherProvider.dispose();
     super.dispose();
+    LogUtil.d(
+        "WeatherPageOpt..dispose");
   }
 
   @override

@@ -281,7 +281,6 @@ class _CityManangePageState extends State<CityManagementPage> {
     return FutureBuilder(
         future: _sqliteManager.queryCityWeatherNow(tab.cityElement.key),
         builder: (context, snapshot) {
-
           if (snapshot.hasData) {
             final Map<String, dynamic>? map =
                 snapshot.data as Map<String, dynamic>?;
@@ -311,8 +310,7 @@ class _CityManangePageState extends State<CityManagementPage> {
     return Card(
         key: key,
         margin: EdgeInsets.only(top: 9.0, bottom: 9.0, left: 18.0, right: 18.0),
-        color:
-            now == null ? AppColor.blackGround : _getWeatherThemeColor(type: now.text),
+        color: _getWeatherThemeColor(now?.text),
         elevation: 4.0,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(12.0))),
@@ -376,9 +374,12 @@ class _CityManangePageState extends State<CityManagementPage> {
   }
 
   ///天气主题色
-  Color _getWeatherThemeColor({required String type}) {
+  Color _getWeatherThemeColor(String? type) {
     final isDay = DateTime.now().hour >= 6 && DateTime.now().hour < 18;
 
+    if (type == null || type.isEmpty) {
+      return isDay ? const Color(0xFF51C0F8) : const Color(0xFF7F9EE9);
+    }
     if (type.contains("晴") || type.contains("多云")) {
       return isDay ? const Color(0xFF51C0F8) : const Color(0xFF7F9EE9);
     } else if (type.contains("雨")) {

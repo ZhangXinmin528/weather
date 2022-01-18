@@ -64,9 +64,6 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
           tabList.clear();
         }
         tabList.addAll(tabs);
-        tabs.forEach((element) {
-          LogUtil.d("MainPageBloc..city item:${element.toJson()}");
-        });
 
         yield AddWeatherTabState(true, tabList);
       } else {
@@ -129,10 +126,6 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
   Stream<MainPageState> _mapLocationChangedToState(MainPageState state) async* {
     LogUtil.e(
         "MainPageBloc.._mapLocationChangedToState..定位数据：${baiduLocation?.address}");
-    tabList.forEach((element) {
-      LogUtil.d(
-          "MainPageBloc.._mapLocationChangedToState..tab..item:${element.toJson()}");
-    });
     if (baiduLocation != null && baiduLocation!.city != null) {
       yield LocationSuccessState();
       add(AddWeatherTabToMainEvent());
@@ -147,7 +140,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     if (state is LocationSuccessState) {
       if (baiduLocation != null && baiduLocation!.city != null) {
         LogUtil.d(
-            "MainPageBloc.._mapAddWeatherTabToState()..定位成功..locTime:${baiduLocation?.getMap().toString()}");
+            "MainPageBloc.._mapAddWeatherTabToState()..定位成功..locTime:${baiduLocation?.locTime}");
         final String name = "${baiduLocation?.district}";
         //定位成功
 
@@ -155,7 +148,12 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
             name, baiduLocation!.latitude!, baiduLocation!.longitude!,
             locTime: baiduLocation?.locTime);
 
-        tabList.replaceRange(0, 1, [tabElement]);
+        if(tabList.isNotEmpty){
+          tabList.replaceRange(0, 1, [tabElement]);
+        }else{
+          tabList.add(tabElement);
+        }
+       
 
         _appLocalRepo.saveCityList(tabList);
 
@@ -179,10 +177,6 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
     final String json = convert.jsonEncode(baiduLocation!.getMap());
     _appLocalRepo.saveLocation(json);
     _appLocalRepo.saveLocationTime();
-    tabList.forEach((element) {
-      LogUtil.d(
-          "MainPageBloc..saveLocation..tab..item:${element.toJson()}");
-    });
   }
 
   @override

@@ -169,7 +169,7 @@ class SPManager {
       map['cityList'] = tabList.map((e) => e.toJson()).toList();
 
       final json = convert.jsonEncode(map);
-      LogUtil.d("Save city list: ${json}");
+      // LogUtil.d("Save city list: ${json}");
       final result = await _spUtils.setString(Ids.storageCityListKey, json);
       LogUtil.d("Saved city list: $result");
       return result;
