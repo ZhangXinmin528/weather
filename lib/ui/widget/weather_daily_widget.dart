@@ -38,7 +38,7 @@ class _WeatherDailyState extends State<WeatherDailyWidget> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final dailyList = weatherDaily.daily;
-      // LogUtil.d("_WeatherDailyState()..data:${weatherDaily.toJson()}");
+      LogUtil.d("_WeatherDailyState()..data:${weatherDaily.toJson()}");
       return Container(
         color: AppColor.ground,
         height: 300,
@@ -92,7 +92,7 @@ class DailyChart extends CustomPainter {
       this._context, this.dailyList, this.dayIconList, this.nightIconList) {
     _paddingLeft = dpToPx(_context, 4);
     _paddingTop = dpToPx(_context, 4);
-
+    LogUtil.d("DailyChart()..daily:${dailyList[0].toJson()}");
     final TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: "测试",
@@ -301,7 +301,7 @@ class DailyChart extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(covariant DailyChart oldDelegate) {
+    return oldDelegate.dailyList != dailyList;
   }
 }
