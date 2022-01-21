@@ -28,7 +28,7 @@ dependencies:
   #http
   dio: ^4.0.0
   #网络状态
-  #  connectivity_plus: ^2.0.2
+  connectivity_plus: ^2.0.2
 
   #数据相关
   equatable: ^2.0.0
@@ -99,5 +99,5 @@ flutter:
     - icons/
     - images/
     - doc/
-#    - fonts/
+    #    - fonts/
     - assets/lottiefiles/
