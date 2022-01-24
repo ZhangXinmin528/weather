@@ -16,6 +16,7 @@ import 'package:weather/weather_observer.dart';
 
 import 'data/repo/local/app_local_repo.dart';
 import 'data/repo/local/sp_manager.dart';
+import 'http/connection_provider.dart';
 
 void main() {
   Bloc.observer = WeatherObserver();
@@ -41,6 +42,8 @@ class _WeatherAppState extends State<WeatherApp> {
   ///sp
   final SPManager _storageManager = SPManager(SharedPreferencesUtils());
 
+
+  late ConnectionProvider _connectionProvider;
   ///app整体缓存
   late AppLocalRepo _appLocalRepo;
 
@@ -54,6 +57,9 @@ class _WeatherAppState extends State<WeatherApp> {
 
     //初始化路由表
     _navigationProvider.defineRotes();
+
+    _connectionProvider = ConnectionProvider();
+    _connectionProvider.initConnectivity();
   }
 
   @override
@@ -74,7 +80,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //主页面
           BlocProvider<MainPageBloc>(
             create: (context) {
-              return MainPageBloc(_appLocalRepo);
+              return MainPageBloc(_appLocalRepo,_connectionProvider);
             },
           ),
           //天气页面

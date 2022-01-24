@@ -1,6 +1,4 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
@@ -13,6 +11,7 @@ import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
+import 'package:weather/http/connection_provider.dart';
 import 'package:weather/ui/weather/weather_page_opt.dart';
 import 'package:weather/utils/log_utils.dart';
 
@@ -33,8 +32,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   // late ChannelHelper _channelHelper;
 
-  final Connectivity _connectivity = Connectivity();
-  ConnectivityResult _connectivityStatus = ConnectivityResult.none;
 
   //tab
   final List<TabElement> tabList = [];
@@ -46,7 +43,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     LogUtil.e("MainPage..initState()~");
-    initConnectivity();
+
 
     _appBloc = BlocProvider.of(context);
     _appBloc.add(LoadSettingsAppEvent());
@@ -120,8 +117,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       ),
     );
   }
-
-
 
   /// 展示天气实时数据
   Widget _buildWeatherTabWidget() {

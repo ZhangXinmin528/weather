@@ -9,6 +9,7 @@ import 'package:weather/bloc/main/main_page_state.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/data/repo/local/app_local_repo.dart';
+import 'package:weather/http/connection_provider.dart';
 import 'package:weather/location/location_manager.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
@@ -22,7 +23,10 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   final List<TabElement> tabList = [];
 
-  MainPageBloc(this._appLocalRepo) : super(InitLocationState()) {
+  final ConnectionProvider connectionProvider;
+
+  MainPageBloc(this._appLocalRepo, this.connectionProvider)
+      : super(InitLocationState()) {
     _locationManager.listenLocationCallback((value) {
       //定位变化
       baiduLocation = value;
@@ -86,23 +90,28 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
       tabList.addAll(tabs);
     }
 
-    LogUtil.d(
-        "MainPageBloc.._mapStartLocationToState()..permission status:${permissionStatus.name}");
-    if (permissionStatus.isGranted) {
-      _mapStartLocationToState(state);
-    } else if (permissionStatus.isPermanentlyDenied) {
-      //android
-      openAppSettings();
-    } else if (permissionStatus.isRestricted) {
-      //ios
-      openAppSettings();
+    if (!connectionProvider.isNetworkConnected()) {
+      add(LoadCityListEvent());
+      yield LoadCityListState();
     } else {
-      permissionStatus = await permission.request();
       LogUtil.d(
-          "MainPageBloc.._mapStartLocationToState()..permission retry:${permissionStatus.name}");
+          "MainPageBloc.._mapStartLocationToState()..permission status:${permissionStatus.name}");
       if (permissionStatus.isGranted) {
         _mapStartLocationToState(state);
-      } else {}
+      } else if (permissionStatus.isPermanentlyDenied) {
+        //android
+        openAppSettings();
+      } else if (permissionStatus.isRestricted) {
+        //ios
+        openAppSettings();
+      } else {
+        permissionStatus = await permission.request();
+        LogUtil.d(
+            "MainPageBloc.._mapStartLocationToState()..permission retry:${permissionStatus.name}");
+        if (permissionStatus.isGranted) {
+          _mapStartLocationToState(state);
+        } else {}
+      }
     }
   }
 
