@@ -294,6 +294,28 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                 "天气数据已过期",
                 style: TextStyle(color: AppColor.textWhite, fontSize: 12.0),
               );
+            } else if (status == WeatherStatus.STATUS_NET_OFFLINE) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.warning,
+                    size: 18.0,
+                    color: AppColor.warningYellow,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: 4.0,
+                    ),
+                    child: Text(
+                      "当前网络不可用，请检查网络连接",
+                      style:
+                          TextStyle(color: AppColor.textYellow, fontSize: 12.0),
+                    ),
+                  )
+                ],
+              );
             } else if (status == WeatherStatus.STATUS_FINISHED) {
               return Text(
                 "数据加载完成",

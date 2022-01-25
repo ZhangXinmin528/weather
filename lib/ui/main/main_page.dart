@@ -32,7 +32,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   // late ChannelHelper _channelHelper;
 
-
   //tab
   final List<TabElement> tabList = [];
   late String currentCity = "";
@@ -60,6 +59,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     // _channelHelper = ChannelHelper();
     // _channelHelper.checkUpgrade();
+  }
+
+  @override
+  void didUpdateWidget(covariant MainPage oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+
   }
 
   @override

@@ -10,6 +10,7 @@ import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/model/remote/weather/weather_warning.dart';
 import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
+import 'package:weather/http/connection_provider.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
@@ -25,6 +26,8 @@ class WeatherProvider {
   //页面状态
   final StreamController<WeatherStatus> weatherStatusController =
       StreamController(sync: true);
+
+  final ConnectionProvider _connectionProvider = ConnectionProvider();
 
   bool _hasCached = false;
 
@@ -69,7 +72,9 @@ class WeatherProvider {
         if (span > 5) {
           ///缓存过时了，请求网络
           Future.delayed(Duration(milliseconds: 1500), () {
-            weatherStatusController.add(WeatherStatus.STATUS_CACHED_INVALID);
+            weatherStatusController.add(_connectionProvider.isNetworkConnected()
+                ? WeatherStatus.STATUS_CACHED_INVALID
+                : WeatherStatus.STATUS_NET_OFFLINE);
           })
             ..timeout(Duration(milliseconds: 500), onTimeout: () {
               weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
@@ -196,5 +201,6 @@ enum WeatherStatus {
   STATUS_INIT,
   STATUS_REFRESHING,
   STATUS_CACHED_INVALID,
+  STATUS_NET_OFFLINE,
   STATUS_FINISHED,
 }
