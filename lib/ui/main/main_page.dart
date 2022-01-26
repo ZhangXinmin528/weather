@@ -12,6 +12,7 @@ import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
 import 'package:weather/http/connection_provider.dart';
+import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/weather/weather_page_opt.dart';
 import 'package:weather/utils/log_utils.dart';
 
@@ -41,9 +42,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    LogUtil.e("MainPage..initState()~");
-
-
     _appBloc = BlocProvider.of(context);
     _appBloc.add(LoadSettingsAppEvent());
 
@@ -59,13 +57,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     // _channelHelper = ChannelHelper();
     // _channelHelper.checkUpgrade();
-  }
-
-  @override
-  void didUpdateWidget(covariant MainPage oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-
   }
 
   @override
@@ -148,7 +139,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           controller: _pageController,
         ),
         Positioned(
-          top: 65,
+          top: 70,
           child: Container(
             padding: EdgeInsets.all(16),
             child: Row(

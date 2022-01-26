@@ -622,8 +622,6 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
 
   ///weather 7Day
   Widget _buildWeather7DayLines(WeatherDaily weatherDaily) {
-    // LogUtil.d(
-    //     "_buildWeather7DayLines..city:${weatherDaily.toJson()}..data:${weatherDaily.daily.hashCode}");
     return Container(
       margin: EdgeInsets.only(
         top: 12.0,
@@ -641,7 +639,8 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                   fontWeight: FontWeight.bold),
             ),
           ),
-          WeatherDailyWidget(weatherDaily: weatherDaily),
+          WeatherDailyWidget(
+              key: Key(weatherDaily.updateTime), weatherDaily: weatherDaily),
         ],
       ),
     );
