@@ -11,7 +11,6 @@ import 'package:weather/bloc/navigation/navigation_event.dart';
 import 'package:weather/data/model/internal/overflow_menu_element.dart';
 import 'package:weather/data/model/internal/tab_element.dart';
 import 'package:weather/data/model/internal/weather_error.dart';
-import 'package:weather/http/connection_provider.dart';
 import 'package:weather/resources/config/colors.dart';
 import 'package:weather/ui/weather/weather_page_opt.dart';
 import 'package:weather/utils/log_utils.dart';
@@ -270,6 +269,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 key: const Key("main_screen_text_address"),
                 style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.normal),
               ),
+              Visibility(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: 6.0,
+                  ),
+                  child: Icon(
+                    Icons.location_on,
+                    color: AppColor.white,
+                    size: 20.0,
+                  ),
+                ),
+                visible: selectedIndex == 0,
+              )
             ],
           ),
           Row(
