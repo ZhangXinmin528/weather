@@ -2,7 +2,6 @@ import 'dart:convert' as convert;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:weather/bloc/main/main_page_bloc.dart';
 import 'package:weather/bloc/navigation/navigation_bloc.dart';
@@ -367,8 +366,10 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
             children: [
               Text(temp,
                   key: const Key("main_screen_temp_now"),
-                  style: GoogleFonts.roboto(
-                      fontSize: 90, fontWeight: FontWeight.w300)),
+                  style: TextStyle(
+                    fontSize: 90,
+                    fontWeight: FontWeight.w300,
+                  )),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,

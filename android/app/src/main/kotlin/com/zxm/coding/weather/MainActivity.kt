@@ -14,6 +14,8 @@ import com.alibaba.fastjson.JSON
 import com.coding.zxm.upgrade.UpgradeManager
 import com.coding.zxm.upgrade.network.UpgradeProgressProvider
 import com.coding.zxm.upgrade.utils.UpgradeUtils
+import com.umeng.commonsdk.UMConfigure
+import com.umeng.umeng_common_sdk.UmengCommonSdkPlugin
 import com.zxm.coding.weather.entity.WeatherWarning
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -34,6 +36,14 @@ class MainActivity : FlutterFragmentActivity() {
         mContext = this
 
         mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        preInitUmeng()
+    }
+
+    private fun preInitUmeng() {
+        UMConfigure.preInit(this, "627dfd1130a4f67780d8ae29", "default")
+        UMConfigure.setLogEnabled(BuildConfig.DEBUG)
+        UmengCommonSdkPlugin.setContext(this)
     }
 
     private fun checkUpgrade() {

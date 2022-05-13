@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bmflocation/flutter_bmflocation.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:umeng_common_sdk/umeng_common_sdk.dart';
 import 'package:weather/bloc/app/app_bloc.dart';
 import 'package:weather/bloc/city/city_manage_bloc.dart';
 import 'package:weather/bloc/city/city_search_bloc.dart';
@@ -42,8 +43,8 @@ class _WeatherAppState extends State<WeatherApp> {
   ///sp
   final SPManager _storageManager = SPManager(SharedPreferencesUtils());
 
-
   late ConnectionProvider _connectionProvider;
+
   ///app整体缓存
   late AppLocalRepo _appLocalRepo;
 
@@ -60,6 +61,14 @@ class _WeatherAppState extends State<WeatherApp> {
 
     _connectionProvider = ConnectionProvider();
     _connectionProvider.initConnectivity();
+
+    //baidu
+    LocationFlutterPlugin().setAgreePrivacy(true);
+
+    //umeng
+    UmengCommonSdk.initCommon(
+        "627dfd1130a4f67780d8ae29", "627dfd1130a4f67780d8ae29", "default");
+    UmengCommonSdk.setPageCollectionModeAuto();
   }
 
   @override
@@ -80,7 +89,7 @@ class _WeatherAppState extends State<WeatherApp> {
           //主页面
           BlocProvider<MainPageBloc>(
             create: (context) {
-              return MainPageBloc(_appLocalRepo,_connectionProvider);
+              return MainPageBloc(_appLocalRepo, _connectionProvider);
             },
           ),
           //天气页面

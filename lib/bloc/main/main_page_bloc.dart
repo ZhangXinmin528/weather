@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert' as convert;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bmflocation/flutter_baidu_location.dart';
+import 'package:flutter_bmflocation/flutter_bmflocation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:weather/bloc/main/main_page_event.dart';
 import 'package:weather/bloc/main/main_page_state.dart';
@@ -27,7 +27,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
 
   MainPageBloc(this._appLocalRepo, this.connectionProvider)
       : super(InitLocationState()) {
-    _locationManager.listenLocationCallback((value) {
+    _locationManager.listenSingleLocationCallback((value) {
       //定位变化
       baiduLocation = value;
       LogUtil.d("MainPageBloc..定位回调了..定位街道：：${baiduLocation?.district}");
@@ -123,7 +123,7 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
         final int span = DateTimeUtils.getTimeSpanByNow(time);
         LogUtil.d("location.. span:：$span..time:$time");
         if (span > 5) {
-          _locationManager.startLocation();
+          _locationManager.startSingleLocation();
         } else {
           baiduLocation = await _appLocalRepo.getLocation();
           if (baiduLocation != null && baiduLocation!.city != null) {
@@ -131,11 +131,11 @@ class MainPageBloc extends Bloc<MainPageEvent, MainPageState> {
               add(LocationChangedEvent());
             });
           } else {
-            _locationManager.startLocation();
+            _locationManager.startSingleLocation();
           }
         }
       } else {
-        _locationManager.startLocation();
+        _locationManager.startSingleLocation();
       }
     }
   }

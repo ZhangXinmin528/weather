@@ -1,15 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bmflocation/bdmap_location_flutter_plugin.dart';
-import 'package:flutter_bmflocation/flutter_baidu_location.dart';
-import 'package:flutter_bmflocation/flutter_baidu_location_android_option.dart';
-import 'package:flutter_bmflocation/flutter_baidu_location_ios_option.dart';
+import 'package:flutter_bmflocation/flutter_bmflocation.dart';
 import 'package:weather/utils/log_utils.dart';
 
 class LocationManager {
   late StreamSubscription<Map<String, Object>?>? _locationListener;
-  late LocationFlutterPlugin _locationPlugin;
+  late LocationFlutterPlugin _myLocPlugin;
+  bool _suc = false;
 
   factory LocationManager() {
     return _instance;
@@ -19,76 +18,150 @@ class LocationManager {
 
   ///私有构造器
   LocationManager._internal() {
-    _locationPlugin = new LocationFlutterPlugin();
+    _myLocPlugin = new LocationFlutterPlugin();
   }
 
-  ///开始定位
-  void startLocation() {
-    if (_locationPlugin != null) {
-      _setLocOption();
-      _locationPlugin.startLocation();
+  //==================================单次定位=================================//
+  /// 开始单次定位
+  Future<void> startSingleLocation() async {
+    _singleLocationAction();
+    if (Platform.isIOS) {
+      _suc = await _myLocPlugin
+          .singleLocation({'isReGeocode': true, 'isNetworkState': true});
+      print('开始单次定位：$_suc');
+    } else if (Platform.isAndroid) {
+      _suc = await _myLocPlugin.startLocation();
+    }
+  }
+
+  void _singleLocationAction() async {
+    /// 设置android端和ios端定位参数
+    /// android 端设置定位参数
+    /// ios 端设置定位参数
+    final Map iosMap = initSingleIOSOptions().getMap();
+    final Map androidMap = initSingleAndroidOptions().getMap();
+
+    _suc = await _myLocPlugin.prepareLoc(androidMap, iosMap);
+    print('设置定位参数：$iosMap');
+  }
+
+  /// 设置地图参数
+  BaiduLocationAndroidOption initSingleAndroidOptions() {
+    BaiduLocationAndroidOption options = BaiduLocationAndroidOption(
+        coorType: 'bd09ll',
+        locationMode: BMFLocationMode.hightAccuracy,
+        isNeedAddress: true,
+        isNeedAltitude: true,
+        isNeedLocationPoiList: true,
+        isNeedNewVersionRgc: true,
+        isNeedLocationDescribe: true,
+        openGps: true,
+        locationPurpose: BMFLocationPurpose.sport,
+        coordType: BMFLocationCoordType.bd09ll);
+    return options;
+  }
+
+  BaiduLocationIOSOption initSingleIOSOptions() {
+    BaiduLocationIOSOption options = BaiduLocationIOSOption(
+        coordType: BMFLocationCoordType.bd09ll,
+        BMKLocationCoordinateType: 'BMKLocationCoordinateTypeBMK09LL',
+        desiredAccuracy: BMFDesiredAccuracy.best);
+    return options;
+  }
+
+  void listenSingleLocationCallback(ValueChanged<BaiduLocation?> valueChanged) {
+    ///单次定位时如果是安卓可以在内部进行判断调用连续定位
+    if (Platform.isIOS) {
+      ///接受定位回调
+      _myLocPlugin.singleLocationCallback(callback: (BaiduLocation result) {
+        try {
+          valueChanged(result);
+        } catch (exception) {
+          valueChanged(null);
+          print(exception);
+        }
+      });
+    } else if (Platform.isAndroid) {
+      ///接受定位回调
+      _myLocPlugin.seriesLocationCallback(callback: (BaiduLocation result) {
+        LogUtil.d(
+            "LocationManager..listenSingleLocationCallback回调了..result：${result.toString()}");
+        try {
+          valueChanged(result);
+        } catch (exception) {
+          valueChanged(null);
+          stopLocation();
+          print(exception);
+        }
+      });
+    }
+  }
+
+  //==================================连续定位=================================//
+
+  ///开始连续定位
+  Future<void> startLocation() async {
+    _locationAction();
+    _suc = await _myLocPlugin.startLocation();
+    print('开始连续定位：$_suc');
+  }
+
+  void _locationAction() async {
+    /// 设置android端和ios端定位参数
+    /// android 端设置定位参数
+    /// ios 端设置定位参数
+    Map iosMap = _initIOSOptions().getMap();
+    Map androidMap = _initAndroidOptions().getMap();
+
+    _suc = await _myLocPlugin.prepareLoc(androidMap, iosMap);
+    print('设置定位参数：$iosMap');
+  }
+
+  /// 设置地图参数
+  BaiduLocationAndroidOption _initAndroidOptions() {
+    BaiduLocationAndroidOption options = BaiduLocationAndroidOption(
+        coorType: 'bd09ll',
+        locationMode: BMFLocationMode.hightAccuracy,
+        isNeedAddress: true,
+        isNeedAltitude: true,
+        isNeedLocationPoiList: true,
+        isNeedNewVersionRgc: true,
+        isNeedLocationDescribe: true,
+        openGps: true,
+        scanspan: 4000,
+        coordType: BMFLocationCoordType.bd09ll);
+    return options;
+  }
+
+  BaiduLocationIOSOption _initIOSOptions() {
+    BaiduLocationIOSOption options = BaiduLocationIOSOption(
+        coordType: BMFLocationCoordType.bd09ll,
+        BMKLocationCoordinateType: 'BMKLocationCoordinateTypeBMK09LL',
+        desiredAccuracy: BMFDesiredAccuracy.best,
+        allowsBackgroundLocationUpdates: true,
+        pausesLocationUpdatesAutomatically: false);
+    return options;
+  }
+
+  ///停止连续定位
+  void stopLocation() async {
+    if (_myLocPlugin != null) {
+      _suc = await _myLocPlugin.stopLocation();
+      print('停止连续定位：$_suc');
     }
   }
 
   void listenLocationCallback(ValueChanged<BaiduLocation?> valueChanged) {
-    _locationListener = _locationPlugin
-        .onResultCallback()
-        .listen((Map<String, Object>? result) {
-      LogUtil.d("LocationManager..定位回调了..result：${result.toString()}");
+    ///接受定位回调
+    _myLocPlugin.seriesLocationCallback(callback: (BaiduLocation result) {
+      LogUtil.d(
+          "LocationManager..listenLocationCallback回调了..result：${result.toString()}");
       try {
-        final BaiduLocation location = BaiduLocation.fromMap(result);
-        valueChanged(location);
+        valueChanged(result);
       } catch (exception) {
         valueChanged(null);
-        stopLocation();
         print(exception);
       }
     });
-  }
-
-  ///取消定位
-  void _cancelLocation() {
-    _locationListener?.cancel();
-  }
-
-  ///终止定位
-  void stopLocation() {
-    if (_locationPlugin != null) {
-      _locationPlugin.stopLocation();
-    }
-  }
-
-  ///移动端设置定位参数，包括
-  void _setLocOption() {
-    /// android 端设置定位参数
-    BaiduLocationAndroidOption androidOption = new BaiduLocationAndroidOption();
-    androidOption.setCoorType("bd09ll"); // 设置返回的位置坐标系类型
-    androidOption.setIsNeedAltitude(true); // 设置是否需要返回海拔高度信息
-    androidOption.setIsNeedAddres(true); // 设置是否需要返回地址信息
-    androidOption.setIsNeedLocationPoiList(true); // 设置是否需要返回周边poi信息
-    androidOption.setIsNeedNewVersionRgc(true); // 设置是否需要返回最新版本rgc信息
-    androidOption.setIsNeedLocationDescribe(true); // 设置是否需要返回位置描述
-    androidOption.setOpenGps(true); // 设置是否需要使用gps
-    androidOption.setLocationMode(LocationMode.Hight_Accuracy); // 设置定位模式
-    androidOption.setScanspan(1000); // 设置发起定位请求时间间隔
-
-    Map androidMap = androidOption.getMap();
-
-    /// ios 端设置定位参数
-    BaiduLocationIOSOption iosOption = new BaiduLocationIOSOption();
-    iosOption.setIsNeedNewVersionRgc(true); // 设置是否需要返回最新版本rgc信息
-    iosOption.setBMKLocationCoordinateType(
-        "BMKLocationCoordinateTypeBMK09LL"); // 设置返回的位置坐标系类型
-    iosOption.setActivityType("CLActivityTypeAutomotiveNavigation"); // 设置应用位置类型
-    iosOption.setLocationTimeout(10); // 设置位置获取超时时间
-    iosOption.setDesiredAccuracy("kCLLocationAccuracyBest"); // 设置预期精度参数
-    iosOption.setReGeocodeTimeout(10); // 设置获取地址信息超时时间
-    iosOption.setDistanceFilter(100); // 设置定位最小更新距离
-    iosOption.setAllowsBackgroundLocationUpdates(true); // 是否允许后台定位
-    iosOption.setPauseLocUpdateAutomatically(true); //  定位是否会被系统自动暂停
-
-    Map iosMap = iosOption.getMap();
-
-    _locationPlugin.prepareLoc(androidMap, iosMap);
   }
 }
