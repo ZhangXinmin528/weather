@@ -18,10 +18,11 @@ class DioClient {
     final _baseOptions = BaseOptions();
     _baseOptions.connectTimeout = 30 * 1000;
     _baseOptions.receiveTimeout = 30 * 1000;
+    _baseOptions.contentType = Headers.jsonContentType;
     _dio = Dio(_baseOptions);
     _dio.interceptors.add(HttpInterceptor());
     if (!inProduct) {
-      // _dio.interceptors.add(PrettyDioLogger());
+      _dio.interceptors.add(PrettyDioLogger());
     }
   }
 

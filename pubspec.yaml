@@ -26,7 +26,8 @@ dependencies:
   fluro: ^2.0.3
 
   #http
-  dio: ^4.0.0
+  dio: ^4.0.6
+
   #网络状态
   connectivity_plus: ^2.0.2
 

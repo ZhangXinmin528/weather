@@ -4,9 +4,11 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:weather/utils/log_utils.dart';
 
+///网络连接状态监听
 class ConnectionProvider {
   ConnectivityResult? _connectStatus;
   Connectivity? _connectivity;
+
   StreamSubscription<ConnectivityResult>? _connectSubScription;
   StreamController<ConnectivityResult> statusController = StreamController();
 
