@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:weather/http/http_exception.dart';
-import 'package:weather/utils/log_utils.dart';
 
+///网络请求拦截器
 class HttpInterceptor extends InterceptorsWrapper {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {

@@ -232,6 +232,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.0.6"
+  dio_flutter_transformer2:
+    dependency: "direct main"
+    description:
+      name: dio_flutter_transformer2
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.1"
   equatable:
     dependency: "direct main"
     description:
@@ -650,7 +657,7 @@ packages:
       name: retry
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.0.0+1"
+    version: "3.1.0"
   shared_preferences:
     dependency: "direct main"
     description:

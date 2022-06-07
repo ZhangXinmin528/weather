@@ -27,6 +27,9 @@ dependencies:
 
   #http
   dio: ^4.0.6
+  pretty_dio_logger: ^1.1.1
+  dio_flutter_transformer2: ^4.0.1
+
 
   #网络状态
   connectivity_plus: ^2.0.2
@@ -43,7 +46,6 @@ dependencies:
   flutter_bmflocation: ^3.1.0
 
   #logger
-  pretty_dio_logger: ^1.2.0-beta-1
   logger: ^1.0.0
 
   #webview
@@ -58,18 +60,18 @@ dependencies:
   url_launcher: ^6.0.10
 
   #FONT
-#  google_fonts: ^2.3.0
+  #  google_fonts: ^2.3.0
 
   #svg
   flutter_svg: ^1.0.0
 
   #file download
-#  flutter_downloader: ^1.7.1
+  #  flutter_downloader: ^1.7.1
 
   #querying information about an application package
   package_info_plus: ^1.3.0
 
-  retry: 3.0.0+1
+  retry: ^3.1.0
 
   #permission:sdk version =31
   permission_handler: ^8.3.0

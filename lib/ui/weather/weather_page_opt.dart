@@ -180,7 +180,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                 _buildWeather7DayLines(weatherDaily),
                 _buildWindDesc(weatherRT),
                 _buildIndicesWidget(weatherIndices),
-                // _buildWeatherFooter(),
+                _buildWeatherFooter(),
               ],
             ),
           ),

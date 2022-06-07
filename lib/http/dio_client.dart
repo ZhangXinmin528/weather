@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:dio_flutter_transformer2/dio_flutter_transformer2.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retry/retry.dart';
 import 'package:weather/http/http_exception.dart';
@@ -21,8 +22,19 @@ class DioClient {
     _baseOptions.contentType = Headers.jsonContentType;
     _dio = Dio(_baseOptions);
     _dio.interceptors.add(HttpInterceptor());
+    //json decoding will be background
+    _dio.transformer = FlutterTransformer();
+
     if (!inProduct) {
-      _dio.interceptors.add(PrettyDioLogger());
+      _dio.interceptors.add(
+        PrettyDioLogger(
+          request: false,
+          requestHeader: false,
+          requestBody: false,
+          responseHeader: false,
+          responseBody: true,
+        ),
+      );
     }
   }
 
