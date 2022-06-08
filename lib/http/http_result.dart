@@ -1,4 +1,4 @@
-class HttpResult<T> {
+class HttpResult<T extends Object> {
   int code = 0;
   String? message = "";
   T? data;

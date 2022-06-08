@@ -2,14 +2,14 @@ import 'package:dio/dio.dart';
 
 class HttpException implements Exception {
   static final int _defaultErrorCode = -1;
-  final int _code;
-  final String _message;
+  final int code;
+  final String message;
 
-  HttpException(this._code, this._message);
+  HttpException(this.code, this.message);
 
   @override
   String toString() {
-    return 'HttpException{_message: $_message, _code: $_code}';
+    return 'HttpException{_message: $message, _code: $code}';
   }
 
   factory HttpException.generate(DioError error) {
