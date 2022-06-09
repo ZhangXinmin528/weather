@@ -72,6 +72,12 @@ class _WeatherAppState extends State<WeatherApp> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    _connectionProvider.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
@@ -92,12 +98,12 @@ class _WeatherAppState extends State<WeatherApp> {
               return MainPageBloc(_appLocalRepo, _connectionProvider);
             },
           ),
-          //天气页面
-          BlocProvider<WeatherPageBloc>(
-            create: (context) {
-              return WeatherPageBloc();
-            },
-          ),
+          // //天气页面
+          // BlocProvider<WeatherPageBloc>(
+          //   create: (context) {
+          //     return WeatherPageBloc();
+          //   },
+          // ),
           //城市管理
           BlocProvider<CityManageBloc>(
             create: (context) {

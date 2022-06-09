@@ -12,9 +12,11 @@ import 'package:weather/data/model/remote/weather/weather_indices.dart';
 import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
+import 'package:weather/http/http_result.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
+@Deprecated('不再使用')
 class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
   final WeatherRemoteRepo _weatherRemoteRepository = WeatherRemoteRepo();
   final SqliteManager _sqliteManager = SqliteManager.INSTANCE;
@@ -97,23 +99,23 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
     if (state is StartRequestWeatherState) {
       //获取天气信息
 
-      final WeatherRT? weatherNow =
+      final HttpResult<WeatherRT?> weatherNow =
           await _weatherRemoteRepository.requestWeatherNow(longitude, latitude);
 
       //实时空气质量
-      final WeatherAir? weatherAir =
+      final HttpResult<WeatherAir?> weatherAir =
           await _weatherRemoteRepository.requestAirNow(longitude, latitude);
 
       //24H
-      final WeatherHour? weatherHour =
+      final HttpResult<WeatherHour?> weatherHour =
           await _weatherRemoteRepository.requestWeather24H(longitude, latitude);
 
       //7D
-      final WeatherDaily? weatherDaily =
+      final HttpResult<WeatherDaily?> weatherDaily =
           await _weatherRemoteRepository.requestWeather7D(longitude, latitude);
 
       //当天天气指数
-      final WeatherIndices? weatherIndices =
+      final HttpResult<WeatherIndices?> weatherIndices =
           await _weatherRemoteRepository.requestIndices1D(longitude, latitude);
 
       //极端天气预警
@@ -135,19 +137,29 @@ class WeatherPageBloc extends Bloc<WeatherPageEvent, WeatherPageState> {
       //     await _weatherRemoteRepository.requestAstronomyMoon(
       //         _baiduLocation!.longitude, _baiduLocation!.latitude);
 
-      if (weatherNow != null && weatherNow.code == "200") {
+      if (weatherNow.code == 200) {
         if (event.hasCached) {
-          final index = await _sqliteManager.updateCityWeather(key, weatherNow,
-              weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
+          final index = await _sqliteManager.updateCityWeather(
+              key,
+              weatherNow.data,
+              weatherAir.data,
+              weatherHour.data,
+              weatherDaily.data,
+              weatherIndices.data);
           LogUtil.d("天气tab页面..更新数据库:$index");
         } else {
-          final index = await _sqliteManager.insertCityWeather(key, weatherNow,
-              weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
+          final index = await _sqliteManager.insertCityWeather(
+              key,
+              weatherNow.data,
+              weatherAir.data,
+              weatherHour.data,
+              weatherDaily.data,
+              weatherIndices.data);
           LogUtil.d("天气tab页面..插入数据库:$index");
         }
 
-        yield LoadWeatherToPageState(key, weatherNow, weatherAir, weatherDaily,
-            weatherIndices, weatherHour);
+        yield LoadWeatherToPageState(key, weatherNow.data, weatherAir.data,
+            weatherDaily.data, weatherIndices.data, weatherHour.data);
       } else {
         yield RequestWeatherFailedState(WeatherError.connectionError);
       }

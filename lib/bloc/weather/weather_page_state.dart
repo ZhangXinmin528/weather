@@ -25,11 +25,11 @@ class StartRequestWeatherState extends WeatherPageState {
 ///天气数据请求成功
 class LoadWeatherToPageState extends WeatherPageState {
   final String key;
-  final WeatherRT weather;
-  final WeatherAir weatherAir;
-  final WeatherDaily weatherDaily;
-  final WeatherIndices weatherIndices;
-  final WeatherHour weatherHour;
+  final WeatherRT? weather;
+  final WeatherAir? weatherAir;
+  final WeatherDaily? weatherDaily;
+  final WeatherIndices? weatherIndices;
+  final WeatherHour? weatherHour;
 
   LoadWeatherToPageState(this.key, this.weather, this.weatherAir,
       this.weatherDaily, this.weatherIndices, this.weatherHour);

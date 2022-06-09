@@ -6,6 +6,7 @@ import 'package:weather/bloc/city/city_search_state.dart';
 import 'package:weather/data/model/remote/city/city_top.dart';
 import 'package:weather/data/repo/local/app_local_repo.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
+import 'package:weather/http/http_result.dart';
 
 class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
   final AppLocalRepo _appLocalRepo;
@@ -31,7 +32,9 @@ class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
       topCities = await _appLocalRepo.getTopCities();
 
       if (topCities == null) {
-        topCities = await _weatherRemoteRepository.requestCityTop();
+        final HttpResult httpResult =
+            await _weatherRemoteRepository.requestCityTop();
+        topCities = httpResult.data;
         final cities = convert.jsonEncode(topCities?.toJson());
         _appLocalRepo.saveTopCities(cities);
       }
@@ -48,11 +51,10 @@ class CitySearchBloc extends Bloc<CitySearchEvent, CitySearchState> {
   ///城市搜索
   Stream<CitySearchState> _mapSearchCityToState(CityLookupEvent state) async* {
     final keyWord = state.keyWord;
-    final cityLocation =
-        await _weatherRemoteRepository.requestCityLookup(keyWord);
+    final result = await _weatherRemoteRepository.requestCityLookup(keyWord);
 
-    if (cityLocation != null && cityLocation.code == "200") {
-      yield CityLookupSuccessState(cityLocation);
+    if (result.code == 200 && result.data != null) {
+      yield CityLookupSuccessState(result.data!);
     } else {
       yield CityLookupFailedState();
     }

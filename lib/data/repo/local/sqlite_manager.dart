@@ -81,11 +81,11 @@ class SqliteManager {
   ///新增某城市天气数据
   Future<int?> insertCityWeather(
       String key,
-      WeatherRT weatherRT,
-      WeatherAir weatherAir,
-      WeatherHour weatherHour,
-      WeatherDaily weatherDaily,
-      WeatherIndices weatherIndices,
+      WeatherRT? weatherRT,
+      WeatherAir? weatherAir,
+      WeatherHour? weatherHour,
+      WeatherDaily? weatherDaily,
+      WeatherIndices? weatherIndices,
       {WeatherWarning? weatherWarning,
       AirDaily? airDaily,
       AstronomySun? astronomySun,
@@ -93,11 +93,11 @@ class SqliteManager {
     Map<String, dynamic> map = Map();
     map[keyLoc] = key;
     map[timeStampKey] = DateTimeUtils.getFormatedNowTimeString();
-    map[weatherRTKey] = convert.jsonEncode(weatherRT.toJson());
-    map[weatherAirKey] = convert.jsonEncode(weatherAir.toJson());
-    map[weatherHourKey] = convert.jsonEncode(weatherHour.toJson());
-    map[weatherDailyKey] = convert.jsonEncode(weatherDaily.toJson());
-    map[weatherIndicesKey] = convert.jsonEncode(weatherIndices.toJson());
+    map[weatherRTKey] = convert.jsonEncode(weatherRT?.toJson());
+    map[weatherAirKey] = convert.jsonEncode(weatherAir?.toJson());
+    map[weatherHourKey] = convert.jsonEncode(weatherHour?.toJson());
+    map[weatherDailyKey] = convert.jsonEncode(weatherDaily?.toJson());
+    map[weatherIndicesKey] = convert.jsonEncode(weatherIndices?.toJson());
     map[weatherWarningKey] = convert.jsonEncode(weatherWarning?.toJson());
     map[airDailyKey] = convert.jsonEncode(airDaily?.toJson());
     map[astronomySunKey] = convert.jsonEncode(astronomyMoon?.toJson());
@@ -117,11 +117,11 @@ class SqliteManager {
   ///更新某个城市天气
   Future<int?> updateCityWeather(
       String key,
-      WeatherRT weatherRT,
-      WeatherAir weatherAir,
-      WeatherHour weatherHour,
-      WeatherDaily weatherDaily,
-      WeatherIndices weatherIndices,
+      WeatherRT? weatherRT,
+      WeatherAir? weatherAir,
+      WeatherHour? weatherHour,
+      WeatherDaily? weatherDaily,
+      WeatherIndices? weatherIndices,
       {WeatherWarning? weatherWarning,
       AirDaily? airDaily,
       AstronomySun? astronomySun,
@@ -129,11 +129,11 @@ class SqliteManager {
     Map<String, dynamic> map = Map();
     map[keyLoc] = key;
     map[timeStampKey] = DateTimeUtils.getFormatedNowTimeString();
-    map[weatherRTKey] = convert.jsonEncode(weatherRT.toJson());
-    map[weatherAirKey] = convert.jsonEncode(weatherAir.toJson());
-    map[weatherHourKey] = convert.jsonEncode(weatherHour.toJson());
-    map[weatherDailyKey] = convert.jsonEncode(weatherDaily.toJson());
-    map[weatherIndicesKey] = convert.jsonEncode(weatherIndices.toJson());
+    map[weatherRTKey] = convert.jsonEncode(weatherRT?.toJson());
+    map[weatherAirKey] = convert.jsonEncode(weatherAir?.toJson());
+    map[weatherHourKey] = convert.jsonEncode(weatherHour?.toJson());
+    map[weatherDailyKey] = convert.jsonEncode(weatherDaily?.toJson());
+    map[weatherIndicesKey] = convert.jsonEncode(weatherIndices?.toJson());
     map[weatherWarningKey] = convert.jsonEncode(weatherWarning?.toJson());
     map[airDailyKey] = convert.jsonEncode(airDaily?.toJson());
     map[astronomySunKey] = convert.jsonEncode(astronomyMoon?.toJson());

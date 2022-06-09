@@ -11,6 +11,7 @@ import 'package:weather/data/model/remote/weather/weather_warning.dart';
 import 'package:weather/data/repo/local/sqlite_manager.dart';
 import 'package:weather/data/repo/remote/weather_remote_repo.dart';
 import 'package:weather/http/connection_provider.dart';
+import 'package:weather/http/http_result.dart';
 import 'package:weather/utils/datetime_utils.dart';
 import 'package:weather/utils/log_utils.dart';
 
@@ -110,48 +111,57 @@ class WeatherProvider {
       required double longitude}) async {
     LogUtil.d("WeatherProvider..requestWeatherData:$key..key:$key");
     //获取天气信息
-
-    final WeatherRT? weatherNow =
+    final HttpResult<WeatherRT?> weatherNow =
         await _weatherRemoteRepo.requestWeatherNow(longitude, latitude);
 
     //实时空气质量
-    final WeatherAir? weatherAir =
+    final HttpResult<WeatherAir?> weatherAir =
         await _weatherRemoteRepo.requestAirNow(longitude, latitude);
 
     //24H
-    final WeatherHour? weatherHour =
+    final HttpResult<WeatherHour?> weatherHour =
         await _weatherRemoteRepo.requestWeather24H(longitude, latitude);
 
     //7D
-    final WeatherDaily? weatherDaily =
+    final HttpResult<WeatherDaily?> weatherDaily =
         await _weatherRemoteRepo.requestWeather7D(longitude, latitude);
 
     //当天天气指数
-    final WeatherIndices? weatherIndices =
+    final HttpResult<WeatherIndices?> weatherIndices =
         await _weatherRemoteRepo.requestIndices1D(longitude, latitude);
 
     //天气预警
-    final WeatherWarning? weatherWarning =
+    final HttpResult weatherWarning =
         await _weatherRemoteRepo.requestWarningNow(longitude, latitude);
 
-    if (weatherNow != null && weatherNow.code == "200") {
+    if (weatherNow.code == 200) {
       if (_hasCached) {
-        final index = await _sqliteManager.updateCityWeather(key, weatherNow,
-            weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
+        final index = await _sqliteManager.updateCityWeather(
+            key,
+            weatherNow.data,
+            weatherAir.data,
+            weatherHour.data,
+            weatherDaily.data,
+            weatherIndices.data);
         LogUtil.d("天气tab页面..更新数据库:$index..key:$key");
       } else {
-        final index = await _sqliteManager.insertCityWeather(key, weatherNow,
-            weatherAir!, weatherHour!, weatherDaily!, weatherIndices!);
+        final index = await _sqliteManager.insertCityWeather(
+            key,
+            weatherNow.data,
+            weatherAir.data,
+            weatherHour.data,
+            weatherDaily.data,
+            weatherIndices.data);
         LogUtil.d("天气tab页面..插入数据库:$index..key:$key");
       }
       _hasCached = true;
       updateWeather(
-          weatherRT: weatherNow,
-          weatherAir: weatherAir,
-          weatherHour: weatherHour,
-          weatherDaily: weatherDaily,
-          weatherIndices: weatherIndices,
-          weatherWarning: weatherWarning);
+          weatherRT: weatherNow.data,
+          weatherAir: weatherAir.data,
+          weatherHour: weatherHour.data,
+          weatherDaily: weatherDaily.data,
+          weatherIndices: weatherIndices.data,
+          weatherWarning: weatherWarning.data);
 
       weatherStatusController.add(WeatherStatus.STATUS_FINISHED);
 
@@ -166,17 +176,18 @@ class WeatherProvider {
       required double latitude,
       required double longitude}) {
     weatherStatusController.add(WeatherStatus.STATUS_REFRESHING);
+
     Future.delayed(Duration(milliseconds: 1000), () {
       _requestWeatherData(key: key, latitude: latitude, longitude: longitude);
     });
   }
 
   void updateWeather(
-      {required WeatherRT weatherRT,
-      required WeatherAir weatherAir,
-      required WeatherHour weatherHour,
-      required WeatherDaily weatherDaily,
-      required WeatherIndices weatherIndices,
+      {required WeatherRT? weatherRT,
+      required WeatherAir? weatherAir,
+      required WeatherHour? weatherHour,
+      required WeatherDaily? weatherDaily,
+      required WeatherIndices? weatherIndices,
       WeatherWarning? weatherWarning}) {
     final Map<String, dynamic> weatherMap = Map();
     weatherMap['weatherRT'] = weatherRT;
@@ -203,4 +214,5 @@ enum WeatherStatus {
   STATUS_CACHED_INVALID,
   STATUS_NET_OFFLINE,
   STATUS_FINISHED,
+  STATUS_ERROR, //发生异常
 }

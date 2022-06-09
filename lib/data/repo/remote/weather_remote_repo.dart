@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:weather/data/model/remote/city/city_location.dart';
 import 'package:weather/data/model/remote/city/city_top.dart';
 import 'package:weather/data/model/remote/weather/air_daily.dart';
@@ -11,6 +12,7 @@ import 'package:weather/data/model/remote/weather/weather_now.dart';
 import 'package:weather/data/model/remote/weather/weather_warning.dart';
 import 'package:weather/http/dio_client.dart';
 import 'package:weather/http/http_exception.dart';
+import 'package:weather/http/http_result.dart';
 import 'package:weather/resources/config/app_config.dart';
 import 'package:weather/utils/datetime_utils.dart';
 
@@ -81,9 +83,26 @@ class WeatherRemoteRepo {
     _dioClient = DioClient.instance;
   }
 
+  ///解析Response
+  Future<HttpResult<T?>> onResponse<T>(
+    Response? response,
+    T? t,
+  ) async {
+    if (response != null) {
+      if (response.statusCode == 200) {
+        return HttpResult(response.statusCode ?? 200, "success", t);
+      } else {
+        return HttpResult(response.statusCode ?? -1,
+            response.statusMessage ?? "failure", null);
+      }
+    } else {
+      return HttpResult(-1, "failure", null);
+    }
+  }
+
   ///城市天气API
   ///实时天气
-  Future<WeatherRT?> requestWeatherNow(
+  Future<HttpResult<WeatherRT?>> requestWeatherNow(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -103,14 +122,11 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return WeatherRT.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, WeatherRT.fromJson(response?.data));
   }
 
   ///7天天气预报
-  Future<WeatherDaily?> requestWeather7D(
+  Future<HttpResult<WeatherDaily?>> requestWeather7D(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -129,14 +145,11 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return WeatherDaily.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, WeatherDaily.fromJson(response?.data));
   }
 
   ///24H天气预报
-  Future<WeatherHour?> requestWeather24H(
+  Future<HttpResult<WeatherHour?>> requestWeather24H(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -155,17 +168,14 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return WeatherHour.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, WeatherHour.fromJson(response?.data));
   }
 
 //===========================================================================//
 
   ///天气指数API
   ///天气生活指数
-  Future<WeatherIndices?> requestIndices1D(
+  Future<HttpResult<WeatherIndices?>> requestIndices1D(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -186,17 +196,14 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return WeatherIndices.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, WeatherIndices.fromJson(response?.data));
   }
 
 //===========================================================================//
 
   ///灾害预警API
   ///极端天气预报数据
-  Future<WeatherWarning?> requestWarningNow(
+  Future<HttpResult<WeatherWarning?>> requestWarningNow(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -215,17 +222,14 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return WeatherWarning.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, WeatherWarning.fromJson(response?.data));
   }
 
 //===========================================================================//
 
   ///空气API
   ///实时空气质量
-  Future<WeatherAir?> requestAirNow(
+  Future<HttpResult<WeatherAir?>> requestAirNow(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -244,14 +248,11 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return WeatherAir.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, WeatherAir.fromJson(response?.data));
   }
 
   ///空气质量预报
-  Future<AirDaily?> requestAir5D(
+  Future<HttpResult<AirDaily?>> requestAir5D(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -270,17 +271,14 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return AirDaily.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, AirDaily.fromJson(response?.data));
   }
 
 //===========================================================================//
 
   ///天文API
   ///日出日落
-  Future<AstronomySun?> requestAstronomySun(
+  Future<HttpResult<AstronomySun?>> requestAstronomySun(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -300,14 +298,11 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return AstronomySun.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, AstronomySun.fromJson(response?.data));
   }
 
   ///月升月落和月相
-  Future<AstronomyMoon?> requestAstronomyMoon(
+  Future<HttpResult<AstronomyMoon?>> requestAstronomyMoon(
     double? longitude,
     double? latitude, {
     Function()? onStart,
@@ -327,17 +322,14 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return AstronomyMoon.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, AstronomyMoon.fromJson(response?.data));
   }
 
 //===========================================================================//
 
   ///地理信息API
   ///城市信息查询：目前中国范围内
-  Future<CityLocation?> requestCityLookup(
+  Future<HttpResult<CityLocation?>> requestCityLookup(
     String city, {
     Function()? onStart,
     Function(HttpException error)? onError,
@@ -356,14 +348,11 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return CityLocation.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, CityLocation.fromJson(response?.data));
   }
 
   ///热门城市查询：目前中国范围内
-  Future<CityTop?> requestCityTop({
+  Future<HttpResult<CityTop?>> requestCityTop({
     Function()? onStart,
     Function(HttpException error)? onError,
   }) async {
@@ -381,9 +370,6 @@ class WeatherRemoteRepo {
       onError: onError,
     );
 
-    if (response != null && response.statusCode == 200) {
-      return CityTop.fromJson(response.data);
-    }
-    return null;
+    return onResponse(response, CityTop.fromJson(response?.data));
   }
 }

@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 
 class HttpException implements Exception {
-  static final int _defaultErrorCode = -1;
+  static final int defaultErrorCode = -1;
+  static final int networkOffline = -2;
   final int code;
   final String message;
 
@@ -9,21 +10,21 @@ class HttpException implements Exception {
 
   @override
   String toString() {
-    return 'HttpException{_message: $message, _code: $code}';
+    return 'HttpException{_code: $code,_message: $message}';
   }
 
   factory HttpException.generate(DioError error) {
     switch (error.type) {
       case DioErrorType.connectTimeout:
-        return HttpException(_defaultErrorCode, "网络连接超时");
+        return HttpException(defaultErrorCode, "网络连接超时");
       case DioErrorType.receiveTimeout:
-        return HttpException(_defaultErrorCode, "网络响应超时");
+        return HttpException(defaultErrorCode, "网络响应超时");
       case DioErrorType.sendTimeout:
-        return HttpException(_defaultErrorCode, "网络请求超时");
+        return HttpException(defaultErrorCode, "网络请求超时");
       case DioErrorType.cancel:
-        return HttpException(_defaultErrorCode, "网络请求取消");
+        return HttpException(defaultErrorCode, "网络请求取消");
       case DioErrorType.other:
-        return HttpException(_defaultErrorCode, "其他错误：${error.message}");
+        return HttpException(defaultErrorCode, "其他错误：${error.message}");
       case DioErrorType.response:
         {
           final response = error.response;
@@ -45,11 +46,9 @@ class HttpException implements Exception {
               return HttpException(
                   statusCode!, "Internal Server Error：服务器遇到了一个未曾预料的状况~");
             case 502:
-              return HttpException(
-                  statusCode!, "Bad Gateway：网管或者代理服务器无法收到响应~");
+              return HttpException(statusCode!, "Bad Gateway：网管或者代理服务器无法收到响应~");
             case 503:
-              return HttpException(
-                  statusCode!, "Service Unavailable：服务器正在维护~");
+              return HttpException(statusCode!, "Service Unavailable：服务器正在维护~");
             case 505:
               return HttpException(statusCode!,
                   "HTTP Version Not Supported：服务器不支持，或者拒绝支持在请求中使用的HTTP 版本~");
@@ -59,7 +58,7 @@ class HttpException implements Exception {
           }
         }
       default:
-        return HttpException(_defaultErrorCode, "异常信息：${error.message}");
+        return HttpException(defaultErrorCode, "异常信息：${error.message}");
     }
   }
 }
