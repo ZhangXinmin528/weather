@@ -134,6 +134,7 @@ class MainActivity : FlutterFragmentActivity() {
                                             intent,
                                             flags
                                         )
+
                                     mWarningBuilder?.setContentTitle(it.title)
                                         ?.setContentText(it.text)
                                         ?.setSmallIcon(R.mipmap.ic_launcher)
@@ -144,6 +145,13 @@ class MainActivity : FlutterFragmentActivity() {
                                         })
                                         ?.setContentIntent(pendingIntent)
                                         ?.setWhen(System.currentTimeMillis())
+
+                                  val bigTextStyle =   NotificationCompat.BigTextStyle()
+                                        .setBigContentTitle(it.title)
+                                        .bigText(it.text)
+
+                                    mWarningBuilder?.setStyle(bigTextStyle)
+
                                     mNotificationManager?.notify(
                                         ChannelConstants.WEATHER_WARNING_NOTIFI_CHANNEL_ID,
                                         mWarningBuilder!!.build()

@@ -257,7 +257,7 @@ class _WeatherPageOptState extends State<WeatherPageOpt>
                   child: Text(
                     "${warning?.typeName}${warning?.level}预警",
                     style: TextStyle(
-                      fontSize: 14.0,
+                      fontSize: 13.0,
                     ),
                   ),
                 )
